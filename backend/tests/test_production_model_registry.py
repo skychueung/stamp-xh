@@ -12,6 +12,9 @@ def test_registry_contains_exactly_five_models(monkeypatch, tmp_path):
 
 def test_adapter_contract_and_truthful_probe(monkeypatch, tmp_path):
     monkeypatch.setenv("STAMP_MODEL_HOME", str(tmp_path))
+    monkeypatch.setenv("STAMP_PEPMLM_ROOT", str(tmp_path / "pepmlm"))
+    monkeypatch.setenv("STAMP_PEPMLM_PYTHON", str(tmp_path / "pepmlm" / "bin" / "python"))
+    monkeypatch.setenv("STAMP_PEPMLM_CHECKPOINT", str(tmp_path / "pepmlm" / "model.safetensors"))
     adapter = ProductionModelRegistry().get("pepmlm")
     assert adapter.probe()["missing"]
     assert adapter.validate_input({"target_sequence": "ACDEFGHIKLMNPQ"}) == []
