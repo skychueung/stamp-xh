@@ -87,12 +87,6 @@ def model_job(job_id: str, db: Session = Depends(get_db)):
     return ApiResponse.success(data=_response(_job(db, job_id)))
 
 
-@router.get("/jobs/{job_id}")
-def canonical_job(job_id: str, db: Session = Depends(get_db)):
-    """Canonical unified status endpoint required by the production API contract."""
-    return ApiResponse.success(data=_response(_job(db, job_id)))
-
-
 @router.post("/jobs/{job_id}/model-cancel")
 def cancel(job_id: str, db: Session = Depends(get_db)):
     return ApiResponse.success(data=_response(cancel_model_job(db, _job(db, job_id))))
