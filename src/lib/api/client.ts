@@ -16,12 +16,16 @@ export class ApiError extends Error {
 
 export async function fetchClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
+  const csrfMatch = document.cookie.match(/(?:^|; )stamp_csrf=([^;]+)/);
+  const csrfToken = csrfMatch ? decodeURIComponent(csrfMatch[1]) : null;
+  const method = (options.method || 'GET').toUpperCase();
   const headers = {
     'Content-Type': 'application/json',
+    ...(csrfToken && !['GET', 'HEAD', 'OPTIONS'].includes(method) ? { 'X-CSRF-Token': csrfToken } : {}),
     ...options.headers,
   };
 
-  const response = await fetch(url, { ...options, headers });
+  const response = await fetch(url, { ...options, headers, credentials: 'include' });
 
   if (!response.ok) {
     let errorData;
