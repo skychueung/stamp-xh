@@ -102,6 +102,18 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     except Exception as exc:
         logger.critical("Startup failed during data loading: %s", exc)
         raise
+    try:
+        from app.database import SessionLocal
+        from app.services.unified_model_runtime import recover_interrupted_model_jobs
+        db = SessionLocal()
+        try:
+            recovered = recover_interrupted_model_jobs(db)
+            logger.info("Unified model runtime recovery queued %d interrupted jobs.", len(recovered))
+        finally:
+            db.close()
+    except Exception as exc:
+        logger.exception("Unified model runtime startup recovery failed: %s", exc)
+        raise
     logger.info("STAMP backend startup complete.")
     yield
     logger.info("STAMP backend shutting down.")
