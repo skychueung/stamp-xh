@@ -3,8 +3,8 @@
 ## 1. 本阶段判定
 
 - 五模型统一注册、统一持久化任务状态机、统一 JSONL 日志、隔离产物目录、独立 worker、取消/超时/重启恢复与标准结果结构已经进入同一执行主干。
-- PepMLM 已在服务器使用真实 `PepMLM-650M` checkpoint 连续执行 seed 41/42/43，结果为 **3/3 SUCCEEDED**。
-- 其余四模型的“每模型三次真实执行”仍按 15 次总分母计入最终验收；本文件不把历史产物、probe 或 fixture 测试计为本轮真实生成。
+- PepMLM、EvoBind2、PepHAR、PepFlow 已分别使用真实 checkpoint 连续执行 seed 41/42/43，结果为 **12/12 SUCCEEDED**。
+- PepPrCLIP 的 3 次真实生成/排序仍按 15 次总分母计入最终验收；本文件不把历史产物、probe 或 fixture 测试计为本轮真实生成。
 
 ## 2. PepMLM 真实连续运行证据
 
@@ -29,6 +29,20 @@ Checkpoint SHA256：`e80587d2ac4a3fb84f2be2cd4f4d02d5f2127cafc75144108ba349d4796
 | 前端 TypeScript + Vite build | passed（3600 modules） |
 | ESLint | passed |
 
+## 3.1 新增真实运行摘要
+
+| 模型 | seed 41 | seed 42 | seed 43 | checkpoint SHA256 |
+|---|---|---|---|---|
+| EvoBind2 | `HGPNMQICVADR` | `EGVITPQFDFMV` | `DWACWQHVTGEC` | `f95e453e6a290ddf317ba1c9698d53fa110cf007ea979b0eae43e6ad38b4e364` |
+| PepHAR | `PPAVVAAPPVVV` | `PVPPPPAPPVAI` | `PPVPGPAPAVVP` | `06b9a2701a9594158de2650d10da756c51dda3cc410ea98c47cf9fd1dbc32d15` |
+| PepFlow | `EWEDIKEIWAEEWPNEVNPHES` | `ENEENCWDHWPEEFPESNEPTP` | `DMEPTDDWEGSIIASNEINFEE` | `80ef4d7a07eddd877067859b5df95c50833cb72c40ef10d6ff5aa1263f0dba21` |
+
+机器可读记录：
+
+- `reports/evobind2_real_3x_results.json`
+- `reports/pephar_real_3x_results.json`
+- `reports/pepflow_real_3x_results.json`
+
 ## 4. 本阶段新增修复
 
 1. GPU 文件锁升级为原子 `O_EXCL` 创建，锁记录含 owner、PID、创建时间与 TTL，并兼容旧锁格式。
@@ -39,7 +53,5 @@ Checkpoint SHA256：`e80587d2ac4a3fb84f2be2cd4f4d02d5f2127cafc75144108ba349d4796
 
 ## 5. 剩余最终验收项
 
-- PepPrCLIP：官方 Quickstart 已核实“ESM 高斯扰动生成 + MiniCLIP 排序”的完整生成路径；服务器仍需补齐官方 checkpoint 与候选嵌入资产。
-- EvoBind2、PepHAR、PepFlow：服务器存在真实源码、环境、checkpoint 与历史成功产物；下一阶段为 runner 标准化及各 3 次连续执行。
+- PepPrCLIP：官方 Quickstart 已核实“ESM 高斯扰动生成 + MiniCLIP 排序”的完整生成路径；服务器当前 4.83GB `PepPrCLIP.zip` 经归档目录核验仅含实验原始数据，不含 MiniCLIP checkpoint。官方 Hugging Face 仓库列出的 24.6MB checkpoint/weight archive 受访问确认控制，服务器账户尚未持有该资产。
 - 完成五模型组合、并发、取消、超时、服务重启、前端浏览器截图、12973 部署与最终 15/15 报告。
-
