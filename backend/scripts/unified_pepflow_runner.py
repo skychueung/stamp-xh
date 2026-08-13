@@ -47,15 +47,17 @@ def main() -> int:
     # The upstream entrypoint seeds to a fixed value. Its sampling remains a real
     # checkpoint forward pass; the job seed is retained in provenance.
     subprocess.run(command, check=True, cwd=str(SOURCE), env=env)
-    import torch
-    case = torch.load(output / "outputs" / "case0.pt", map_location="cpu", weights_only=False)
-    seqs = case["seqs"].detach().cpu()
-    masks = case["batch"]["generate_mask"].detach().cpu().bool()
-    candidates = []
-    for rank in range(seqs.shape[0]):
-        tokens = seqs[rank][masks[rank]].tolist()
-        sequence = "".join(RESTYPES[int(token)] for token in tokens)
-        candidates.append({"sequence": sequence, "rank": rank + 1})
+    decoder = (
+        "import json,torch,sys; p=torch.load(sys.argv[1],map_location='cpu',weights_only=False);"
+        "s=p['seqs'].cpu();m=p['batch']['generate_mask'].cpu().bool();aa='ARNDCEQGHILKMFPSTWYV';"
+        "print(json.dumps([''.join(aa[int(x)] for x in s[i][m[i]].tolist()) for i in range(s.shape[0])]))"
+    )
+    decoded = subprocess.run(
+        [command[0], "-c", decoder, str(output / "outputs" / "case0.pt")],
+        check=True, capture_output=True, text=True,
+    )
+    candidates = [{"sequence": sequence, "rank": rank}
+                  for rank, sequence in enumerate(json.loads(decoded.stdout), 1)]
     Path(args.result_json).write_text(json.dumps({
         "candidates": candidates,
         "metrics": {"num_steps": int(payload.get("num_steps", 3)), "job_seed": payload.get("seed")},
