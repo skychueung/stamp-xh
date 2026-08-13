@@ -27,8 +27,8 @@ def run_root(run_id: str, *, create: bool = True) -> Path:
     # a route parameter before a database lookup has happened.
     if not run_id or any(ch not in "0123456789abcdef-" for ch in run_id.lower()):
         raise ValueError("Invalid pipeline run id")
-    root = (Path(settings.stamp_data_dir).resolve() / "pipeline_runs" / run_id).resolve()
-    parent = (Path(settings.stamp_data_dir).resolve() / "pipeline_runs").resolve()
+    parent = Path(settings.stamp_pipeline_artifact_root).expanduser().resolve()
+    root = (parent / run_id).resolve()
     if root.parent != parent:
         raise ValueError("Invalid pipeline run path")
     if create:

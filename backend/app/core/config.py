@@ -77,6 +77,7 @@ class Settings(BaseSettings):
     stamp_dist_dir: str = str(PROJECT_ROOT / "dist")
     stamp_logs_dir: str = str(PROJECT_ROOT / "logs")
     stamp_models_dir: str = str(PROJECT_ROOT / "models")
+    stamp_pipeline_artifact_root: str = str(PROJECT_ROOT / "data" / "pipeline_runs")
     target_peptide_models_dir: str = str(PROJECT_ROOT.parent / "models_dev")
 
     pepmlm_model_path: str | None = None
