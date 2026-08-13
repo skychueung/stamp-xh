@@ -35,6 +35,11 @@ nohup "$PYTHON" -m uvicorn app.main:app --app-dir "$ROOT/backend" \
   --host 0.0.0.0 --port 12974 >"$RUN/backend.log" 2>&1 &
 echo $! >"$RUN/backend.pid"
 
+for _ in {1..60}; do
+  curl -fsS http://127.0.0.1:12974/api/health >/dev/null 2>&1 && break
+  sleep 1
+done
+
 nohup "$PYTHON" -m app.workers.model_worker \
   >"$RUN/worker.log" 2>&1 &
 echo $! >"$RUN/worker.pid"
@@ -45,7 +50,7 @@ nohup "$PYTHON" "$ROOT/scripts/unified_web_12973.py" \
 echo $! >"$RUN/web.pid"
 
 for _ in {1..60}; do
-  curl -fsS http://127.0.0.1:12973/api/v1/health >/dev/null 2>&1 && exit 0
+  curl -fsS http://127.0.0.1:12973/api/health >/dev/null 2>&1 && exit 0
   sleep 1
 done
 echo "startup health check failed" >&2
