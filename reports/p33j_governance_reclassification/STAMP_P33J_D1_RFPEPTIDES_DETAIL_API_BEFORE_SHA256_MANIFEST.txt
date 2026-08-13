@@ -1,0 +1,18 @@
+# STAMP P33J-D1 RFpeptides Detail API Patch — Before-State SHA256 Manifest
+# Generated: 2026-06-28T15:41:11Z
+# Scope: backend/app/services/model_adapters/rfpeptides_adapter.py only
+
+file: backend/app/services/model_adapters/rfpeptides_adapter.py
+sha256: 2ed88dec51fff0c05f042f340797a3666397114cc22a54d744dbc38555f677f0
+bytes: 16555
+note: Original file before P33J-D1 metadata-only patch; missing self.model_entry, causing AttributeError in GET /api/v1/models/rfpeptides.
+
+file: STAMP_P33J_D1_RFPEPTIDES_DETAIL_API_PROPOSED_PATCH.diff
+sha256: 920884abf2ede3df114f1922f660369134541cb392bccdecdb7fedea9a96dcb5
+bytes: 807
+note: Unified diff of the minimal patch adding get_model import and self.model_entry assignment.
+
+file: rfpeptides_adapter_patched.py (proposed)
+sha256: 61b570f984dc336fce1bd721006969f4073e21afe588f59aa4b123df9131e4d3
+bytes: 16820
+note: Patched file (not yet applied to server) with model_entry exposed for metadata endpoint only.

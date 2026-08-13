@@ -1,0 +1,76 @@
+{
+  "version": "1.0",
+  "generated_at": "2026-05-12T00:00:00Z",
+  "note": "Demo dataset for STAMP v1.0 teacher workshop. Sequences are synthetic examples.",
+  "projects": [
+    {
+      "id": "demo-project-001",
+      "name": "Boar TLR2 Anti-Infective Demo",
+      "description": "Teaching demonstration: design STAMP hybrids targeting boar TLR2 epitope.",
+      "species": "Sus scrofa",
+      "project_type": "demo"
+    }
+  ],
+  "target_proteins": [
+    {
+      "id": "demo-tp-001",
+      "project_id": "demo-project-001",
+      "name": "TLR2 Extracellular Domain",
+      "sequence": "MELKLTISLLLVVSNLTGNSSEPLQIPEVKFDKLEEGLKSLENLGIKLLNKKNEEISKAQEAVEKYQELQKELTLKESLQKEVERLTSELSQKDLERAFQEVKASEQELLSLQSQLAMQSQLVHLQNELLRTEIELQSQLALKQSQMQLKSQLALKQSQLVHLQNELLRTEIELQSQLALKQSQLAMQSQLVHLQNELLRTEI",
+      "sequence_hash": "a1b2c3d4",
+      "length": 200,
+      "organism": "Sus scrofa",
+      "source_type": "synthetic_demo",
+      "uniprot_id": null,
+      "pdb_id": null
+    }
+  ],
+  "epitope_candidates": [
+    {
+      "id": "demo-epi-001",
+      "scan_id": "demo-scan-001",
+      "start": 45,
+      "end": 58,
+      "sequence": "QELQKELTLKESLQ",
+      "net_charge": 2.5,
+      "hydrophobicity": -0.8,
+      "pi": 9.2,
+      "cys_count": 0,
+      "surface_exposure_score": 0.78,
+      "metrics": {"confidence": "high", "method": "heuristic_v1"},
+      "ranking_score": 0.85,
+      "filter_status": "PASS"
+    }
+  ],
+  "stamp_candidates": [
+    {
+      "id": "demo-stamp-001",
+      "project_id": "demo-project-001",
+      "epitope_id": "demo-epi-001",
+      "generation_run_id": "demo-run-001",
+      "targeting_peptide_seq": "KESLQKE",
+      "linker_seq": "GGGGS",
+      "full_sequence": "KESLQKEGGGGSKWKLFKKIGKVLKKL",
+      "composite_score": 0.72,
+      "validation_status": "NOT_EXPERIMENTALLY_VALIDATED",
+      "metrics": {
+        "biophysical": {
+          "length": 27,
+          "net_charge": 5.2,
+          "pI": 10.1,
+          "GRAVY": -0.45
+        },
+        "mmpbsa": {
+          "run_type": "PILOT",
+          "convergence_status": "PILOT_ONLY_NOT_PRODUCTION_MMGBSA",
+          "official_mm_gbsa_delta_g": null,
+          "pilot_delta_total_kcal_mol": -0.0001,
+          "warnings": [
+            "Pilot data only. Not for candidate ranking."
+          ]
+        },
+        "note": "Synthetic demo candidate. No experimental validation."
+      }
+    }
+  ]
+}

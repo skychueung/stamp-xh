@@ -1,0 +1,96 @@
+"""Alembic environment configuration for STAMP Platform.
+
+Supports both offline and online migration modes.
+Database URL is resolved from STAMP_DATABASE_URL env var,
+fallback to the default SQLite path.
+"""
+
+from __future__ import annotations
+
+import os
+import sys
+from logging.config import fileConfig
+
+from sqlalchemy import create_engine, pool
+
+from alembic import context
+
+# ---------------------------------------------------------------------------
+# Ensure app package is importable (alembic runs from backend/)
+# ---------------------------------------------------------------------------
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+
+from app.database import Base, DATABASE_URL  # noqa: E402
+
+# ---------------------------------------------------------------------------
+# Import all models so they register with Base.metadata
+# ---------------------------------------------------------------------------
+import app.models  # noqa: E402,F401
+
+# ---------------------------------------------------------------------------
+# Alembic Config
+# ---------------------------------------------------------------------------
+config = context.config
+
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
+
+# Autogenerate support: expose all ORM metadata
+target_metadata = Base.metadata
+
+# ---------------------------------------------------------------------------
+# SQLite-specific: batch mode for ALTER TABLE (needed because SQLite has
+# limited ALTER TABLE support). Alembic will use "batch" operations
+# transparently when running against SQLite.
+# ---------------------------------------------------------------------------
+
+
+def get_database_url() -> str:
+    """Resolve DB URL from environment or fallback to app default."""
+    # Allow override via env var (same as app.database)
+    env_url = os.environ.get("STAMP_DATABASE_URL")
+    if env_url:
+        return env_url
+    # Fallback: reconstruct the absolute path used by database.py
+    from app.core.config import settings
+    return settings.stamp_database_url
+
+
+def run_migrations_offline() -> None:
+    """Run migrations in 'offline' mode.
+
+    This configures the context with just a URL and not an Engine.
+    """
+    url = get_database_url()
+    context.configure(
+        url=url,
+        target_metadata=target_metadata,
+        literal_binds=True,
+        dialect_opts={"paramstyle": "named"},
+        render_as_batch=True,  # SQLite batch mode
+    )
+
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+def run_migrations_online() -> None:
+    """Run migrations in 'online' mode."""
+    url = get_database_url()
+    connectable = create_engine(url, poolclass=pool.NullPool)
+
+    with connectable.connect() as connection:
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            render_as_batch=True,  # SQLite batch mode
+        )
+
+        with context.begin_transaction():
+            context.run_migrations()
+
+
+if context.is_offline_mode():
+    run_migrations_offline()
+else:
+    run_migrations_online()

@@ -1,0 +1,18 @@
+STAMP P33L — User Execution Authorization
+==========================================
+Task ID: P33L
+Date: 2026-06-29
+Authorized by: user
+Manifest SHA256: 8fa327b3652f45c2441db39b399004b2d9d4b15ea1675603236cd29d33572cc6
+
+Authorization statement:
+> 授权执行 P33L manifest SHA256=8fa327b3652f45c2441db39b399004b2d9d4b15ea1675603236cd29d33572cc6；
+> 按六模型固定顺序各一次真实运行，失败即停，禁止自动或手工重试。
+
+Conditions acknowledged:
+- Phase 4 will execute six models in fixed order: PepMLM, EvoBind2, DiffPepBuilder, PepFlow, PepHAR, PPFlow.
+- One failure stops the entire task; no retry allowed.
+- All outputs are marked NOT_EXPERIMENTALLY_VALIDATED.
+- Execution is gated by P33L_AUTHORIZED_MANIFEST_SHA env var and backend P33L gate.
+
+This authorization does not itself start Phase 4; it satisfies the final pre-condition.

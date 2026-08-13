@@ -1,0 +1,30 @@
+已完成 STAMP XIA-30 前端真实计算结果中心：
+
+1. **新增 BatchComputationDetailPage** (`src/pages/BatchComputationDetailPage.tsx`)
+   - 批次概览、状态卡片、返回导航
+   - Batch Items 可展开列表：展示 artifact 文件、stdout/stderr 日志、output_json
+   - MD Pilot 结果区域：RMSD/RMSF/Rg 文件存在性状态（仅真实文件才显示）
+   - FlexPepDock Detail 区域：score.sc 文件存在性状态
+   - MM-GBSA Detail 区域：ΔG 结果文件存在性状态
+   - 失败原因可视化：BLOCKED / FAILED / 422 / CONFIG_REQUIRED 分类展示
+   - 支持下载：JSON、CSV、Markdown、ZIP
+
+2. **前端类型与 API 更新**
+   - `src/types/batchComputation.ts` 增加 `ArtifactFile`、`LogContent`、`BatchReport` 等类型
+   - `src/lib/api/batchComputation.ts` 增加 `getItemArtifacts`、`getItemLogs`、`getReport`、`download` 方法
+
+3. **路由与导航**
+   - `App.tsx` 新增 `/batch-computation/:id` 路由
+   - `BatchComputationPage.tsx` 每个批次卡片增加 "View" 入口
+
+4. **后端扩展** (`backend/app/routers/batch_computations.py`)
+   - `GET /batch-computations/{id}/items/{itemId}/artifacts` — 列出 item 输出文件
+   - `GET /batch-computations/{id}/items/{itemId}/logs` — 读取 stdout/stderr
+   - `GET /batch-computations/{id}/report` — 聚合报告（MD/FlexPepDock/MM-GBSA 文件状态）
+   - `GET /batch-computations/{id}/download?format={zip|json|csv|md}` — 多格式下载
+   - `BatchItemResponse` 增加 `output_json` 字段
+
+5. **测试**
+   - 新增 `backend/tests/test_batch_computations_v15.py`（8 个测试覆盖新端点）
+   - 全量 backend pytest：`911 passed`
+   - 前端 build：`npm run build` 通过

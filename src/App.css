@@ -1,0 +1,10 @@
+/* Peptide Platform Global Styles */
+
+#root {
+  min-height: 100vh;
+  min-width: 1280px;
+}
+
+body {
+  min-width: 1280px;
+}

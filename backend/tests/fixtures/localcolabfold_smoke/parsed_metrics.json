@@ -1,0 +1,36 @@
+{
+  "status": "success",
+  "prediction_status": "COMPUTATIONAL_STRUCTURE_PREDICTION_ONLY",
+  "validation_status": "NOT_EXPERIMENTALLY_VALIDATED",
+  "model_source": "LocalColabFold",
+  "metrics_are_real": true,
+  "output_directory": "/home/xh/kxc/tools/localcolabfold/runs/smoke_20260510_111732/gpu_attempt",
+  "best_model_pdb": "/home/xh/kxc/tools/localcolabfold/runs/smoke_20260510_111732/gpu_attempt/smoke_gpu_20260510_111732__0_unrelaxed_rank_001_alphafold2_ptm_model_1_seed_000.pdb",
+  "mean_plddt": 65.23,
+  "plddt_per_residue": [
+    59.03, 58.25, 57.38, 57.81, 61.5, 59.09, 61.53, 63.72, 68.25, 63.69,
+    64.44, 64.75, 63.62, 65.31, 61.84, 63.53, 66.38, 64.69, 63.34, 66.75,
+    68.06, 73.19, 73.0, 72.12, 76.06, 75.56, 71.44, 75.25, 73.31, 68.0,
+    69.12, 72.0, 66.12, 61.66, 57.72, 54.84, 51.03
+  ],
+  "cif_file": null,
+  "pae_file": "/home/xh/kxc/tools/localcolabfold/runs/smoke_20260510_111732/gpu_attempt/smoke_gpu_20260510_111732__0_pae.png",
+  "raw_score_json": "/home/xh/kxc/tools/localcolabfold/runs/smoke_20260510_111732/gpu_attempt/smoke_gpu_20260510_111732__0_scores_rank_001_alphafold2_ptm_model_1_seed_000.json",
+  "ptm": 0.28,
+  "iptm": null,
+  "ranking_confidence": null,
+  "plddt": [
+    59.03, 58.25, 57.38, 57.81, 61.5, 59.09, 61.53, 63.72, 68.25, 63.69,
+    64.44, 64.75, 63.62, 65.31, 61.84, 63.53, 66.38, 64.69, 63.34, 66.75,
+    68.06, 73.19, 73.0, 72.12, 76.06, 75.56, 71.44, 75.25, 73.31, 68.0,
+    69.12, 72.0, 66.12, 61.66, 57.72, 54.84, 51.03
+  ],
+  "coverage_plot": "/home/xh/kxc/tools/localcolabfold/runs/smoke_20260510_111732/gpu_attempt/smoke_gpu_20260510_111732__0_coverage.png",
+  "fields_verified": {
+    "best_model_pdb": true,
+    "mean_plddt": true,
+    "pae_file": true,
+    "ptm": true,
+    "iptm": false
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "job_type": "complex_structure_prediction",
+  "stage": "input_preparation_only",
+  "prediction_type": "complex_structure_prediction_input_only",
+  "validation_status": "NOT_EXPERIMENTALLY_VALIDATED",
+  "prediction_status": "COMPUTATIONAL_COMPLEX_PREDICTION_INPUT_ONLY",
+  "metrics_are_real": false,
+  "target": {
+    "name": "target",
+    "chain_id": "A",
+    "sequence_length": 359,
+    "sequence": "MKTAYIAKQRQISFVKSHFSRQDILDLWIYHTQGYFPDWQNYTPGPGTRYPAGQFGPKPGDKFDNSFKDNENLQLQDSVKNVQKQDDSIVSQSKQSSQKTQADSSSQDTQPQTSQSNTQPQQTPQNPQQSQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQ"
+  },
+  "peptide": {
+    "name": "candidate_peptide",
+    "chain_id": "B",
+    "sequence_length": 39,
+    "sequence": "MKTAYIAKQRQISFVKSHFSRQDILDLWIYHTQGYFP"
+  },
+  "chain_mapping": {
+    "A": "target",
+    "B": "peptide"
+  },
+  "fasta_content": ">target_chain_A\nMKTAYIAKQRQISFVKSHFSRQDILDLWIYHTQGYFPDWQNYTPGPGTRYPAGQFGPKPGDKFDNSFKDNENLQLQDSVKNVQKQDDSIVSQSKQSSQKTQADSSSQDTQPQTSQSNTQPQQTPQNPQQSQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQPQQQ\n>candidate_peptide_chain_B\nMKTAYIAKQRQISFVKSHFSRQDILDLWIYHTQGYFP\n",
+  "forbidden_metrics": {
+    "pDockQ": null,
+    "delta_G": null,
+    "docking_score": null
+  },
+  "candidate_id": null,
+  "source_job_id": null
+}

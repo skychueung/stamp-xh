@@ -1,0 +1,131 @@
+node_modules
+dist
+.DS_Store
+Thumbs.db
+
+# Environment variables & secrets
+.env
+.env.*
+
+# Logs & caches
+*.log
+.cache/
+.vite/
+
+# Raw experimental data and large structure files — do not commit to GitHub
+# Keep these in local filesystem only
+data/raw/
+data/processed/
+
+# Any remaining nested zips inside raw
+data/**/*.zip
+
+# Backend virtual environment & cache
+backend/.venv/
+backend/.pytest_cache/
+backend/**/__pycache__/
+__pycache__/
+
+# Local screenshots and release artifacts
+screenshots/
+release/
+*.zip
+*.tar.gz
+screenshot_*.png
+filter-empty-result-screenshot.png
+
+# Model outputs & temporary generation artifacts
+pepmlm_gpu_generation_outputs/
+pepmlm_oprf_*
+
+# Deployment bundles & temporary directories
+deploy-v0.6d-P1c/
+dist-deploy.tar.gz
+
+# Temporary / debug scripts and snapshots
+_*.py
+!__init__.py
+_*.sh
+_*.py.b64
+snapshot_*.txt
+
+# Root-level utility / test / generation scripts (not part of core frontend)
+check_v0.6d-P2a.sh
+export_sequences.py
+fix_outputs.py
+generate_oprf_1000.py
+generate_report.py
+patch_model_path.py
+restart_backend.sh
+run_generation.sh
+start_backend.sh
+start_v0.6d-P2a.sh
+stop_v0.6d-P2a.sh
+test_api.py
+test_build.py
+test_model_load.py
+verify_env.py
+
+backend/.venv-linux/
+
+# Reports
+CLAUDE.md
+v0.7-P*_*.md
+
+
+# Windows native venv
+backend/.venv-win/
+
+
+# SQLite databases
+backend/app/*.db
+
+# Backups
+backup/
+
+# Temporary files
+gemini-code-*.ts
+ChatGPT Image*.png
+
+# STAMP structure prediction data (large files, not committed)
+backend/data/structure_predictions/
+backend/data/batch_jobs/
+backend/data/pipeline_runs/
+
+# Legacy files
+legacy_predict.py
+前端
+
+# Additional local artifacts
+backend/venv/
+backend/venv-linux/
+backend/venv-win/
+logs/
+*.pdf
+前端/
+附件1-4/
+v0.7_ROADMAP_AFTER_P1D.md
+P5_LITE_FRONTEND_ALIGNMENT_REPORT.md
+V011_P4_CANDIDATE_PRIORITIZATION_PANEL_REPORT.md
+
+
+# Local model weights and generated runtime data
+models_dev/
+data/
+data_dev/
+logs_dev/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.trr
+*.xtc
+
+# Local working snapshots
+.scratch*/
+*.bak
+*.orig
+*.orig_*
+*_orig_*
+*.before_*

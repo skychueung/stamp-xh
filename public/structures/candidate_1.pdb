@@ -1,0 +1,43 @@
+HEADER    PEPTIDE PLACEHOLDER                      27-APR-26   1XXX
+TITLE     PLACEHOLDER STRUCTURE FOR CANDIDATE 1: MKWVTFISL
+REMARK    1  THIS IS A PLACEHOLDER PDB FILE FOR FRONTEND PREVIEW.
+REMARK    2  REPLACE WITH REAL COLABFOLD/ALPHAFOLD2 OUTPUT.
+REMARK    3  SEQUENCE: MKWVTFISL
+ATOM      1  N   MET A   1      -1.000   0.000   0.000  1.00 86.40           N
+ATOM      2  CA  MET A   1       0.000   0.000   0.000  1.00 86.40           C
+ATOM      3  C   MET A   1       1.000   0.000   0.000  1.00 86.40           C
+ATOM      4  O   MET A   1       1.600   0.800   0.200  1.00 80.00           O
+ATOM      4  N   LYS A   2       1.500   0.000   1.500  1.00 85.00           N
+ATOM      5  CA  LYS A   2       2.500   0.000   1.500  1.00 85.00           C
+ATOM      6  C   LYS A   2       3.500   0.000   1.500  1.00 85.00           C
+ATOM      7  O   LYS A   2       4.100   0.800   1.700  1.00 80.00           O
+ATOM      7  N   TRP A   3       4.000   0.000   3.000  1.00 88.00           N
+ATOM      8  CA  TRP A   3       5.000   0.000   3.000  1.00 88.00           C
+ATOM      9  C   TRP A   3       6.000   0.000   3.000  1.00 88.00           C
+ATOM     10  O   TRP A   3       6.600   0.800   3.200  1.00 80.00           O
+ATOM     10  N   VAL A   4       6.500   0.000   4.500  1.00 84.00           N
+ATOM     11  CA  VAL A   4       7.500   0.000   4.500  1.00 84.00           C
+ATOM     12  C   VAL A   4       8.500   0.000   4.500  1.00 84.00           C
+ATOM     13  O   VAL A   4       9.100   0.800   4.700  1.00 80.00           O
+ATOM     13  N   THR A   5       9.000   0.000   6.000  1.00 87.00           N
+ATOM     14  CA  THR A   5      10.000   0.000   6.000  1.00 87.00           C
+ATOM     15  C   THR A   5      11.000   0.000   6.000  1.00 87.00           C
+ATOM     16  O   THR A   5      11.600   0.800   6.200  1.00 80.00           O
+ATOM     16  N   PHE A   6      11.500   0.000   7.500  1.00 86.00           N
+ATOM     17  CA  PHE A   6      12.500   0.000   7.500  1.00 86.00           C
+ATOM     18  C   PHE A   6      13.500   0.000   7.500  1.00 86.00           C
+ATOM     19  O   PHE A   6      14.100   0.800   7.700  1.00 80.00           O
+ATOM     19  N   ILE A   7      14.000   0.000   9.000  1.00 85.00           N
+ATOM     20  CA  ILE A   7      15.000   0.000   9.000  1.00 85.00           C
+ATOM     21  C   ILE A   7      16.000   0.000   9.000  1.00 85.00           C
+ATOM     22  O   ILE A   7      16.600   0.800   9.200  1.00 80.00           O
+ATOM     22  N   SER A   8      16.500   0.000  10.500  1.00 88.00           N
+ATOM     23  CA  SER A   8      17.500   0.000  10.500  1.00 88.00           C
+ATOM     24  C   SER A   8      18.500   0.000  10.500  1.00 88.00           C
+ATOM     25  O   SER A   8      19.100   0.800  10.700  1.00 80.00           O
+ATOM     25  N   LEU A   9      19.000   0.000  12.000  1.00 86.00           N
+ATOM     26  CA  LEU A   9      20.000   0.000  12.000  1.00 86.00           C
+ATOM     27  C   LEU A   9      21.000   0.000  12.000  1.00 86.00           C
+ATOM     28  O   LEU A   9      21.600   0.800  12.200  1.00 80.00           O
+TER      28      LEU A   9
+END

@@ -1,0 +1,43 @@
+HEADER    PEPTIDE PLACEHOLDER                      27-APR-26   3XXX
+TITLE     PLACEHOLDER STRUCTURE FOR CANDIDATE 3: KFFKFFKKV
+REMARK    1  THIS IS A PLACEHOLDER PDB FILE FOR FRONTEND PREVIEW.
+REMARK    2  REPLACE WITH REAL COLABFOLD/ALPHAFOLD2 OUTPUT.
+REMARK    3  SEQUENCE: KFFKFFKKV
+ATOM      1  N   LYS A   1      -1.000   0.000   0.000  1.00 82.10           N
+ATOM      2  CA  LYS A   1       0.000   0.000   0.000  1.00 82.10           C
+ATOM      3  C   LYS A   1       1.000   0.000   0.000  1.00 82.10           C
+ATOM      4  O   LYS A   1       1.600   0.800   0.200  1.00 80.00           O
+ATOM      4  N   PHE A   2       1.500   0.000   1.500  1.00 83.00           N
+ATOM      5  CA  PHE A   2       2.500   0.000   1.500  1.00 83.00           C
+ATOM      6  C   PHE A   2       3.500   0.000   1.500  1.00 83.00           C
+ATOM      7  O   PHE A   2       4.100   0.800   1.700  1.00 80.00           O
+ATOM      7  N   PHE A   3       4.000   0.000   3.000  1.00 81.00           N
+ATOM      8  CA  PHE A   3       5.000   0.000   3.000  1.00 81.00           C
+ATOM      9  C   PHE A   3       6.000   0.000   3.000  1.00 81.00           C
+ATOM     10  O   PHE A   3       6.600   0.800   3.200  1.00 80.00           O
+ATOM     10  N   LYS A   4       6.500   0.000   4.500  1.00 82.00           N
+ATOM     11  CA  LYS A   4       7.500   0.000   4.500  1.00 82.00           C
+ATOM     12  C   LYS A   4       8.500   0.000   4.500  1.00 82.00           C
+ATOM     13  O   LYS A   4       9.100   0.800   4.700  1.00 80.00           O
+ATOM     13  N   PHE A   5       9.000   0.000   6.000  1.00 84.00           N
+ATOM     14  CA  PHE A   5      10.000   0.000   6.000  1.00 84.00           C
+ATOM     15  C   PHE A   5      11.000   0.000   6.000  1.00 84.00           C
+ATOM     16  O   PHE A   5      11.600   0.800   6.200  1.00 80.00           O
+ATOM     16  N   PHE A   6      11.500   0.000   7.500  1.00 80.00           N
+ATOM     17  CA  PHE A   6      12.500   0.000   7.500  1.00 80.00           C
+ATOM     18  C   PHE A   6      13.500   0.000   7.500  1.00 80.00           C
+ATOM     19  O   PHE A   6      14.100   0.800   7.700  1.00 80.00           O
+ATOM     19  N   LYS A   7      14.000   0.000   9.000  1.00 83.00           N
+ATOM     20  CA  LYS A   7      15.000   0.000   9.000  1.00 83.00           C
+ATOM     21  C   LYS A   7      16.000   0.000   9.000  1.00 83.00           C
+ATOM     22  O   LYS A   7      16.600   0.800   9.200  1.00 80.00           O
+ATOM     22  N   LYS A   8      16.500   0.000  10.500  1.00 81.00           N
+ATOM     23  CA  LYS A   8      17.500   0.000  10.500  1.00 81.00           C
+ATOM     24  C   LYS A   8      18.500   0.000  10.500  1.00 81.00           C
+ATOM     25  O   LYS A   8      19.100   0.800  10.700  1.00 80.00           O
+ATOM     25  N   VAL A   9      19.000   0.000  12.000  1.00 82.00           N
+ATOM     26  CA  VAL A   9      20.000   0.000  12.000  1.00 82.00           C
+ATOM     27  C   VAL A   9      21.000   0.000  12.000  1.00 82.00           C
+ATOM     28  O   VAL A   9      21.600   0.800  12.200  1.00 80.00           O
+TER      28      VAL A   9
+END

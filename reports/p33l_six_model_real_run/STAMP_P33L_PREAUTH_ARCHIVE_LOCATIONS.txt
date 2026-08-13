@@ -1,0 +1,2 @@
+gate_archive=/home/xh/kxc/stampup/backups/p33l_pre_auth_archive_20260629_054557/run_gates_p33l
+artifact_archive=/mnt/sdb/kxc/stamp_models/artifacts/p33l_pre_auth_archive_20260629_054557

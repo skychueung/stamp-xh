@@ -1,0 +1,1 @@
+"""Centralized model path configuration."""

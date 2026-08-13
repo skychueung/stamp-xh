@@ -1,0 +1,91 @@
+.card {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.header {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6B7280;
+  text-align: center;
+}
+
+.ringHeader {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6B7280;
+  text-align: center;
+}
+
+.scoreRow {
+  text-align: center;
+  line-height: 1;
+}
+
+.ringBody {
+  display: flex;
+  justify-content: center;
+}
+
+.ringScoreText {
+  text-align: center;
+  line-height: 1;
+  margin-top: -8px;
+}
+
+.scoreNumber {
+  font-size: 28px;
+  font-weight: 700;
+  color: #156B98;
+}
+
+.scoreMax {
+  font-size: 14px;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.barTrack {
+  width: 100%;
+  height: 6px;
+  background: #E5E7EB;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  background: #156B98;
+  border-radius: 3px;
+  transition: width 600ms ease-out;
+}
+
+.criteriaList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.criteriaItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #374151;
+}
+
+.criteriaIcon {
+  width: 16px;
+  height: 16px;
+  color: #10B981;
+  flex-shrink: 0;
+}

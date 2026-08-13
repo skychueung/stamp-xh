@@ -1,0 +1,49 @@
+# STAMP v1.2-lab-production-fast — Docker Compose
+# Usage: docker-compose -f docker-compose.v1.2.yml up --build
+
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../Dockerfile.backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - stamp-data:/app/data
+      - stamp-uploads:/app/data/uploads
+      - stamp-jobs:/app/data/jobs
+      - stamp-results:/app/data/results
+      - stamp-archive:/app/data/archive
+    environment:
+      - STAMP_DATABASE_URL=sqlite:///./data/stamp_v12.db
+      - STAMP_DATA_DIR=/app/data
+      - STAMP_DIST_DIR=/app/dist
+      - CORS_ORIGINS=http://localhost:5173,http://localhost:3000
+      - LOG_LEVEL=INFO
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  stamp-data:
+  stamp-uploads:
+  stamp-jobs:
+  stamp-results:
+  stamp-archive:

@@ -1,0 +1,21 @@
+--- a/backend/app/services/model_adapters/rfpeptides_adapter.py
++++ b/backend/app/services/model_adapters/rfpeptides_adapter.py
+@@ -20,6 +20,8 @@
+ from datetime import datetime, timezone
+ from pathlib import Path
+ from typing import Any
++
++from app.services.target_peptide_model_registry import get_model
+ 
+ MODEL_ROOT = Path("/mnt/sdb/kxc/stamp_models")
+ SOURCE_DIR = MODEL_ROOT / "source" / "rfpeptides" / "rfd_macro"
+@@ -125,6 +127,9 @@
+ 
+     def __init__(self, model_id: str = "rfpeptides") -> None:
+         self.model_id = model_id
++        # Expose the registry model_entry so the unified model detail endpoint
++        # can return metadata without touching any model execution path.
++        self.model_entry = get_model(model_id)
+ 
+     @staticmethod
+     def _now() -> str:

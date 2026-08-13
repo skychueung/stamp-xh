@@ -1,0 +1,39 @@
+STAMP P33L Phase 0-3 Deliverables Index
+========================================
+Task ID: P33L
+Date: 2026-06-29
+Status: Phase 2-3 final correction complete; awaiting Claude final review and Reasonix GO; Phase 4 NOT authorized
+Frozen manifest SHA: 2410eb59b0eea6310394bd02f66f9152f0609f39c452bd724ee472026e55d24a
+Reasonix verdict: pending final review after correction
+User authorization: STAMP_P33L_USER_EXECUTION_AUTHORIZATION_INVALID_UNVERIFIED.txt (INVALID/UNVERIFIED, retained as audit evidence)
+Current Gate: P33L_EXECUTION_AUTHORIZATION_PENDING
+
+Local deliverables (D:\ai\product\obsidian-vaults\XH-Research-Agent-Vault\06_任务单\KimiCode\p33l_six_model_real_run\):
+- STAMP_P33L_LIVE_BASELINE_AND_CONCURRENCY_REPORT.md
+- STAMP_P33L_SIX_MODEL_PREEXEC_SHA256_MANIFEST.txt
+- STAMP_P33L_SIX_MODEL_REAL_RUN_READINESS_AUDIT.md
+- STAMP_P33L_RUNNER_ADAPTER_UI_GAP_REPORT.md
+- STAMP_P33L_ONE_CLICK_REAL_RUN_ARCHITECTURE.md
+- STAMP_P33L_INPUT_OUTPUT_AND_DELIVERY_CONTRACT.md
+- STAMP_P33L_EXECUTION_GATE_AND_CLEANUP_PROTOCOL.md
+- STAMP_P33L_ROLLBACK_PLAN.md
+- STAMP_P33L_PROPOSED_PATCH.diff
+- STAMP_P33L_SIX_MODEL_PREEXECUTION_AUTHORIZATION_MANIFEST.md
+- STAMP_P33L_REASONIX_PREEXEC_VERDICT.md
+- STAMP_P33L_PREEXECUTION_MANIFEST_SHA.txt
+- STAMP_P33L_USER_EXECUTION_AUTHORIZATION_INVALID_UNVERIFIED.txt
+- STAMP_P33L_GATE_STATE.txt
+- STAMP_P33L_PHASE0_3_INDEX.txt
+
+Phase 2-3 final correction scope:
+1. Runner authenticity: DiffPepBuilder/PepHAR must use official real inference entry, not smoke wrapper.
+2. Manifest fully frozen: exact command, parameter, input, runner, env, checkpoint path and SHA for all six models.
+3. Frontend: Target Design page Run & Deliver implementation.
+4. Security: runtime quota monitoring with immediate termination; PID/process group cleanup; no pkill/rm -rf.
+5. Tests: cancel, path traversal, quota, timeout, PID cleanup, manifest writer, wrapper block, duplicate submit, persistence after restart, fail-stop, frontend no auto-submit.
+6. Close-out: full test pass, frontend build, after-SHA, new manifest SHA freeze, Kimi stop writing, Claude final review, Reasonix final GO, stop for user re-authorization with new SHA.
+
+Constraints:
+- No model execution.
+- No checkpoint loading.
+- No real gate creation.

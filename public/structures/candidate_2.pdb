@@ -1,0 +1,31 @@
+HEADER    PEPTIDE PLACEHOLDER                      27-APR-26   2XXX
+TITLE     PLACEHOLDER STRUCTURE FOR CANDIDATE 2: GGSGGS
+REMARK    1  THIS IS A PLACEHOLDER PDB FILE FOR FRONTEND PREVIEW.
+REMARK    2  REPLACE WITH REAL COLABFOLD/ALPHAFOLD2 OUTPUT.
+REMARK    3  SEQUENCE: GGSGGS
+ATOM      1  N   GLY A   1      -1.000   0.000   0.000  1.00 78.90           N
+ATOM      2  CA  GLY A   1       0.000   0.000   0.000  1.00 78.90           C
+ATOM      3  C   GLY A   1       1.000   0.000   0.000  1.00 78.90           C
+ATOM      4  O   GLY A   1       1.600   0.800   0.200  1.00 80.00           O
+ATOM      4  N   GLY A   2       1.500   0.000   1.500  1.00 79.00           N
+ATOM      5  CA  GLY A   2       2.500   0.000   1.500  1.00 79.00           C
+ATOM      6  C   GLY A   2       3.500   0.000   1.500  1.00 79.00           C
+ATOM      7  O   GLY A   2       4.100   0.800   1.700  1.00 80.00           O
+ATOM      7  N   SER A   3       4.000   0.000   3.000  1.00 77.00           N
+ATOM      8  CA  SER A   3       5.000   0.000   3.000  1.00 77.00           C
+ATOM      9  C   SER A   3       6.000   0.000   3.000  1.00 77.00           C
+ATOM     10  O   SER A   3       6.600   0.800   3.200  1.00 80.00           O
+ATOM     10  N   GLY A   4       6.500   0.000   4.500  1.00 80.00           N
+ATOM     11  CA  GLY A   4       7.500   0.000   4.500  1.00 80.00           C
+ATOM     12  C   GLY A   4       8.500   0.000   4.500  1.00 80.00           C
+ATOM     13  O   GLY A   4       9.100   0.800   4.700  1.00 80.00           O
+ATOM     13  N   GLY A   5       9.000   0.000   6.000  1.00 78.00           N
+ATOM     14  CA  GLY A   5      10.000   0.000   6.000  1.00 78.00           C
+ATOM     15  C   GLY A   5      11.000   0.000   6.000  1.00 78.00           C
+ATOM     16  O   GLY A   5      11.600   0.800   6.200  1.00 80.00           O
+ATOM     16  N   SER A   6      11.500   0.000   7.500  1.00 80.00           N
+ATOM     17  CA  SER A   6      12.500   0.000   7.500  1.00 80.00           C
+ATOM     18  C   SER A   6      13.500   0.000   7.500  1.00 80.00           C
+ATOM     19  O   SER A   6      14.100   0.800   7.700  1.00 80.00           O
+TER      19      SER A   6
+END

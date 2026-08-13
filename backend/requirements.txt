@@ -1,0 +1,47 @@
+# STAMP Platform Backend — Python Dependencies
+# FastAPI 0.100+ with Pydantic v2, uvicorn server, and settings management.
+# Last updated: 2025-04-29
+
+# --- Web framework & server -----------------------------------------------
+fastapi>=0.110.0,<1.0.0
+uvicorn[standard]>=0.27.0,<1.0.0
+
+# --- Data validation & settings (Pydantic v2) -----------------------------
+pydantic>=2.5.0,<3.0.0
+pydantic-settings>=2.1.0,<3.0.0
+
+# --- Database (P5-lite: SQLite + SQLAlchemy 2.0 Async) --------------------
+sqlalchemy[asyncio]>=2.0.0,<3.0.0
+aiosqlite>=0.19.0
+alembic>=1.13.0
+alembic>=1.13.0
+
+# --- CORS & middleware ----------------------------------------------------
+python-multipart>=0.0.6
+
+# --- HTTP client (for future external API calls) --------------------------
+httpx>=0.26.0,<1.0.0
+
+# --- Optional: enhanced bio-sequence calculations -------------------------
+# biopython>=1.81          # Uncomment when full pI / GRAVY pipeline is added
+# peptides>=0.3.0          # Uncomment for advanced peptide descriptors
+
+# --- Development & testing ------------------------------------------------
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+httpx>=0.26.0              # Also used by TestClient
+
+# --- Report export (XLSX / PDF) -------------------------------------------
+openpyxl>=3.1.0
+reportlab>=4.0.0
+
+# --- Type checking --------------------------------------------------------
+mypy>=1.8.0
+
+# --- Code quality ---------------------------------------------------------
+ruff>=0.2.0
+
+# --- Authentication & security (P33V-A1) -------------------------------
+bcrypt>=4.0.0
+itsdangerous>=2.2.0
+slowapi>=0.1.10

@@ -1,0 +1,112 @@
+.card {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.right {
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.metaGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metaLabel {
+  font-size: 11px;
+  color: #9CA3AF;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.metaValue {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.metaValueMono {
+  font-size: 13px;
+  font-weight: 600;
+  color: #156B98;
+  font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0.04em;
+}
+
+.ssSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ssLabel {
+  font-size: 11px;
+  color: #9CA3AF;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.downloadBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #FFFFFF;
+  color: #156B98;
+  border: 1px solid rgba(21, 107, 152, 0.25);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 150ms ease;
+  margin-top: 4px;
+}
+
+.downloadBtn:hover {
+  background: rgba(21, 107, 152, 0.06);
+}
+
+.btnIcon {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 1024px) {
+  .card {
+    grid-template-columns: 1fr;
+  }
+}

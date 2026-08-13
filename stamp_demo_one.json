@@ -1,0 +1,57 @@
+{
+  "code": 200,
+  "message": "Single STAMP demo candidate assembled",
+  "data": {
+    "candidate_id": "stamp_oprf_0029",
+    "target_molecule": "Pseudomonas OprF",
+    "targeting_domain": {
+      "name": "OPRF_0029",
+      "sequence": "DATAAAALAALG",
+      "length": 12,
+      "net_charge": -1.0,
+      "gravy": 1.3
+    },
+    "linker": {
+      "name": "EAAAK",
+      "sequence": "EAAAK",
+      "length": 5,
+      "type": "rigid"
+    },
+    "killing_domain": {
+      "name": "P4",
+      "sequence": "FSRFLRRVRRYRPKISFNLEPFFKF",
+      "length": 25,
+      "net_charge": 7.0,
+      "gravy": -0.592
+    },
+    "orientation": "N-to-C",
+    "terminal_modification": "-NH2",
+    "raw_full_sequence": "DATAAAALAALGEAAAKFSRFLRRVRRYRPKISFNLEPFFKF",
+    "display_full_sequence": "DATAAAALAALG-EAAAK-FSRFLRRVRRYRPKISFNLEPFFKF-NH2",
+    "is_complete": true,
+    "biophysical": {
+      "length": 42,
+      "net_charge": 6.0,
+      "pI": null,
+      "GRAVY": null,
+      "hydrophobicity_fraction": null
+    },
+    "mock_scores": null,
+    "experimental": {
+      "MIC_ug_ml": null,
+      "MBC_ug_ml": null,
+      "hemolysis_percent": null,
+      "LPS_binding_Kd_nM": null,
+      "pLDDT": null,
+      "ipTM": null,
+      "pDockQ": null,
+      "note": "Reserved for real experimental data"
+    },
+    "structure_status": {
+      "monomer_predicted": false,
+      "complex_predicted": false,
+      "experimental_structure": false
+    },
+    "validation_status": "NOT_EXPERIMENTALLY_VALIDATED"
+  }
+}

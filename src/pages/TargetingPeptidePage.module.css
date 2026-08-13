@@ -1,0 +1,90 @@
+.page {
+  padding: 32px 40px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pageTitle {
+  font-size: 32px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.pageSubtitle {
+  font-size: 15px;
+  color: #6B7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.sectionTabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.tab {
+  padding: 10px 28px;
+  border: 1px solid #E5E7EB;
+  background: #FFFFFF;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.tab:hover {
+  border-color: #156B98;
+  color: #156B98;
+}
+
+.tabActive {
+  background: #156B98;
+  color: #FFFFFF;
+  border-color: #156B98;
+}
+
+.tabActive:hover {
+  background: #115a82;
+  color: #FFFFFF;
+}
+
+.section {
+  margin-bottom: 24px;
+}
+
+.noticeBar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: rgba(21, 107, 152, 0.08);
+  border: 1px solid rgba(21, 107, 152, 0.15);
+  border-radius: 8px;
+  color: #156B98;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.noticeIcon {
+  font-size: 14px;
+  flex-shrink: 0;
+}

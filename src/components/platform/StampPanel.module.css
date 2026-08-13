@@ -1,0 +1,223 @@
+.panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(21, 107, 152, 0.08);
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.inputCard {
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.inputLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #111827;
+  resize: vertical;
+  min-height: 80px;
+  outline: none;
+  font-family: inherit;
+}
+
+.textarea:focus {
+  border-color: #156B98;
+  box-shadow: 0 0 0 2px rgba(21, 107, 152, 0.12);
+}
+
+.charCount {
+  text-align: right;
+  font-size: 11px;
+  color: #9CA3AF;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: #156B98;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease;
+  flex: 1;
+}
+
+.primaryBtn:hover {
+  background: #115a82;
+}
+
+.secondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: #FFFFFF;
+  color: #374151;
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.secondaryBtn:hover {
+  background: #F9FAFB;
+}
+
+.btnIcon {
+  width: 14px;
+  height: 14px;
+}
+
+.advancedToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #156B98;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  align-self: flex-start;
+}
+
+.toggleIcon {
+  width: 14px;
+  height: 14px;
+  transition: transform 200ms ease;
+}
+
+.toggleIconOpen {
+  transform: rotate(90deg);
+}
+
+.toggleText {
+  color: #6B7280;
+  font-weight: 400;
+}
+
+.scoreHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.helpIcon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #E5E7EB;
+  border-radius: 50%;
+  font-size: 11px;
+  color: #9CA3AF;
+  cursor: help;
+}
+
+.scoreGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.linkBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+  background: none;
+  border: none;
+  color: #156B98;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 150ms ease;
+  align-self: flex-start;
+}
+
+.linkBtn:hover {
+  opacity: 0.8;
+}
+
+.linkIcon {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 1024px) {
+  .panel {
+    grid-template-columns: 1fr;
+  }
+
+  .scoreGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

@@ -1,0 +1,6 @@
+# P33J Registry/API/UI Patch After SHA256 Manifest
+# Generated: 2026-06-29 00:36:17 +0800
+# Project: /home/xh/kxc/stampup/stamp-targeted-peptide-platform-target-design-dev
+5301cbdea9f7de38f48c4c45725ede70856724dba9bb0422e715da758efc4002  app/services/target_peptide_model_registry.py
+fe374d2f260280eb358c8c14027623f298ae6a49df73e2f9e0367b8f3ecc31ee  tests/test_model_registry.py
+bfb16fafd707e1be7fa2cb0a2748d470c0abfe0271f6874620ff23f4b2590ba8  tests/test_p33j_registry_api_ui_governance.py

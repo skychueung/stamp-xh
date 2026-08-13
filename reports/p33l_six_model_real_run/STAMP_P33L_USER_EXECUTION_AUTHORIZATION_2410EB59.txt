@@ -1,0 +1,29 @@
+STAMP P33L — User Execution Authorization (post-incident acknowledgement)
+======================================================================
+Task ID: P33L
+Date: 2026-06-29
+Authorized by: user
+Manifest SHA256: 2410eb59b0eea6310394bd02f66f9152f0609f39c452bd724ee472026e55d24a
+
+Authorization statement:
+
+> 我已知悉授权前存在使用测试manifest aaaa...的未授权PepMLM真实执行；要求完整保留并归档旧state、gate和artifact，不追溯认可旧执行；授权为manifest 2410eb59b0eea6310394bd02f66f9152f0609f39c452bd724ee472026e55d24a创建全新隔离执行state，并按六模型固定顺序各一次运行，失败即停、禁止重试，不得终止或抢占现有GPU任务。
+
+Execution order:
+
+1. PepMLM
+2. EvoBind2
+3. DiffPepBuilder
+4. PepFlow
+5. PepHAR
+6. PPFlow
+
+Conditions:
+
+- Pre-authorization test-manifest execution remains out-of-scope evidence and is not retroactively authorized.
+- Old state, gates, and artifacts must be archived without deletion before the authorized session begins.
+- The authorized session is bound to the exact manifest SHA above.
+- Each model receives one authorized attempt; any failure stops all subsequent models.
+- No automatic or manual retry.
+- Existing non-P33L GPU workloads must not be terminated or preempted.
+- All outputs remain NOT_EXPERIMENTALLY_VALIDATED.

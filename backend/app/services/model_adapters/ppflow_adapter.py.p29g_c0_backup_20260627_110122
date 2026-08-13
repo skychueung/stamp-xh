@@ -1,0 +1,279 @@
+"""PPFlow adapter for P29A: probe/dry-run/submit blocked.
+
+This adapter registers PPFlow in the Model Registry after P28J safe-load.
+It performs only read-only existence checks and never imports PPFlow source,
+never torch.load()s the checkpoint, never instantiates the model, and never
+produces candidates or PDB files.  Real execution is unconditionally blocked.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import re
+from pathlib import Path
+from typing import Any
+
+from app.schemas.model_registry import (
+    ModelArtifactsResponse,
+    ModelDryRunPayload,
+    ModelDryRunResult,
+    ModelProbeResult,
+)
+from app.services.model_adapters.base import BaseModelAdapter
+from app.services.target_peptide_model_registry import SCIENTIFIC_BOUNDARY_NOTE
+
+MODEL_ROOT = Path("/mnt/sdb/kxc/stamp_models")
+SOURCE_DIR = MODEL_ROOT / "source" / "ppflow" / "extracted_p25_install_probe" / "ppflow-main"
+CHECKPOINT_PATH = MODEL_ROOT / "checkpoints" / "ppflow" / "p25_install_probe" / "ppflow" / "pretrained.pt"
+SUMMARY_PATH = Path("/home/xh/kxc/stampup/reports/STAMP_PPFLOW_CHECKPOINT_SAFE_GLOBALS_SAFE_LOAD_P28J_SUMMARY.json")
+ENV_PATH = MODEL_ROOT / "envs" / "ppflow_p28g_safeglobals_diag"
+ENV_PYTHON = ENV_PATH / "bin" / "python"
+ARTIFACT_ROOT = MODEL_ROOT / "artifacts" / "ppflow"
+PYTHON_ENV_VAR = "PPFLOW_PYTHON"
+REAL_RUN_ENV_VAR = "STAMP_PPFLOW_REAL_RUN_ENABLED"
+_SAFE_JOB_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$")
+
+_EXPECTED_SHA256 = "be1b53ae09dee78c45faa84c4c90f6c65c285c64e70d3b6e8c931b93abaa6d5d"
+
+
+class PPFlowAdapter(BaseModelAdapter):
+    """Read-only PPFlow adapter: probe/dry-run only; submit always blocked."""
+
+    @staticmethod
+    def _under_model_root(path: Path) -> bool:
+        try:
+            path.relative_to(MODEL_ROOT)
+            return True
+        except ValueError:
+            return False
+
+    @staticmethod
+    def _is_true(value: str | None) -> bool:
+        return str(value or "").strip().lower() in {"1", "true", "yes", "on"}
+
+    def _read_summary(self) -> dict[str, Any] | None:
+        if not SUMMARY_PATH.is_file():
+            return None
+        try:
+            with SUMMARY_PATH.open("r", encoding="utf-8") as handle:
+                data = json.load(handle)
+            return data if isinstance(data, dict) else None
+        except (OSError, json.JSONDecodeError):
+            return None
+
+    def _probe_checks(self) -> tuple[dict[str, Any], list[str]]:
+        summary = self._read_summary()
+
+        source_exists = SOURCE_DIR.is_dir()
+        checkpoint_exists = CHECKPOINT_PATH.is_file()
+        summary_exists = summary is not None
+        env_python_path = os.environ.get(PYTHON_ENV_VAR, "").strip() or str(ENV_PYTHON)
+        env_python_exists = Path(env_python_path).is_file()
+
+        safe_load_gate = None
+        tensor_count = None
+        checkpoint_sha256 = None
+        if summary is not None:
+            safe_load_gate = summary.get("safe_load_passed")
+            if safe_load_gate is True:
+                safe_load_gate = "SAFE_GLOBALS_SAFE_LOAD_GO"
+            elif safe_load_gate is False:
+                safe_load_gate = "SAFE_GLOBALS_SAFE_LOAD_FAILED"
+            else:
+                safe_load_gate = str(safe_load_gate)
+            tensor_count = summary.get("tensor_count")
+            checkpoint_sha256 = summary.get("checkpoint_sha256")
+            if not checkpoint_sha256:
+                checkpoint_sha256 = _EXPECTED_SHA256
+
+        blocked_reasons: list[str] = []
+        if not source_exists:
+            blocked_reasons.append("missing_source")
+        if not checkpoint_exists:
+            blocked_reasons.append("missing_checkpoint")
+        if not summary_exists:
+            blocked_reasons.append("missing_safe_load_summary")
+        if not env_python_exists:
+            blocked_reasons.append("missing_env_python")
+        if summary_exists and safe_load_gate != "SAFE_GLOBALS_SAFE_LOAD_GO":
+            blocked_reasons.append("safe_load_gate_not_go")
+        if checkpoint_sha256 and checkpoint_sha256.lower() != _EXPECTED_SHA256.lower():
+            blocked_reasons.append("checkpoint_sha256_mismatch")
+
+        detail = {
+            "source_exists": source_exists,
+            "checkpoint_exists": checkpoint_exists,
+            "safe_load_summary_exists": summary_exists,
+            "env_python_path": env_python_path,
+            "env_python_exists": env_python_exists,
+            "safe_load_gate": safe_load_gate,
+            "safe_load_tensor_count": tensor_count,
+            "checkpoint_sha256": checkpoint_sha256,
+            "expected_sha256": _EXPECTED_SHA256,
+            "path_guard": {
+                "source_under_model_root": self._under_model_root(SOURCE_DIR),
+                "checkpoint_under_model_root": self._under_model_root(CHECKPOINT_PATH),
+                "env_under_model_root": self._under_model_root(ENV_PATH),
+                "artifact_root_under_model_root": self._under_model_root(ARTIFACT_ROOT),
+            },
+            "runs_model": False,
+            "generates_candidates": False,
+            "generates_pdb": False,
+            "experimental_validation": False,
+            "is_scientific_result": False,
+            "computational_prediction_only": True,
+            "validation_status": "NOT_EXPERIMENTALLY_VALIDATED",
+            "blocked_reasons": blocked_reasons,
+            "real_run_status": "blocked",
+            "real_run_blocked_reason": "ppflow_runner_not_implemented",
+        }
+        return detail, list(dict.fromkeys(blocked_reasons))
+
+    def probe(self) -> ModelProbeResult:
+        detail, blocked_reasons = self._probe_checks()
+        available = not blocked_reasons
+        status = "available_for_probe" if available else "blocked"
+        reason = (
+            blocked_reasons[0]
+            if blocked_reasons
+            else "ppflow_runner_not_implemented"
+        )
+
+        return ModelProbeResult(
+            model_id=self.model_id,
+            display_name=self.display_name,
+            status=status,
+            message=(
+                "PPFlow probe completed. Safe-load checkpoint is observed; "
+                "real execution remains disabled."
+            ),
+            probe_time=self._now(),
+            adapter_id=self.adapter_id,
+            safety_flags=self._base_safety_flags(),
+            detail=detail,
+            scientific_boundary=SCIENTIFIC_BOUNDARY_NOTE,
+            available=available,
+            actionable=False,
+            probe_status="available_for_probe" if available else "blocked",
+            reason=reason,
+            stage="P29A_PROBE_DRYRUN_BLOCKED",
+            runs_model=False,
+            generates_candidates=False,
+            generates_pdb=False,
+            experimental_validation=False,
+            is_scientific_result=False,
+            computational_prediction_only=True,
+            validation_status="NOT_EXPERIMENTALLY_VALIDATED",
+            real_run_status="blocked",
+            real_run_blocked_reason="ppflow_runner_not_implemented",
+        )
+
+    def dry_run(self, payload: ModelDryRunPayload) -> ModelDryRunResult:
+        detail, _blocked = self._probe_checks()
+        blocked_reasons = ["ppflow_real_run_not_implemented"]
+        if _blocked:
+            blocked_reasons = list(dict.fromkeys([*_blocked, *blocked_reasons]))
+
+        env_python_path = os.environ.get(PYTHON_ENV_VAR, "").strip() or str(ENV_PYTHON)
+        target_pdb_path = payload.target_pdb_path or "<required_target_pdb_path>"
+        job_id = "<job_id>"
+        planned_run_dir = ARTIFACT_ROOT / job_id
+
+        command_preview = [
+            env_python_path,
+            str(SOURCE_DIR / "codesign_ppf.py"),
+            "--config",
+            str(SOURCE_DIR / "configs" / "train" / "ppflow_pepglad.yml"),
+            "--checkpoint",
+            str(CHECKPOINT_PATH),
+            "--target-pdb",
+            target_pdb_path,
+            "--target-chain",
+            payload.target_chain,
+            "--peptide-length",
+            str(payload.peptide_length),
+            "--num-candidates",
+            str(payload.num_candidates),
+            "--seed",
+            str(payload.seed if payload.seed is not None else 0),
+            "--output-dir",
+            str(planned_run_dir),
+        ]
+
+        expected_inputs = {
+            "target_pdb_path": target_pdb_path,
+            "target_chain": payload.target_chain,
+            "peptide_length": payload.peptide_length,
+            "num_candidates": payload.num_candidates,
+            "seed": payload.seed,
+        }
+        expected_outputs = {
+            "planned_only": True,
+            "candidate_sequences": None,
+            "pdb_files": [],
+            "scientific_metrics": {},
+        }
+        artifact_plan = {
+            "artifact_root": str(ARTIFACT_ROOT),
+            "planned_run_dir": str(planned_run_dir),
+            "directory_created": False,
+            "artifacts_written": False,
+        }
+
+        return ModelDryRunResult(
+            model_id=self.model_id,
+            display_name=self.display_name,
+            status="BLOCKED",
+            message="PPFlow dry-run plan only; no job, artifact, or subprocess was created.",
+            run_id=None,
+            artifacts={},
+            expected_artifacts={},
+            expected_inputs=expected_inputs,
+            expected_outputs=expected_outputs,
+            artifact_plan=artifact_plan,
+            command_preview=command_preview,
+            env_preview={PYTHON_ENV_VAR: env_python_path},
+            environment_summary=detail,
+            blocked_reasons=blocked_reasons,
+            safety_flags=self._base_safety_flags(),
+            validation_status="NOT_EXPERIMENTALLY_VALIDATED",
+            scientific_boundary=SCIENTIFIC_BOUNDARY_NOTE,
+            available=False,
+            actionable=False,
+            dry_run_status="blocked",
+            reason="ppflow_real_run_not_implemented",
+            stage="P29A_PROBE_DRYRUN_BLOCKED",
+            runs_model=False,
+            generates_candidates=False,
+            generates_pdb=False,
+            experimental_validation=False,
+            is_scientific_result=False,
+            computational_prediction_only=True,
+            mode="dry_run",
+            would_use_checkpoint=str(CHECKPOINT_PATH),
+            would_use_env=str(ENV_PATH),
+            creates_job=False,
+            writes_artifacts=False,
+            runs_subprocess=False,
+        )
+
+    def submit(self, payload: ModelDryRunPayload) -> ModelDryRunResult:
+        result = self.dry_run(payload)
+        result.message = "PPFlow submission is unconditionally BLOCKED in P29A."
+        if "ppflow_real_run_not_implemented" not in result.blocked_reasons:
+            result.blocked_reasons.append("ppflow_real_run_not_implemented")
+        return result
+
+    def list_artifacts(self, job_id: str | None = None) -> ModelArtifactsResponse:
+        normalized_job_id = job_id or ""
+        if not normalized_job_id or ".." in normalized_job_id or not _SAFE_JOB_ID.fullmatch(normalized_job_id):
+            raise ValueError("Invalid PPFlow job_id")
+        return ModelArtifactsResponse(
+            model_id=self.model_id,
+            job_id=normalized_job_id,
+            status="empty",
+            artifacts=[],
+            validation_status="NOT_EXPERIMENTALLY_VALIDATED",
+            scientific_boundary=SCIENTIFIC_BOUNDARY_NOTE,
+        )

@@ -1,0 +1,64 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bar {
+  display: flex;
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: #F3F4F6;
+}
+
+.segmentHelix {
+  height: 100%;
+  background: #156B98;
+  transition: width 400ms ease;
+}
+
+.segmentSheet {
+  height: 100%;
+  background: #3B82F6;
+  transition: width 400ms ease;
+}
+
+.segmentCoil {
+  height: 100%;
+  background: #D1D5DB;
+  transition: width 400ms ease;
+}
+
+.legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #374151;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dotHelix {
+  background: #156B98;
+}
+
+.dotSheet {
+  background: #3B82F6;
+}
+
+.dotCoil {
+  background: #D1D5DB;
+}

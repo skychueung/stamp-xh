@@ -1,0 +1,29 @@
+# This file was created Tue May 12 23:40:56 2026
+# Created by:
+#                 :-) GROMACS - gmx rmsf, 2026.0-conda_forge (-:
+# 
+# Executable:   /home/xh/miniconda3/envs/stamp-md/bin.AVX2_256/gmx
+# Data prefix:  /home/xh/miniconda3/envs/stamp-md
+# Working dir:  /home/xh/kxc/靶向肽/stamp-targeted-peptide-platform/data/batch_jobs/md_pilot_test_001/md_pilot/item_001/analysis
+# Command line:
+#   gmx rmsf -s ../production/md_1ns.tpr -f ../production/md_1ns.trr -o rmsf.xvg -res
+# gmx rmsf is part of G R O M A C S:
+#
+# Georgetown Riga Oslo Madrid Amsterdam Chisinau Stockholm
+#
+@    title "RMS fluctuation"
+@    xaxis  label "Residue"
+@    yaxis  label "(nm)"
+@TYPE xy
+    1   0.2844
+    2   0.2267
+    3   0.2021
+    4   0.2075
+    5   0.2350
+    6   0.2329
+    7   0.2791
+    8   0.2340
+    9   0.1767
+   10   0.1858
+   11   0.2290
+   12   0.2974

@@ -1,0 +1,813 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  AlertTriangle,
+  Ban,
+  FileJson,
+  FlaskConical,
+  Lock,
+  Play,
+  RefreshCw,
+  ShieldAlert,
+  Terminal,
+  Cpu,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  p33uApi,
+  P33UApiError,
+  type P33UConsoleMatrix,
+  type P33UConsoleMatrixModel,
+  type P33UJob,
+  type P33UConfirmFlags,
+} from '@/lib/api/p33u';
+import { D26ScoringMatrixPanel } from "./D26ScoringMatrixPanel";
+import { D31OrderDecisionPanel } from "./D31OrderDecisionPanel";
+
+const MODEL_LABELS: Record<string, string> = {
+  pepmlm: 'PepMLM',
+  evobind2: 'EvoBind2',
+  diffpepbuilder: 'DiffPepBuilder',
+  pepflow: 'PepFlow',
+  pephar: 'PepHAR',
+  ppflow: 'PPFlow',
+  pepprclip: 'PepPrCLIP',
+  rfpeptides: 'RFpeptides',
+  pepglad: 'PepGLAD',
+};
+
+const SCORER_LABELS: Record<string, string> = {
+  prodigy: 'PRODIGY (ΔG / Kd)',
+  vina: 'Vina (pose score)',
+  openmm: 'OpenMM (relax)',
+  mmgbsa: 'MM-GBSA',
+  af2_multimer: 'AF2-Multimer (ipTM)',
+  gnina: 'GNINA',
+  esmfold: 'ESMFold',
+  pyrosetta: 'PyRosetta',
+};
+
+const STATUS_TONE: Record<string, string> = {
+  queued: 'bg-blue-100 text-blue-700',
+  running: 'bg-sky-100 text-sky-700 animate-pulse',
+  succeeded: 'bg-emerald-100 text-emerald-700',
+  failed: 'bg-rose-100 text-rose-700',
+  blocked_license: 'bg-purple-100 text-purple-700',
+  blocked_dependency: 'bg-amber-100 text-amber-700',
+  unavailable_with_reason: 'bg-amber-100 text-amber-700',
+  safety_gate_not_enabled: 'bg-orange-100 text-orange-700',
+  safety_gate_not_enabled_with_evidence: 'bg-orange-100 text-orange-700',
+  artifact_only_parser_smoke: 'bg-teal-100 text-teal-700',
+  real_run_minimal_smoke: 'bg-emerald-100 text-emerald-700',
+  real_run_adapter_hardened: 'bg-emerald-100 text-emerald-700',
+  real_run_registry_dispatched: 'bg-emerald-100 text-emerald-700',
+};
+
+// Short label + tone for the per-model console_status field.
+const CONSOLE_STATUS_META: Record<string, { label: string; tone: string }> = {
+  real_run_enabled: { label: 'real-run enabled', tone: 'bg-emerald-100 text-emerald-700' },
+  real_run_minimal_smoke: { label: 'dev-only minimal real-run', tone: 'bg-emerald-100 text-emerald-700' },
+  real_run_adapter_hardened: { label: 'dev real-run · adapter hardened', tone: 'bg-emerald-100 text-emerald-700' },
+  real_run_registry_dispatched: { label: 'dev real-run · registry dispatch', tone: 'bg-emerald-100 text-emerald-700' },
+  artifact_only_parser_smoke: { label: 'artifact-only parser smoke', tone: 'bg-teal-100 text-teal-700' },
+  blocked_dependency: { label: 'blocked dependency', tone: 'bg-amber-100 text-amber-700' },
+  safety_gate_not_enabled: { label: 'safety gate not enabled', tone: 'bg-orange-100 text-orange-700' },
+  safety_gate_not_enabled_with_evidence: { label: 'safety gate not enabled (evidence)', tone: 'bg-orange-100 text-orange-700' },
+  disabled_blocked_license: { label: 'license blocked', tone: 'bg-purple-100 text-purple-700' },
+};
+
+// A model is runnable from the console if its run_button is enabled. D21:
+// PepMLM / DiffPepBuilder / PepHAR (real-run minimal smoke) + PepFlow (parser
+// smoke) are runnable. EvoBind2 is NOT runnable (safety_gate_not_enabled_with_
+// evidence — env missing, license allowed). PPFlow is license-blocked.
+function isRunnable(m: P33UConsoleMatrixModel): boolean {
+  return m.run_button === 'enabled';
+}
+
+function Banners() {
+  return (
+    <div className="flex flex-wrap items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">
+      <ShieldAlert className="h-4 w-4" />
+      <span>COMPUTATIONAL_PREDICTION_ONLY</span>
+      <span className="text-amber-400">·</span>
+      <span>NOT_EXPERIMENTALLY_VALIDATED</span>
+      <span className="text-amber-400">·</span>
+      <span>WETLAB_VALIDATION_PLANNED</span>
+      <span className="text-amber-400">·</span>
+      <span className="text-purple-700">PPFLOW_BLOCKED_LICENSE</span>
+    </div>
+  );
+}
+
+function ConfirmModal({
+  open,
+  title,
+  onCancel,
+  onConfirm,
+}: {
+  open: boolean;
+  title: string;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  if (!open) return null;
+  const lines = [
+    'This is a dev-only computational run',
+    'No experimental validation',
+    'Do not run PPFlow',
+    'GPU may be used',
+  ];
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <Card className="w-[480px] max-w-[92vw]">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <AlertTriangle className="h-4 w-4 text-amber-600" />
+            {title}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <ul className="space-y-1.5 text-sm">
+            {lines.map((l) => (
+              <li key={l} className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                {l}
+              </li>
+            ))}
+          </ul>
+          <p className="text-xs text-slate-500">
+            By confirming you acknowledge all four safety statements. PPFlow will never be invoked.
+          </p>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button variant="outline" size="sm" onClick={onCancel}>
+              Cancel
+            </Button>
+            <Button size="sm" onClick={onConfirm}>
+              Confirm & Run
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+export function RunConsole() {
+  const [matrix, setMatrix] = useState<P33UConsoleMatrix | null>(null);
+  const [modelId, setModelId] = useState('pepmlm');
+  const [scorerId, setScorerId] = useState('prodigy');
+  const [candidateId, setCandidateId] = useState('pepmlm_candidate_3');
+  const [targetSeq, setTargetSeq] = useState('SIINFEKL');
+  const [peptideLength, setPeptideLength] = useState(10);
+  const [numCandidates, setNumCandidates] = useState(3);
+  const [tab, setTab] = useState<'model' | 'scorer'>('model');
+  const [pending, setPending] = useState<null | 'model' | 'scorer'>(null);
+  const [activeJob, setActiveJob] = useState<P33UJob | null>(null);
+  const [logs, setLogs] = useState('');
+  const [error, setError] = useState('');
+  const [errorKind, setErrorKind] = useState<string>('');
+  // P33U-D23A: artifacts panel + gate JSON link (job_id/run_id/status/logs
+  // link/artifacts link/gate JSON must be shown after a run).
+  const [artifacts, setArtifacts] = useState<any[] | null>(null);
+  const [artifactsError, setArtifactsError] = useState('');
+  // D22: dev smoke candidates ingested to P33T dev DB (separate from primary).
+  const [smokeCandidates, setSmokeCandidates] = useState<any[] | null>(null);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const loadSmokeCandidates = useCallback(async () => {
+    try {
+      const r = await fetch('/api/v1/p33u/smoke-candidates');
+      const j = await r.json();
+      setSmokeCandidates(j?.data?.smoke_candidates ?? []);
+    } catch {
+      setSmokeCandidates([]);
+    }
+  }, []);
+
+  const loadMatrix = useCallback(async () => {
+    try {
+      const m = await p33uApi.getConsoleMatrix();
+      setMatrix(m);
+      // Keep current selection if still valid; else fall back to default.
+      const validAvailable = m.models.find((mm) => mm.model_id === modelId && mm.category === 'available' && isRunnable(mm));
+      if (!validAvailable) {
+        setModelId(m.default_model);
+      }
+      setScorerId(m.default_scorer);
+      setCandidateId(m.default_candidate);
+    } catch (e) {
+      setError(`Failed to load console matrix: ${e}`);
+    }
+  }, [modelId]);
+
+  useEffect(() => {
+    loadMatrix();
+    loadSmokeCandidates();
+  }, [loadMatrix, loadSmokeCandidates]);
+
+  // 模型切换 bug 修复 (止血)：切换 modelId 时清空上一轮实时结果（activeJob/logs/
+  // artifacts/error），杜绝选择 A 模型却仍显示 B 模型结果的残留。新运行会显示新的
+  // run_id / job_id / source_model (model_or_scorer)。
+  useEffect(() => {
+    setActiveJob(null);
+    setLogs('');
+    setArtifacts(null);
+    setArtifactsError('');
+    setError('');
+    setErrorKind('');
+  }, [modelId]);
+
+  const pollJob = useCallback(async (jobId: string) => {
+    try {
+      const job = await p33uApi.getJob(jobId);
+      setActiveJob(job);
+      try {
+        const lg = await p33uApi.getJobLogs(jobId);
+        setLogs(lg.log || '');
+      } catch {
+        /* logs may not be ready */
+      }
+      const terminal = [
+        'succeeded',
+        'failed',
+        'blocked_license',
+        'blocked_dependency',
+        'unavailable_with_reason',
+        'safety_gate_not_enabled',
+        'safety_gate_not_enabled_with_evidence',
+      ];
+      if (terminal.includes(job.status) && pollRef.current) {
+        clearInterval(pollRef.current);
+        pollRef.current = null;
+      }
+    } catch (e) {
+      if (e instanceof P33UApiError) {
+        setError(`Poll failed: ${e.detail || e.message}`);
+        setErrorKind(e.kind);
+      } else {
+        setError(`Poll failed: ${e instanceof Error ? e.message : String(e)}`);
+        setErrorKind('unknown');
+      }
+    }
+  }, []);
+
+  const startPolling = (jobId: string) => {
+    if (pollRef.current) clearInterval(pollRef.current);
+    pollJob(jobId);
+    pollRef.current = setInterval(() => pollJob(jobId), 3000);
+  };
+
+  useEffect(() => () => {
+    if (pollRef.current) clearInterval(pollRef.current);
+  }, []);
+
+  const confirmFlags: P33UConfirmFlags = {
+    dev_only_acknowledged: true,
+    no_experimental_validation_acknowledged: true,
+    do_not_run_ppflow_acknowledged: true,
+    gpu_may_be_used_acknowledged: true,
+  };
+
+  const loadArtifacts = useCallback(async (jobId: string) => {
+    setArtifactsError('');
+    try {
+      const r = await p33uApi.getJobArtifacts(jobId);
+      setArtifacts(r.artifacts ?? []);
+    } catch (e) {
+      if (e instanceof P33UApiError) {
+        setArtifactsError(`${e.kind}: ${e.detail || e.message}`);
+      } else {
+        setArtifactsError(e instanceof Error ? e.message : String(e));
+      }
+      setArtifacts([]);
+    }
+  }, []);
+
+  const doModelRun = async () => {
+    setPending(null);
+    setError('');
+    setErrorKind('');
+    setLogs('');
+    setActiveJob(null);
+    setArtifacts(null);
+    setArtifactsError('');
+    try {
+      const job = await p33uApi.runModel({
+        model_id: modelId,
+        target_sequence: targetSeq,
+        peptide_length: peptideLength,
+        num_candidates: numCandidates,
+        device: 'auto',
+        gpu_device: modelId === 'pepmlm' ? 'cuda:1' : null,
+        seed: 2024,
+        top_k: 3,
+        confirm: confirmFlags,
+      });
+      setActiveJob(job);
+      startPolling(job.job_id);
+    } catch (e) {
+      if (e instanceof P33UApiError) {
+        setError(e.detail || e.message);
+        setErrorKind(e.kind);
+      } else {
+        setError(`Model run failed: ${e instanceof Error ? e.message : String(e)}`);
+        setErrorKind('unknown');
+      }
+    }
+  };
+
+  const doScorerRun = async () => {
+    setPending(null);
+    setError('');
+    setErrorKind('');
+    setLogs('');
+    setActiveJob(null);
+    setArtifacts(null);
+    setArtifactsError('');
+    try {
+      const job = await p33uApi.runScorer({
+        scorer_id: scorerId,
+        candidate_id: candidateId,
+        confirm: confirmFlags,
+      });
+      setActiveJob(job);
+      startPolling(job.job_id);
+    } catch (e) {
+      if (e instanceof P33UApiError) {
+        setError(e.detail || e.message);
+        setErrorKind(e.kind);
+      } else {
+        setError(`Scorer run failed: ${e instanceof Error ? e.message : String(e)}`);
+        setErrorKind('unknown');
+      }
+    }
+  };
+
+  const availableModels = matrix?.models.filter((m) => m.category === 'available') ?? [];
+  const blockedModels = matrix?.models.filter((m) => m.category === 'blocked') ?? [];
+  const backlogModels = matrix?.models.filter((m) => m.category === 'backlog') ?? [];
+  const availableScorers = matrix?.scorers.filter((s) => s.category === 'available') ?? [];
+  const blockedScorers = matrix?.scorers.filter((s) => s.category === 'blocked') ?? [];
+
+  const selectedModel = availableModels.find((m) => m.model_id === modelId);
+  const selectedRunnable = selectedModel ? isRunnable(selectedModel) : false;
+
+  return (
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between text-base">
+          <span className="flex items-center gap-2">
+            <Terminal className="h-4 w-4" />
+            P33U Run Console / Dev-only
+            <Badge variant="outline" className="text-[10px]">P33U-D23</Badge>
+          </span>
+          <Button variant="ghost" size="sm" onClick={loadMatrix}>
+            <RefreshCw className="h-3.5 w-3.5" /> Refresh
+          </Button>
+        </CardTitle>
+        <div className="pt-1">
+          <Banners />
+          <p className="mt-2 text-xs text-slate-600">
+            Dev-only computational run. Results are computational predictions and require experimental validation.
+          </p>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {error && (
+          <div className="rounded border border-rose-300 bg-rose-50 px-3 py-2 text-xs text-rose-700">
+            <div className="flex items-center gap-2 font-semibold">
+              <Badge className="bg-rose-200 text-rose-800 text-[9px]">{errorKind || 'error'}</Badge>
+              <span>API request failed</span>
+            </div>
+            <div className="mt-1 break-all">{error}</div>
+          </div>
+        )}
+
+        {/* Tab switch */}
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant={tab === 'model' ? 'default' : 'outline'}
+            onClick={() => setTab('model')}
+          >
+            <Play className="h-3.5 w-3.5" /> Model Run
+          </Button>
+          <Button
+            size="sm"
+            variant={tab === 'scorer' ? 'default' : 'outline'}
+            onClick={() => setTab('scorer')}
+          >
+            <FlaskConical className="h-3.5 w-3.5" /> Scorer Run
+          </Button>
+        </div>
+
+        {tab === 'model' ? (
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs font-semibold text-slate-600">
+                Model (3 real-run · registry-dispatched · 1 parser-smoke · 1 safety-gate · PPFlow blocked · 3 backlog) — D23 per-model status
+              </label>
+              <div className="mt-1 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {availableModels.map((m) => {
+                  const runnable = isRunnable(m);
+                  const cmeta = CONSOLE_STATUS_META[m.console_status ?? ''] ?? { label: m.console_status, tone: 'bg-slate-100 text-slate-700' };
+                  return (
+                    <button
+                      key={m.model_id}
+                      onClick={() => setModelId(m.model_id)}
+                      disabled={!runnable}
+                      className={`rounded border px-2 py-1.5 text-left text-xs ${
+                        modelId === m.model_id
+                          ? 'border-sky-500 bg-sky-50 text-sky-800'
+                          : runnable
+                          ? 'border-slate-200 bg-white hover:border-slate-300'
+                          : 'border-slate-200 bg-slate-50 text-slate-500 cursor-not-allowed'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold">{MODEL_LABELS[m.model_id] ?? m.model_id}</span>
+                        <span className={`rounded px-1 py-0.5 text-[9px] font-semibold ${cmeta.tone}`}>
+                          {cmeta.label}
+                        </span>
+                      </div>
+                      <div className="mt-0.5 text-[10px] text-slate-500">
+                        smoke: {m.smoke_status ?? '—'}
+                      </div>
+                      {!runnable && m.blocked_reason && (
+                        <div className="mt-0.5 line-clamp-2 text-[9px] text-amber-700">
+                          {m.blocked_reason}
+                        </div>
+                      )}
+                      {m.license_status && m.model_id === 'evobind2' && (
+                        <div className="mt-0.5 text-[9px] text-emerald-600">
+                          license: allowed (CC BY-NC 4.0)
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+                {blockedModels.map((m) => (
+                  <div key={m.model_id} className="rounded border border-purple-200 bg-purple-50 px-2 py-1.5 text-xs text-purple-700 opacity-70">
+                    <div className="flex items-center gap-1 font-semibold">
+                      <Lock className="h-3 w-3" /> {MODEL_LABELS[m.model_id] ?? m.model_id}
+                    </div>
+                    <div className="text-[10px]">{m.reason}</div>
+                  </div>
+                ))}
+                {backlogModels.map((m) => (
+                  <div key={m.model_id} className="rounded border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs text-slate-500 opacity-70">
+                    <div className="flex items-center gap-1 font-semibold">
+                      <Ban className="h-3 w-3" /> {MODEL_LABELS[m.model_id] ?? m.model_id}
+                    </div>
+                    <div className="text-[10px]">{m.reason}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+              <div className="sm:col-span-1">
+                <label className="text-xs font-semibold text-slate-600">Target sequence</label>
+                <input
+                  value={targetSeq}
+                  onChange={(e) => setTargetSeq(e.target.value.toUpperCase())}
+                  className="mt-1 w-full rounded border border-slate-300 px-2 py-1 text-sm"
+                  placeholder="e.g. SIINFEKL"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-slate-600">Peptide length</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={peptideLength}
+                  onChange={(e) => setPeptideLength(Number(e.target.value))}
+                  className="mt-1 w-full rounded border border-slate-300 px-2 py-1 text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-slate-600">Num candidates</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={numCandidates}
+                  onChange={(e) => setNumCandidates(Number(e.target.value))}
+                  className="mt-1 w-full rounded border border-slate-300 px-2 py-1 text-sm"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <Button size="sm" disabled={!selectedRunnable} onClick={() => setPending('model')}>
+                <Play className="h-3.5 w-3.5" /> Run model
+              </Button>
+              <span className="text-[11px] text-amber-700">
+                {selectedRunnable
+                  ? 'dev only · may use GPU · not experimentally validated'
+                  : 'selected model is NOT runnable from console (blocked / safety gate not enabled)'}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs font-semibold text-slate-600">
+                  Scorer ({availableScorers.filter((s) => s.run_button === 'enabled').length} runnable · {blockedScorers.length} blocked)
+                </label>
+              <div className="mt-1 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {availableScorers.map((s) => {
+                  const runnable = s.run_button === 'enabled';
+                  return (
+                    <button
+                      key={s.scorer_id}
+                      onClick={() => runnable && setScorerId(s.scorer_id)}
+                      disabled={!runnable}
+                      className={`rounded border px-2 py-1.5 text-left text-xs ${
+                        scorerId === s.scorer_id
+                          ? 'border-sky-500 bg-sky-50 text-sky-800'
+                          : runnable
+                          ? 'border-slate-200 bg-white hover:border-slate-300'
+                          : 'border-slate-200 bg-slate-50 text-slate-500 cursor-not-allowed'
+                      }`}
+                    >
+                      <div className="font-semibold">{SCORER_LABELS[s.scorer_id] ?? s.scorer_id}</div>
+                      <div className="text-[9px] text-slate-500">
+                        {runnable
+                          ? `${s.smoke_passed ? 'smoke passed · ' : ''}${s.requires ?? 'runnable'}`
+                          : 'wired · needs prepared input'}
+                      </div>
+                      {runnable && s.complex_source_label && (
+                        <div className="text-[8px] text-amber-600 leading-tight">placement/AF2 · not docking</div>
+                      )}
+                    </button>
+                  );
+                })}
+                {blockedScorers.map((s) => (
+                  <div key={s.scorer_id} className="rounded border border-amber-200 bg-amber-50 px-2 py-1.5 text-xs text-amber-700 opacity-70">
+                    <div className="flex items-center gap-1 font-semibold">
+                      <Ban className="h-3 w-3" /> {SCORER_LABELS[s.scorer_id] ?? s.scorer_id}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-600">Candidate (complex PDB)</label>
+              <select
+                value={candidateId}
+                onChange={(e) => setCandidateId(e.target.value)}
+                className="mt-1 w-full rounded border border-slate-300 px-2 py-1 text-sm"
+              >
+                {matrix?.candidates.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <Button size="sm" onClick={() => setPending('scorer')}>
+                <FlaskConical className="h-3.5 w-3.5" /> Run scorer
+              </Button>
+              <span className="text-[11px] text-amber-700">
+                dev only · computational rescore · not experimentally validated
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Active job panel */}
+        {activeJob && (
+          <div className="rounded border border-slate-200 bg-slate-50/60 p-3">
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <Badge className={STATUS_TONE[activeJob.status] ?? 'bg-slate-100 text-slate-700'}>
+                {activeJob.status}
+              </Badge>
+              <span className="font-mono text-[11px] text-slate-500">{activeJob.job_id}</span>
+              <span className="text-slate-400">·</span>
+              <span className="text-slate-600">{activeJob.model_or_scorer}</span>
+              {activeJob.gpu_used && (
+                <span className="flex items-center gap-1 text-slate-500">
+                  <Cpu className="h-3 w-3" /> {activeJob.gpu_used}
+                </span>
+              )}
+              {activeJob.checkpoint_loaded && (
+                <span className="text-[10px] text-slate-400">ckpt: …{activeJob.checkpoint_loaded.slice(-28)}</span>
+              )}
+            </div>
+            <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-slate-600 sm:grid-cols-4">
+              <div>run_id: <span className="font-mono">{activeJob.run_id}</span></div>
+              <div>exit_code: {String(activeJob.exit_code)}</div>
+              <div>start: {activeJob.start_time}</div>
+              <div>end: {activeJob.end_time || '—'}</div>
+              {activeJob.sha256 && (
+                <div className="col-span-2 break-all">SHA256: <span className="font-mono">{activeJob.sha256}</span></div>
+              )}
+              {activeJob.failure_reason && (
+                <div className="col-span-2 break-all text-rose-600">reason: {activeJob.failure_reason}</div>
+              )}
+            </div>
+            {activeJob.result_summary && (
+              <pre className="mt-2 max-h-40 overflow-auto rounded bg-white p-2 text-[10px] text-slate-700">
+                {JSON.stringify(activeJob.result_summary, null, 2)}
+              </pre>
+            )}
+            {/* P33U-D23: registry submit contract provenance + dispatch metadata. */}
+            {(activeJob.provenance || activeJob.dispatch_contract) && (
+              <div className="mt-2 rounded border border-emerald-200 bg-emerald-50/60 p-2 text-[10px] text-emerald-900">
+                <div className="flex flex-wrap items-center gap-2 font-semibold">
+                  <Badge className="bg-emerald-200 text-emerald-800 text-[9px]">REGISTRY DISPATCH</Badge>
+                  <span>{activeJob.dispatch_contract ?? '—'}</span>
+                  {activeJob.provenance?.adapter_formal_path && (
+                    <span className="rounded bg-emerald-200 px-1 py-0.5 text-[9px]">adapter_formal_path</span>
+                  )}
+                </div>
+                <div className="mt-1 grid grid-cols-1 gap-x-4 gap-y-0.5 sm:grid-cols-2">
+                  {activeJob.provenance?.adapter_id && (
+                    <div>adapter_id: <span className="font-mono">{activeJob.provenance.adapter_id}</span></div>
+                  )}
+                  {activeJob.adapter_registry_id && (
+                    <div>registry adapter: <span className="font-mono">{activeJob.adapter_registry_id}</span></div>
+                  )}
+                  {activeJob.dispatch_entrypoint && (
+                    <div>entrypoint: <span className="font-mono">{activeJob.dispatch_entrypoint}</span></div>
+                  )}
+                  {activeJob.provenance?.seed !== undefined && activeJob.provenance.seed !== null && (
+                    <div>seed: <span className="font-mono">{activeJob.provenance.seed}</span>
+                      <span className="text-emerald-600"> ({activeJob.provenance.seed_note ?? '—'})</span>
+                    </div>
+                  )}
+                  {activeJob.provenance?.script_sha256 && (
+                    <div className="break-all">script_sha256: <span className="font-mono">{activeJob.provenance.script_sha256.slice(0, 16)}…</span></div>
+                  )}
+                  {activeJob.provenance?.config_sha256 && (
+                    <div className="break-all">config_sha256: <span className="font-mono">{activeJob.provenance.config_sha256.slice(0, 16)}…</span></div>
+                  )}
+                  {activeJob.provenance?.checkpoint_sha256 && (
+                    <div className="break-all">checkpoint_sha256:
+                      <span className="font-mono"> {Object.values(activeJob.provenance.checkpoint_sha256).map((s) => s.slice(0, 12)).join(' + ')}…</span>
+                    </div>
+                  )}
+                  {activeJob.provenance?.env_python && (
+                    <div className="break-all">env_python: <span className="font-mono">{activeJob.provenance.env_python}</span></div>
+                  )}
+                </div>
+              </div>
+            )}
+            <details className="mt-2">
+              <summary className="flex cursor-pointer items-center gap-1 text-[11px] text-slate-500">
+                <FileJson className="h-3 w-3" /> logs
+              </summary>
+              <pre className="mt-1 max-h-48 overflow-auto rounded bg-slate-900 p-2 text-[10px] text-slate-100">
+                {logs || '(empty)'}
+              </pre>
+            </details>
+
+            {/* P33U-D23A: artifacts link + gate JSON link. After a run the
+                console must show job_id / run_id / status / logs link /
+                artifacts link / gate JSON. */}
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px]">
+              <Button variant="outline" size="sm" onClick={() => loadArtifacts(activeJob.job_id)}>
+                <FileJson className="h-3 w-3" /> artifacts
+              </Button>
+              <details className="rounded border border-slate-200 bg-white px-2 py-1">
+                <summary className="cursor-pointer text-slate-600">gate JSON</summary>
+                <pre className="mt-1 max-h-56 overflow-auto rounded bg-slate-900 p-2 text-[10px] text-slate-100">
+                  {JSON.stringify(activeJob.gate, null, 2)}
+                </pre>
+              </details>
+            </div>
+            {artifactsError && (
+              <div className="mt-1 text-[11px] text-rose-600">artifacts: {artifactsError}</div>
+            )}
+            {artifacts !== null && (
+              <div className="mt-2 rounded border border-slate-200 bg-white p-2">
+                <div className="text-[10px] font-semibold text-slate-600">
+                  artifacts ({artifacts.length})
+                </div>
+                {artifacts.length === 0 ? (
+                  <div className="text-[10px] text-slate-500">(no artifacts yet)</div>
+                ) : (
+                  <table className="mt-1 w-full text-[10px]">
+                    <thead className="text-left text-slate-500">
+                      <tr>
+                        <th className="py-0.5 pr-2">name</th>
+                        <th className="py-0.5 pr-2">size</th>
+                        <th className="py-0.5 pr-2">sha256</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {artifacts.map((a) => (
+                        <tr key={a.path} className="border-t border-slate-100 align-top">
+                          <td className="py-0.5 pr-2 break-all font-mono">{a.name}</td>
+                          <td className="py-0.5 pr-2">{a.size}</td>
+                          <td className="py-0.5 pr-2 break-all font-mono">{(a.sha256 || '').slice(0, 16)}…</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* D22/D23: dev smoke candidates ingested to P33T dev DB. Separate from
+            primary candidates — never Top4, never wetlab shortlist, never
+            experimentally validated. D23: grouped by source_round (D21 / D22)
+            so the two smoke layers are never mixed. */}
+        {smokeCandidates !== null && (() => {
+          const byRound: Record<string, typeof smokeCandidates> = {};
+          for (const c of smokeCandidates) {
+            const rk = c.source_round ?? 'unknown';
+            (byRound[rk] ??= []).push(c);
+          }
+          const rounds = Object.keys(byRound).sort(); // P33U_D21, P33U_D22, ...
+          return (
+          <div className="rounded-md border border-amber-300 bg-amber-50 p-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Badge className="bg-amber-200 text-amber-800 text-[10px]">DEV SMOKE ONLY</Badge>
+                <span className="text-xs font-semibold text-amber-900">
+                  D21/D22 smoke candidates ingested to P33T dev DB ({smokeCandidates.length} · {rounds.length} round{rounds.length === 1 ? '' : 's'})
+                </span>
+              </div>
+              <Button variant="ghost" size="sm" onClick={loadSmokeCandidates}>
+                <RefreshCw className="h-3 w-3" /> reload
+              </Button>
+            </div>
+            <p className="mt-1 text-[11px] text-amber-800">
+              Dev smoke only · not Top4 · not wetlab shortlist · not experimentally validated · computational prediction only. D21 = stochastic smoke; D22 = fixed seed=12345 verification rerun.
+            </p>
+            {smokeCandidates.length > 0 ? (
+              <div className="mt-2 space-y-3">
+                {rounds.map((rk) => (
+                  <div key={rk} className="rounded border border-amber-200 bg-amber-50/50">
+                    <div className="flex items-center gap-2 border-b border-amber-200 px-2 py-1">
+                      <Badge className="bg-amber-300 text-amber-900 text-[9px]">{rk}</Badge>
+                      <span className="text-[10px] font-semibold text-amber-900">
+                        {byRound[rk].length} candidate{byRound[rk].length === 1 ? '' : 's'}
+                      </span>
+                      <span className="text-[10px] text-amber-700">
+                        {rk === 'P33U_D21' ? 'minimal real-run smoke (stochastic)' : rk === 'P33U_D22' ? 'verification rerun (seed=12345)' : ''}
+                      </span>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-[11px]">
+                        <thead className="text-amber-900">
+                          <tr className="text-left">
+                            <th className="py-1 pr-2">candidate_id</th>
+                            <th className="py-1 pr-2">model</th>
+                            <th className="py-1 pr-2">seq</th>
+                            <th className="py-1 pr-2">len</th>
+                            <th className="py-1 pr-2">source_job_id</th>
+                            <th className="py-1 pr-2">structure_sha256</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {byRound[rk].map((c) => (
+                            <tr key={c.candidate_id} className="border-t border-amber-200 align-top">
+                              <td className="py-1 pr-2 font-mono text-[10px]">{c.candidate_id}</td>
+                              <td className="py-1 pr-2">{c.source_model_id}</td>
+                              <td className="py-1 pr-2 font-mono">{c.sequence}</td>
+                              <td className="py-1 pr-2">{c.length}</td>
+                              <td className="py-1 pr-2 font-mono text-[10px]">{c.source_job_id}</td>
+                              <td className="py-1 pr-2 font-mono text-[10px] break-all">
+                                {c.structures?.[0]?.artifact_sha256?.slice(0, 16) ?? '—'}…
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-2 text-[11px] text-amber-700">(no smoke candidates ingested yet)</p>
+            )}
+          </div>
+          );
+        })()}
+
+        <D26ScoringMatrixPanel />
+
+        <D31OrderDecisionPanel />
+
+        <ConfirmModal
+          open={pending === 'model'}
+          title="Confirm dev-only model run"
+          onCancel={() => setPending(null)}
+          onConfirm={doModelRun}
+        />
+        <ConfirmModal
+          open={pending === 'scorer'}
+          title="Confirm dev-only scorer run"
+          onCancel={() => setPending(null)}
+          onConfirm={doScorerRun}
+        />
+      </CardContent>
+    </Card>
+  );
+}
