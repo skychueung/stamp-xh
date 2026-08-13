@@ -83,13 +83,15 @@ class ConfiguredModelAdapter:
         if not python.is_file():
             missing.append("python_environment")
             state = "dependency_missing"
-        elif not checkpoint.is_file():
+        if not checkpoint.is_file():
             missing.append("checkpoint")
-            state = "checkpoint_missing"
-        elif candidate_library is not None and not candidate_library.is_file():
+            if state != "dependency_missing":
+                state = "checkpoint_missing"
+        if candidate_library is not None and not candidate_library.is_file():
             missing.append("candidate_library")
-            state = "checkpoint_missing"
-        elif root.exists():
+            if state != "dependency_missing":
+                state = "checkpoint_missing"
+        if root.exists() and not missing:
             state = "ready"
         busy_file = root / ".busy"
         if state == "ready" and busy_file.exists():

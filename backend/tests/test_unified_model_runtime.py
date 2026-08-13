@@ -74,6 +74,20 @@ def test_model_registry_exact_five():
     assert MODEL_IDS == ("pepmlm", "pepprclip", "evobind2", "pephar", "pepflow")
 
 
+def test_pepprclip_probe_reports_every_missing_asset(monkeypatch, tmp_path):
+    root = tmp_path / "pepprclip"
+    root.mkdir()
+    python = root / "python"
+    python.write_text("fixture", encoding="utf-8")
+    monkeypatch.setenv("STAMP_PEPPRCLIP_ROOT", str(root))
+    monkeypatch.setenv("STAMP_PEPPRCLIP_PYTHON", str(python))
+    monkeypatch.setenv("STAMP_PEPPRCLIP_CHECKPOINT", str(root / "missing.ckpt"))
+    monkeypatch.setenv("STAMP_PEPPRCLIP_CANDIDATES", str(root / "missing.pkl"))
+    probe = ProductionModelRegistry().get("pepprclip").probe()
+    assert probe["state"] == "checkpoint_missing"
+    assert probe["missing"] == ["checkpoint", "candidate_library"]
+
+
 def test_every_model_has_executable_adapter():
     registry = ProductionModelRegistry()
     for model_id in MODEL_IDS:
