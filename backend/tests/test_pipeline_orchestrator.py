@@ -203,6 +203,48 @@ def test_run_peptide_generation_step_success(db_session, pipeline_run: PipelineR
     assert step.output_json["record_count"] > 0
 
 
+def test_selected_models_preserve_ready_results_when_one_runtime_is_missing(
+    db_session, pipeline_run: PipelineRun, monkeypatch, tmp_path
+):
+    assert run_target_input_step(db_session, pipeline_run)
+    assert run_epitope_screening_step(db_session, pipeline_run)
+    request = dict((pipeline_run.output_json or {}).get("request") or {})
+    request["selected_models"] = ["pepmlm", "pepprclip"]
+    pipeline_run.output_json = {**(pipeline_run.output_json or {}), "request": request}
+    db_session.commit()
+
+    script = tmp_path / "runner.py"
+    script.write_text(
+        "import json,os,pathlib; p=pathlib.Path(os.environ['STAMP_RESULT_JSON']);"
+        "p.parent.mkdir(parents=True,exist_ok=True);"
+        "json.dump({'candidates':[{'sequence':'ACDEFGHIKLMN','score':0.9}]},open(p,'w'))",
+        encoding="utf-8",
+    )
+    pepmlm_root = tmp_path / "pepmlm"
+    pepmlm_root.mkdir()
+    python = pepmlm_root / "python"
+    checkpoint = pepmlm_root / "model.pt"
+    python.write_text("fixture", encoding="utf-8")
+    checkpoint.write_text("weights", encoding="utf-8")
+    monkeypatch.setenv("STAMP_MODEL_RUNTIME_ROOT", str(tmp_path / "runtime"))
+    monkeypatch.setenv("STAMP_PEPMLM_ROOT", str(pepmlm_root))
+    monkeypatch.setenv("STAMP_PEPMLM_PYTHON", str(python))
+    monkeypatch.setenv("STAMP_PEPMLM_CHECKPOINT", str(checkpoint))
+    monkeypatch.setenv("STAMP_PEPMLM_RUNNER_COMMAND", json.dumps([os.sys.executable, str(script)]))
+    monkeypatch.setenv("STAMP_PEPPRCLIP_ROOT", str(tmp_path / "missing-pepprclip"))
+
+    assert run_peptide_generation_step(db_session, pipeline_run, peptides_per_epitope=1)
+    step = db_session.query(PipelineStep).filter_by(
+        pipeline_run_id=pipeline_run.id, step_name="PEPTIDE_GENERATION"
+    ).one()
+    execution = step.output_json["model_execution"]
+    assert execution["status"] == "PARTIAL"
+    assert {item["model_id"]: item["status"] for item in execution["jobs"]} == {
+        "pepmlm": "SUCCEEDED", "pepprclip": "BLOCKED"
+    }
+    assert step.output_json["record_count"] == 1
+
+
 # ---------------------------------------------------------------------------
 # Peptide Optimization Step
 # ---------------------------------------------------------------------------

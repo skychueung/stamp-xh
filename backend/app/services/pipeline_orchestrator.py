@@ -600,23 +600,22 @@ def run_peptide_generation_step(
             _update_run(run, status="BLOCKED", current_step="PEPTIDE_GENERATION")
             db.commit()
             return False
-        unavailable = [probe for probe in probes if probe["state"] != "ready"]
-        if unavailable:
-            detail = {"selected_models": selected_models, "probes": probes}
-            _update_step(step, "BLOCKED", output_json=detail, error_message="Selected model runtime is not ready")
-            _update_run(run, status="BLOCKED", current_step="PEPTIDE_GENERATION")
-            db.commit()
-            _append_pipeline_log(
-                run.id,
-                "WARNING",
-                "Selected model execution blocked by runtime probe.",
-                step="PEPTIDE_GENERATION",
-                model_id=",".join(selected_models),
-            )
-            return False
         from app.services.unified_model_runtime import process_model_job
         model_results = []
-        for model_id in selected_models:
+        for model_id, probe in zip(selected_models, probes):
+            if probe["state"] != "ready":
+                model_results.append({
+                    "job_id": None,
+                    "model_id": model_id,
+                    "status": "BLOCKED",
+                    "result": None,
+                    "error": {"error_code": "MODEL_RUNTIME_NOT_READY", "probe": probe},
+                })
+                _append_pipeline_log(
+                    run.id, "WARNING", f"{model_id} skipped: runtime state={probe['state']}.",
+                    step="PEPTIDE_GENERATION", model_id=model_id,
+                )
+                continue
             model_job = production_registry.get(model_id).submit(
                 db,
                 {
@@ -640,18 +639,21 @@ def run_peptide_generation_step(
                 "result": model_job.output_json,
                 "error": model_job.error_json,
             })
+        succeeded_models = [item for item in model_results if item["status"] == "SUCCEEDED"]
         failed_models = [item for item in model_results if item["status"] != "SUCCEEDED"]
-        if failed_models:
+        if not succeeded_models:
             _update_step(step, "BLOCKED", output_json={"model_results": model_results},
-                         error_message="One or more selected model jobs did not succeed")
+                         error_message="No selected model job succeeded")
             _update_run(run, status="BLOCKED", current_step="PEPTIDE_GENERATION")
             db.commit()
             return False
         model_execution = {
             "model_ids": selected_models,
-            "status": "SUCCEEDED",
+            "status": "PARTIAL" if failed_models else "SUCCEEDED",
             "jobs": model_results,
             "provenance": "real_model",
+            "warnings": [{"model_id": item["model_id"], "status": item["status"], "error": item["error"]}
+                         for item in failed_models],
         }
 
     all_peptides: list[dict[str, Any]] = []
@@ -669,6 +671,8 @@ def run_peptide_generation_step(
 
     if model_execution:
         for model_job in model_execution["jobs"]:
+            if model_job["status"] != "SUCCEEDED":
+                continue
             result = model_job.get("result") or {}
             for candidate in result.get("candidates") or []:
                 sequence = str(candidate.get("sequence", "")).upper()
