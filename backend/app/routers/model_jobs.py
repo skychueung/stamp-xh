@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -16,6 +17,7 @@ from app.services.unified_model_runtime import (
     list_job_artifacts,
     process_model_job,
     read_job_logs,
+    resolve_job_artifact,
     submit_model_job,
 )
 
@@ -101,6 +103,18 @@ def logs(job_id: str, after_id: int = Query(0, ge=0), limit: int = Query(200, ge
 def artifacts(job_id: str, db: Session = Depends(get_db)):
     job = _job(db, job_id)
     return ApiResponse.success(data={"job_id": job.id, "artifacts": list_job_artifacts(job)})
+
+
+@router.get("/jobs/{job_id}/artifacts/download")
+def download_artifact(job_id: str, path: str = Query(...), db: Session = Depends(get_db)):
+    job = _job(db, job_id)
+    try:
+        artifact = resolve_job_artifact(job, path)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="Artifact not found") from exc
+    return FileResponse(artifact, filename=artifact.name)
 
 
 @router.get("/runs/{run_id}/jobs")

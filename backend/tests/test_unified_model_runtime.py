@@ -17,6 +17,7 @@ from app.services.unified_model_runtime import (
     read_job_logs,
     recover_interrupted_model_jobs,
     model_jobs_for_run,
+    resolve_job_artifact,
     submit_model_job,
 )
 
@@ -129,3 +130,11 @@ def test_secret_redaction(db, configured_runtime):
     job = submit_model_job(db, "pephar", {**_payload(), "token": "TOPSECRET", "password": "TOPSECRET"})
     assert "TOPSECRET" not in json.dumps(job.input_json)
     assert "REDACTED" in json.dumps(job.input_json)
+
+
+def test_artifact_resolver_rejects_traversal(db, configured_runtime):
+    job = submit_model_job(db, "pepmlm", _payload(), run_id="artifact_resolver")
+    process_model_job(db, job)
+    assert resolve_job_artifact(job, "output/result.json").is_file()
+    with pytest.raises(ValueError, match="INVALID_ARTIFACT_PATH"):
+        resolve_job_artifact(job, "../../etc/passwd")

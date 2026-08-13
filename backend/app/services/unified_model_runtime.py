@@ -16,6 +16,7 @@ import os
 import re
 import signal
 import subprocess
+import sys
 import time
 import traceback
 import uuid
@@ -184,11 +185,27 @@ def _command_for(model_id: str, paths: dict[str, Path], payload: dict[str, Any])
     env_name = f"STAMP_{model_id.upper()}_RUNNER_COMMAND"
     raw = os.environ.get(env_name, "")
     if not raw:
-        raise RuntimeError(f"RUNNER_COMMAND_MISSING: set {env_name} to a JSON argv array")
-    try:
-        argv = json.loads(raw)
-    except json.JSONDecodeError as exc:
-        raise RuntimeError(f"RUNNER_COMMAND_INVALID_JSON: {env_name}: {exc}") from exc
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if model_id == "pepmlm":
+            argv = [
+                str(_resolve_runtime_path("STAMP_PEPMLM_PYTHON", "/home/xh/kxc/stampup/tools/envs/pepmlm/bin/python")),
+                str(_resolve_runtime_path("STAMP_PEPMLM_SCRIPT", "/home/xh/kxc/stampup/models_dev/pepmlm/scripts/pepmlm_infer.py")),
+                "--model_path", str(_resolve_runtime_path("STAMP_PEPMLM_MODEL_DIR", "/home/xh/kxc/stampup/models_dev/pepmlm/ChatterjeeLab_PepMLM-650M")),
+                "--target_sequence", "{target_sequence}", "--peptide_length", "{peptide_length}",
+                "--num_candidates", "{num_candidates}", "--top_k", "3", "--device", "{device}",
+                "--output_dir", "{output_dir}", "--seed", "{seed}",
+            ]
+        elif model_id in {"evobind2", "pephar", "pepflow"}:
+            argv = [sys.executable, str(scripts / f"unified_{model_id}_runner.py"),
+                    "--input-json", "{input_json}", "--output-dir", "{output_dir}",
+                    "--result-json", "{result_json}"]
+        else:
+            raise RuntimeError(f"RUNNER_COMMAND_MISSING: set {env_name} to a JSON argv array")
+    else:
+        try:
+            argv = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(f"RUNNER_COMMAND_INVALID_JSON: {env_name}: {exc}") from exc
     if not isinstance(argv, list) or not argv or not all(isinstance(v, str) for v in argv):
         raise RuntimeError(f"RUNNER_COMMAND_INVALID: {env_name} must be a non-empty JSON string array")
     values = {
@@ -207,6 +224,10 @@ def _command_for(model_id: str, paths: dict[str, Path], payload: dict[str, Any])
         "device": str(payload.get("device", "cuda")),
     }
     return [part.format_map(values) for part in argv]
+
+
+def _resolve_runtime_path(env_name: str, default: str) -> Path:
+    return Path(os.environ.get(env_name, default)).expanduser().resolve()
 
 
 def _sha256(path: Path) -> str:
@@ -445,6 +466,20 @@ def list_job_artifacts(job: Job) -> list[dict[str, Any]]:
     return _artifact_manifest(paths)
 
 
+def resolve_job_artifact(job: Job, artifact_path: str) -> Path:
+    """Resolve a manifest-relative artifact path with strict containment."""
+    meta = job.input_json or {}
+    paths = job_paths(str(meta.get("run_id", job.id)), str(meta.get("model_id", "unknown")), job.id)
+    relative = Path(artifact_path)
+    if relative.is_absolute() or ".." in relative.parts:
+        raise ValueError("INVALID_ARTIFACT_PATH")
+    resolved = (paths["artifact_dir"] / relative).resolve()
+    resolved.relative_to(paths["artifact_dir"])
+    if not resolved.is_file() or resolved.is_symlink():
+        raise FileNotFoundError(artifact_path)
+    return resolved
+
+
 def recover_interrupted_model_jobs(db: Session) -> list[str]:
     """Move jobs left active by a service restart into RECOVERING then QUEUED."""
     jobs = db.query(Job).filter(
@@ -460,9 +495,23 @@ def recover_interrupted_model_jobs(db: Session) -> list[str]:
 
 
 def get_next_queued_model_job(db: Session) -> Job | None:
-    return db.query(Job).filter(
-        Job.job_type.like(f"{MODEL_JOB_PREFIX}%"), Job.status == "QUEUED"
-    ).order_by(Job.created_at.asc()).with_for_update().first()
+    # Conditional UPDATE is the cross-worker claim. ``SELECT ... FOR UPDATE``
+    # is ignored by SQLite and can still double-run a GPU job.
+    while True:
+        candidate = db.query(Job.id).filter(
+            Job.job_type.like(f"{MODEL_JOB_PREFIX}%"), Job.status == "QUEUED"
+        ).order_by(Job.created_at.asc()).first()
+        if candidate is None:
+            return None
+        claimed = db.query(Job).filter(Job.id == candidate[0], Job.status == "QUEUED").update(
+            {Job.status: "PREFLIGHT", Job.message: "Worker claimed queued model job"},
+            synchronize_session=False,
+        )
+        db.commit()
+        if claimed == 1:
+            job = db.query(Job).filter(Job.id == candidate[0]).one()
+            append_log(job, "WORKER_CLAIMED", "Worker atomically claimed queued model job", progress=3)
+            return job
 
 
 def model_jobs_for_run(db: Session, run_id: str) -> Iterable[Job]:
