@@ -249,7 +249,7 @@ def _load_candidates(result_path: Path, output_dir: Path, model_id: str) -> tupl
                 raw = parsed if isinstance(parsed, dict) else {}
                 break
     if not rows:
-        for name in ("candidates.csv", "candidate_sequences.csv", "ranking.csv", "outputs.csv"):
+        for name in ("candidates.csv", "candidate_sequences.csv", "ranking.csv", "outputs.csv", "metrics.csv", "test.csv"):
             path = output_dir / name
             if path.is_file():
                 with path.open(encoding="utf-8-sig", newline="") as handle:
@@ -466,4 +466,5 @@ def get_next_queued_model_job(db: Session) -> Job | None:
 
 
 def model_jobs_for_run(db: Session, run_id: str) -> Iterable[Job]:
-    return db.query(Job).filter(Job.job_type.like(f"{MODEL_JOB_PREFIX}%")).order_by(Job.created_at).all()
+    jobs = db.query(Job).filter(Job.job_type.like(f"{MODEL_JOB_PREFIX}%")).order_by(Job.created_at).all()
+    return [job for job in jobs if (job.input_json or {}).get("run_id") == run_id]

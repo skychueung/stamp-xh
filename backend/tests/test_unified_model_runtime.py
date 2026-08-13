@@ -16,6 +16,7 @@ from app.services.unified_model_runtime import (
     process_model_job,
     read_job_logs,
     recover_interrupted_model_jobs,
+    model_jobs_for_run,
     submit_model_job,
 )
 
@@ -116,6 +117,12 @@ def test_restart_recovery(db, configured_runtime):
     assert recover_interrupted_model_jobs(db) == [job.id]
     db.refresh(job)
     assert job.status == "QUEUED"
+
+
+def test_model_jobs_for_run_filters_other_runs(db, configured_runtime):
+    wanted = submit_model_job(db, "pepmlm", _payload(), run_id="wanted")
+    submit_model_job(db, "pepflow", _payload(), run_id="other")
+    assert [job.id for job in model_jobs_for_run(db, "wanted")] == [wanted.id]
 
 
 def test_secret_redaction(db, configured_runtime):

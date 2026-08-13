@@ -7,6 +7,8 @@ Uses a simple file-based lock so it works across uvicorn worker processes.
 from __future__ import annotations
 
 import logging
+import json
+import os
 import tempfile
 import time
 from contextlib import contextmanager
@@ -19,17 +21,45 @@ DEFAULT_LOCK_PATH = Path(tempfile.gettempdir()) / "stamp_gpu.lock"
 DEFAULT_LOCK_TIMEOUT_SECONDS = 3600  # 1 hour
 
 
-def _read_lock_info(lock_path: Path) -> tuple[str | None, float]:
-    """Read the current lock holder and timestamp from the lock file."""
+def _read_lock_record(lock_path: Path) -> dict:
+    """Read both the v2 JSON lock and the legacy ``owner:timestamp`` format."""
     try:
         text = lock_path.read_text(encoding="utf-8").strip()
+        if text.startswith("{"):
+            data = json.loads(text)
+            created = float(data.get("created_epoch") or 0)
+            return {
+                "owner": str(data.get("owner") or "") or None,
+                "pid": data.get("pid"),
+                "created_epoch": created,
+                "created_at": data.get("created_at"),
+                "ttl_seconds": float(data.get("ttl_seconds") or 0),
+            }
         parts = text.split(":", 1)
         if len(parts) == 2:
-            pid, timestamp_str = parts
-            return pid, float(timestamp_str)
-    except (OSError, ValueError):
+            owner, timestamp_str = parts
+            return {"owner": owner, "pid": None, "created_epoch": float(timestamp_str),
+                    "created_at": None, "ttl_seconds": 0}
+    except (OSError, ValueError, json.JSONDecodeError):
         pass
-    return None, 0.0
+    return {"owner": None, "pid": None, "created_epoch": 0.0,
+            "created_at": None, "ttl_seconds": 0.0}
+
+
+def _read_lock_info(lock_path: Path) -> tuple[str | None, float]:
+    """Backward-compatible tuple view used by existing callers/tests."""
+    record = _read_lock_record(lock_path)
+    return record["owner"], record["created_epoch"]
+
+
+def _record(job_id: str, now: float, ttl_seconds: float) -> bytes:
+    return json.dumps({
+        "owner": job_id,
+        "pid": os.getpid(),
+        "created_epoch": now,
+        "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now)),
+        "ttl_seconds": ttl_seconds,
+    }, separators=(",", ":")).encode("utf-8")
 
 
 def acquire_gpu_lock(
@@ -41,37 +71,41 @@ def acquire_gpu_lock(
     path = lock_path or DEFAULT_LOCK_PATH
     now = time.time()
 
-    try:
-        if path.exists():
-            holder_pid, holder_time = _read_lock_info(path)
-            if holder_pid and holder_pid != job_id:
-                if now - holder_time < timeout_seconds:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    for _ in range(3):
+        try:
+            fd = os.open(str(path), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            try:
+                os.write(fd, _record(job_id, now, timeout_seconds))
+            finally:
+                os.close(fd)
+            logger.info("GPU lock acquired by job %s", job_id)
+            return True
+        except FileExistsError:
+            record = _read_lock_record(path)
+            holder = record["owner"]
+            holder_time = float(record["created_epoch"] or 0)
+            effective_ttl = float(record["ttl_seconds"] or timeout_seconds)
+            if holder == job_id:
+                return True
+            if holder and now - holder_time < effective_ttl:
                     logger.warning(
                         "GPU lock held by job %s since %.0f seconds ago. "
                         "Job %s cannot acquire GPU.",
-                        holder_pid,
+                        holder,
                         now - holder_time,
                         job_id,
                     )
                     return False
-                else:
-                    logger.warning(
-                        "GPU lock held by job %s is stale (%.0f seconds old). "
-                        "Force-releasing for job %s.",
-                        holder_pid,
-                        now - holder_time,
-                        job_id,
-                    )
-            path.write_text(f"{job_id}:{now}", encoding="utf-8")
-            logger.info("GPU lock acquired by job %s", job_id)
-            return True
-        else:
-            path.write_text(f"{job_id}:{now}", encoding="utf-8")
-            logger.info("GPU lock acquired by job %s", job_id)
-            return True
-    except OSError as exc:
-        logger.error("Failed to acquire GPU lock: %s", exc)
-        return False
+            logger.warning("Removing stale or malformed GPU lock for job %s", job_id)
+            try:
+                path.unlink()
+            except FileNotFoundError:
+                pass
+        except OSError as exc:
+            logger.error("Failed to acquire GPU lock: %s", exc)
+            return False
+    return False
 
 
 def release_gpu_lock(
@@ -123,10 +157,15 @@ def probe_gpu_lock_status(lock_path: Path | None = None) -> dict:
             "holder": None,
             "held_since_seconds": None,
         }
-    holder_pid, holder_time = _read_lock_info(path)
+    record = _read_lock_record(path)
+    holder_pid, holder_time = record["owner"], record["created_epoch"]
     now = time.time()
     return {
         "locked": True,
         "holder": holder_pid,
+        "owner": holder_pid,
+        "pid": record.get("pid"),
+        "created_at": record.get("created_at"),
+        "ttl_seconds": record.get("ttl_seconds"),
         "held_since_seconds": round(now - holder_time, 1) if holder_time else None,
     }

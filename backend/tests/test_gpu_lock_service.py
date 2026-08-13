@@ -26,6 +26,10 @@ def test_acquire_and_release_lock():
     status = probe_gpu_lock_status(lock_path=lock_path)
     assert status["locked"] is True
     assert status["holder"] == "job-001"
+    assert status["owner"] == "job-001"
+    assert isinstance(status["pid"], int)
+    assert status["created_at"].endswith("Z")
+    assert status["ttl_seconds"] == 3600
 
     released = release_gpu_lock("job-001", lock_path=lock_path)
     assert released is True

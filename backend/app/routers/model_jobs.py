@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
-from app.database import SessionLocal, get_db
+from app.database import get_db
 from app.models.orm import Job
 from app.models.schemas import ApiResponse
 from app.services.unified_model_runtime import (
@@ -46,17 +46,8 @@ def _response(job: Job) -> dict[str, Any]:
     }
 
 
-def _background(job_id: str) -> None:
-    db = SessionLocal()
-    try:
-        job = _job(db, job_id)
-        process_model_job(db, job)
-    finally:
-        db.close()
-
-
 @router.post("/models/{model_id}/jobs")
-def submit(model_id: str, body: dict[str, Any], background: BackgroundTasks,
+def submit(model_id: str, body: dict[str, Any],
            sync: bool = Query(False), db: Session = Depends(get_db)):
     try:
         payload = dict(body.get("payload") or body)
@@ -66,14 +57,11 @@ def submit(model_id: str, body: dict[str, Any], background: BackgroundTasks,
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     if sync:
         process_model_job(db, job)
-    else:
-        background.add_task(_background, job.id)
     return ApiResponse.success(data=_response(job))
 
 
 @router.post("/model-runs")
-def submit_combined(body: dict[str, Any], background: BackgroundTasks,
-                    db: Session = Depends(get_db)):
+def submit_combined(body: dict[str, Any], db: Session = Depends(get_db)):
     selected = list(body.get("selected_models") or [])
     if not selected:
         raise HTTPException(status_code=422, detail="selected_models is required")
@@ -83,12 +71,17 @@ def submit_combined(body: dict[str, Any], background: BackgroundTasks,
         job = submit_model_job(db, model_id, body, project_id=str(body.get("project_id", "production_models")), run_id=run_id)
         run_id = (job.input_json or {}).get("run_id")
         jobs.append(job)
-        background.add_task(_background, job.id)
     return ApiResponse.success(data={"run_id": run_id, "jobs": [_response(job) for job in jobs]})
 
 
 @router.get("/jobs/{job_id}/model-status")
 def status(job_id: str, db: Session = Depends(get_db)):
+    return ApiResponse.success(data=_response(_job(db, job_id)))
+
+
+@router.get("/model-jobs/{job_id}")
+def model_job(job_id: str, db: Session = Depends(get_db)):
+    """Unambiguous canonical status endpoint for unified model jobs."""
     return ApiResponse.success(data=_response(_job(db, job_id)))
 
 
