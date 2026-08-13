@@ -1,0 +1,11 @@
+target-version = "py312"
+exclude = ["app/services/p33u/runner.py.tmp", "data", "data_dev", "logs", "logs_dev"]
+
+[lint.per-file-ignores]
+"app/models/__init__.py" = ["F401"]
+"app/services/model_adapters/__init__.py" = ["F401"]
+"app/routers/p33u.py" = ["E701", "E702"]
+"app/services/experimental_validation_service.py" = ["E402"]
+"app/workers/evobind2_worker.py" = ["E402"]
+"tests/test_complex_batch_queue.py" = ["E402", "E741"]
+"tests/test_pepmlm_adapter.py" = ["E402"]

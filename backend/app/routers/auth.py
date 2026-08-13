@@ -25,7 +25,6 @@ from app.core.security import (
     SESSION_COOKIE_NAME,
     clear_session,
     create_session,
-    get_current_user,
     hash_password,
     require_active,
     validate_csrf,

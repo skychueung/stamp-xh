@@ -20,7 +20,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.database import Base, get_db
 from app.main import create_app
-from app.schemas import JobCreate, ProjectCreate, TargetProteinCreate
+from app.schemas import ProjectCreate, TargetProteinCreate
 from app.crud import create_project, create_target_protein
 from app.crud.epitopes import list_epitope_candidates_by_scan
 from app.crud.stamp_candidates import list_stamp_candidates_by_generation_run

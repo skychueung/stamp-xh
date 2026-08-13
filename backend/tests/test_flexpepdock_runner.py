@@ -15,7 +15,6 @@ import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
 
 from app.services.flexpepdock_runner import (
     create_workdir,

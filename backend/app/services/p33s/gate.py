@@ -18,7 +18,6 @@ import signal
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any
 
 GATE_ROOT = Path("/home/xh/kxc/stampup/run_gates/p33s")
 DEFAULT_TTL = 3600

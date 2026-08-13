@@ -16,7 +16,6 @@ from sqlalchemy.orm import sessionmaker
 
 from app.database import Base, get_db
 from app.main import create_app
-from app.models.orm import Project, StampCandidate, StampGenerationRun
 from app.schemas import (
     ProjectCreate,
     StampCandidateCreate,
@@ -26,7 +25,6 @@ from app.crud import (
     create_project,
     create_stamp_candidate,
     create_stamp_generation_run,
-    get_stamp_generation_run,
     list_stamp_candidates_by_generation_run,
 )
 
@@ -629,14 +627,14 @@ async def test_no_fabricated_experimental_metrics(
     for cand in candidates:
         metrics = cand.metrics or {}
         all_keys = " ".join(str(k).lower() for k in metrics.keys())
-        assert "mic" not in all_keys, f"MIC-like key found in metrics"
-        assert "mbc" not in all_keys, f"MBC-like key found in metrics"
-        assert "hemolysis" not in all_keys, f"hemolysis-like key found in metrics"
-        assert "toxicity" not in all_keys, f"toxicity-like key found in metrics"
-        assert "iptm" not in all_keys, f"ipTM-like key found in metrics"
-        assert "pdockq" not in all_keys, f"pDockQ-like key found in metrics"
-        assert "docking_score" not in all_keys, f"docking_score-like key found in metrics"
-        assert "delta_g" not in all_keys, f"delta_g-like key found in metrics"
+        assert "mic" not in all_keys, "MIC-like key found in metrics"
+        assert "mbc" not in all_keys, "MBC-like key found in metrics"
+        assert "hemolysis" not in all_keys, "hemolysis-like key found in metrics"
+        assert "toxicity" not in all_keys, "toxicity-like key found in metrics"
+        assert "iptm" not in all_keys, "ipTM-like key found in metrics"
+        assert "pdockq" not in all_keys, "pDockQ-like key found in metrics"
+        assert "docking_score" not in all_keys, "docking_score-like key found in metrics"
+        assert "delta_g" not in all_keys, "delta_g-like key found in metrics"
 
 
 # ============================================================================
@@ -647,7 +645,6 @@ async def test_no_fabricated_experimental_metrics(
 @pytest.mark.asyncio
 async def test_old_stamp_assemble_v07_still_available(client):
     """The v0.7 STAMP assembly endpoint must still respond."""
-    from app.models.stamp_assembly import StampAssembleRequest, TargetingDomainComponent
 
     request_body = {
         "targeting_peptide": {

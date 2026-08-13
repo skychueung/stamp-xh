@@ -24,7 +24,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 
 from app.models.orm import BatchComputationItem
-from app.services.batch_dir_service import ensure_item_dir, get_item_log_path
+from app.services.batch_dir_service import ensure_item_dir
 
 logger = logging.getLogger("stamp")
 
@@ -191,6 +191,87 @@ def dispatch_batch_item(
     db.refresh(item)
     logger.info("Batch item %s marked RUNNING (job_type=%s, execution deferred)", item.id, item.job_type)
     return item
+
+
+def dispatch_flexpepdock_item(
+    db: Session,
+    item: BatchComputationItem,
+) -> BatchComputationItem:
+    """Execute one FlexPepDock item through its canonical runner contract."""
+    from app.services.flexpepdock_runner import create_workdir, dispatch, validate_input
+
+    payload = item.input_json or {}
+    valid, error = validate_input(payload)
+    if not valid:
+        item.status = "FAILED"
+        item.error_message = error or "FlexPepDock input validation failed"
+    else:
+        item.artifact_dir = create_workdir(str(item.batch_id), str(item.id))
+        item.status = "RUNNING"
+        item.started_at = datetime.now(timezone.utc)
+        db.commit()
+        try:
+            status, error, output = dispatch(str(item.batch_id), str(item.id), payload)
+            item.status = status
+            item.error_message = error
+            item.output_json = output or {}
+        except Exception as exc:
+            logger.exception("FlexPepDock item %s crashed", item.id)
+            item.status = "FAILED"
+            item.error_message = str(exc)
+            item.output_json = {}
+    item.finished_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(item)
+    return item
+
+
+def run_flexpepdock_batch(
+    db: Session,
+    batch: object,
+    items: list[BatchComputationItem],
+) -> dict:
+    """Run every item independently and persist a truthful aggregate summary."""
+    batch.status = "RUNNING"
+    batch.started_at = datetime.now(timezone.utc)
+    db.commit()
+    completed: list[BatchComputationItem] = []
+    for item in items:
+        try:
+            completed.append(dispatch_flexpepdock_item(db, item))
+        except Exception as exc:  # isolate one item failure from the rest of the batch
+            logger.exception("FlexPepDock batch item %s failed", item.id)
+            item.status = "FAILED"
+            item.error_message = str(exc)
+            item.finished_at = datetime.now(timezone.utc)
+            completed.append(item)
+            db.commit()
+
+    counts = {status: sum(item.status == status for item in completed) for status in ("SUCCEEDED", "FAILED", "BLOCKED")}
+    batch.status = compute_batch_status_from_items(completed)
+    batch.finished_at = datetime.now(timezone.utc)
+    summary = {
+        "batch_id": str(batch.id),
+        "status": batch.status,
+        "total": len(completed),
+        "succeeded": counts["SUCCEEDED"],
+        "failed": counts["FAILED"],
+        "blocked": counts["BLOCKED"],
+        "items": [
+            {
+                "id": str(item.id),
+                "candidate_id": str(item.candidate_id),
+                "status": item.status,
+                "error_message": item.error_message,
+                "output_json": item.output_json or {},
+            }
+            for item in completed
+        ],
+    }
+    batch.summary_json = summary
+    db.commit()
+    db.refresh(batch)
+    return summary
 
 
 def finalize_batch_item(

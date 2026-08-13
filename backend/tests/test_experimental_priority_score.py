@@ -14,7 +14,6 @@ from app.crud.experimental_validation import (
 from app.crud.projects import create_project
 from app.crud.stamp_candidates import create_stamp_candidate, create_stamp_generation_run
 from app.database import Base
-import app.models.orm  # Ensure all ORM tables are registered in Base.metadata
 from app.schemas.experimental_validation import (
     ExperimentalMeasurementCreate,
     ExperimentalValidationRunCreate,
@@ -38,7 +37,6 @@ _test_engine = create_engine(
 def db_session():
     """Create a fresh in-memory DB session for each test."""
     # Ensure all ORM models are registered before creating tables
-    import app.models.orm  # noqa: F401
     Base.metadata.create_all(bind=_test_engine)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=_test_engine)
     session = SessionLocal()
@@ -91,7 +89,7 @@ def test_planned_run_status_experiment_planned(db_session, test_project, test_ca
         create_experimental_validation_run,
     )
 
-    run = create_experimental_validation_run(
+    create_experimental_validation_run(
         db_session,
         ExperimentalValidationRunCreate(
             project_id=test_project.id,

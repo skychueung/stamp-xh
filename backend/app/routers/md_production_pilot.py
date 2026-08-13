@@ -21,7 +21,6 @@ from app.database import get_db
 from app.models.schemas import ApiResponse
 from app.services.md_environment_probe import probe_md_environment
 from app.services.md_pilot_runner import (
-    check_environment,
     create_workdir,
     dry_run,
     smoke_run,

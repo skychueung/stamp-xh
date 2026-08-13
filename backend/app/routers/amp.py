@@ -12,7 +12,6 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Path, Query, status
 
-from app.core.exceptions import AmpNotFoundError
 from app.data.loader import get_amp_structure_manifest, get_priority_amp_library
 from app.models.schemas import (
     AmpListItem,
@@ -20,7 +19,7 @@ from app.models.schemas import (
     ApiResponse,
     PaginatedResponse,
 )
-from app.services.amp_selector import get_amp_by_name, list_amp_records
+from app.services.amp_selector import get_amp_by_name
 from app.utils.response import ok, paginated
 
 logger = logging.getLogger(__name__)

@@ -446,7 +446,7 @@ def render_candidate_report_xlsx(report_data: dict[str, Any]) -> bytes:
         XLSX file as bytes.
     """
     from openpyxl import Workbook
-    from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+    from openpyxl.styles import Font, PatternFill
 
     wb = Workbook()
 
@@ -641,7 +641,7 @@ def render_candidate_report_pdf(report_data: dict[str, Any]) -> bytes:
     story.append(Spacer(1, 12))
 
     # Scientific Boundary box
-    boundary = report_data.get("scientific_boundary", {})
+    report_data.get("scientific_boundary", {})
     story.append(Paragraph("<b>Scientific Boundary</b>", styles["Heading2"]))
     boundary_text = (
         "All results in this report are computational predictions or model-generated candidates. "

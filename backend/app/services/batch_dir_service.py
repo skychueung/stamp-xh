@@ -19,7 +19,6 @@ Each item gets a sub-directory under the stage directory.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 from app.core.config import settings
 

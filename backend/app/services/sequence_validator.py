@@ -9,7 +9,6 @@ fraction) are intentionally deferred to a future pipeline.
 
 from __future__ import annotations
 
-import re
 from typing import Final
 
 from app.core.exceptions import InvalidSequenceError

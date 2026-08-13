@@ -21,8 +21,6 @@ from __future__ import annotations
 
 import json
 import os
-import shlex
-import subprocess
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -31,7 +29,6 @@ from typing import Any
 from app.services.p33s.gate import (
     GateState,
     cancel_gate,
-    close_gate,
     open_gate,
 )
 from app.services.p33s.provenance import (
@@ -39,7 +36,6 @@ from app.services.p33s.provenance import (
     ProvenanceManifest,
     code_sha_of_files,
     sha256_bytes,
-    sha256_file,
     write_manifest,
 )
 from app.services.p33s import scorers
@@ -116,7 +112,7 @@ def run_pipeline(cfg: PipelineConfig) -> dict[str, Any]:
         return _assemble_delivery(cfg, job_dir, outcomes)
 
     pid = os.getpid()
-    gs = open_gate(task, cfg.model_id, cfg.job_id, "generation", pid,
+    open_gate(task, cfg.model_id, cfg.job_id, "generation", pid,
                    ttl_seconds=cfg.max_wall_seconds + 300, gpu_device=cfg.gpu_device)
     try:
         gen_outcome = _run_generation(cfg, job_dir)
@@ -230,7 +226,7 @@ def _manifest(cfg: PipelineConfig, stage: str, exit_code: int | None) -> Provena
         input_sha256=sha256_bytes(cfg.target_sequence.encode("utf-8")),
         weight_sha256="",  # filled by adapter which knows the checkpoint path
         code_sha256=code_sha_of_files([__file__]),
-        env=f"p33s_scorers_py310@/mnt/sdb/kxc/stamp_models/envs/p33s_scorers_py310",
+        env="p33s_scorers_py310@/mnt/sdb/kxc/stamp_models/envs/p33s_scorers_py310",
         seed=cfg.seed,
         gpu_device=cfg.gpu_device,
         gpu_free_mib_at_start=None,

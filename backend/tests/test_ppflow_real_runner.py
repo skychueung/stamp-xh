@@ -17,7 +17,6 @@ These tests verify that:
 
 from __future__ import annotations
 
-import subprocess
 from contextlib import ExitStack
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -29,15 +28,9 @@ from app.services.ppflow_real_runner import (
     STAGE,
     VALIDATION_STATUS,
     DISCLAIMER,
-    GATE_FILE,
-    SOURCE_ROOT,
     CODESIGN_PP,
     DEFAULT_CHECKPOINT,
-    ENV_PYTHON,
-    JOBS_BASE,
     ARTIFACTS_BASE,
-    LOGS_BASE,
-    FORBIDDEN_PREFIXES,
     PPFlowRunnerBlocked,
     check_gate,
     generate_job_id,
@@ -136,7 +129,6 @@ class TestCommandTemplate:
 
     def _patch_paths(self, source, entry, ckpt, out):
         """Return a context manager that patches all path validation."""
-        from contextlib import ExitStack
         stack = ExitStack()
         stack.enter_context(patch("app.services.ppflow_real_runner._ALLOWED_SOURCE_ROOTS", (source,)))
         stack.enter_context(patch("app.services.ppflow_real_runner._ALLOWED_CHECKPOINT_ROOTS", (ckpt.parent,)))
@@ -196,7 +188,7 @@ class TestCommandTemplate:
         """Test 10: subprocess.run must not be called."""
         source, entry, ckpt, out = self._setup_paths(tmp_path)
         with self._patch_paths(source, entry, ckpt, out):
-            cmd = build_command(
+            build_command(
                 env_python="/usr/bin/python3",
                 source_root=source,
                 codesign_pp=entry,
@@ -425,7 +417,7 @@ class TestNoRealJobArtifact:
         assert result["paths_created"] is False
         # The paths in the result should not actually exist
         for key in ("job_dir", "artifact_dir", "log_file"):
-            path = Path(result["paths"][key])
+            Path(result["paths"][key])
             # In test environment, these paths should not be created
             # (they're on the server, not on the test machine)
 

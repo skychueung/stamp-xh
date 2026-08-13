@@ -25,22 +25,15 @@ from pathlib import Path
 from typing import Any
 
 from app.services.compute_wrappers.evobind2_gate import (
-    GateClosedError,
     require_run_gate,
     validate_run_id,
 )
 from app.services.compute_wrappers.evobind2_wrapper import (
-    ALLOWED_MODEL_NAMES,
-    BLOCKED_MODEL_NAMES,
-    CONDA_ENV_PATH,
     EVOBIND2_ARTIFACT_ROOT,
     EVOBIND2_LOG_ROOT,
-    EVOBIND2_ROOT,
-    EVOBIND2_WORK_ROOT,
     EvoBind2Input,
     build_environment,
     build_mc_design_command,
-    build_run_paths,
     validate_model_name,
     validate_peptide_sequence,
 )

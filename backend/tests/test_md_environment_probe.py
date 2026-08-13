@@ -12,13 +12,11 @@ from __future__ import annotations
 import os
 import tempfile
 
-import pytest
 
 from app.services.md_environment_probe import (
     check_command,
     check_gpu,
     check_python_module,
-    check_python_module_in_conda_env,
     probe_md_environment,
     validate_pdb,
     _check_conda_env,

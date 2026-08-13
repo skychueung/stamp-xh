@@ -22,9 +22,13 @@ from typing import Optional
 
 logger = logging.getLogger("stamp")
 
-ROSETTA_ENV_SCRIPT = os.environ.get(
-    "ROSETTA_ENV_SCRIPT", "/home/xh/kxc/tools/rosetta/rosetta_env.sh"
-)
+DEFAULT_ROSETTA_ENV_SCRIPT = "/home/xh/kxc/tools/rosetta/rosetta_env.sh"
+# Compatibility export; entry points resolve the live environment at call time.
+ROSETTA_ENV_SCRIPT = os.environ.get("ROSETTA_ENV_SCRIPT", DEFAULT_ROSETTA_ENV_SCRIPT)
+
+
+def get_rosetta_env_script() -> str:
+    return os.environ.get("ROSETTA_ENV_SCRIPT", DEFAULT_ROSETTA_ENV_SCRIPT)
 FLEXPEPDOCK_CANDIDATES = [
     "FlexPepDocking.default.linuxgccrelease",
     "FlexPepDocking.static.linuxgccrelease",
@@ -132,17 +136,18 @@ def probe_flexpepdock_environment() -> FlexPepDockEnvironmentReport:
     Returns AVAILABLE only if all critical dependencies are present.
     """
     blocking_reasons: list[str] = []
+    env_script = get_rosetta_env_script()
 
     # 1. Check env script exists
-    env_exists = os.path.isfile(ROSETTA_ENV_SCRIPT)
+    env_exists = os.path.isfile(env_script)
     if not env_exists:
         blocking_reasons.append(
-            f"Rosetta env script not found: {ROSETTA_ENV_SCRIPT}. "
+            f"Rosetta env script not found: {env_script}. "
             "Install Rosetta or set ROSETTA_ENV_SCRIPT environment variable."
         )
 
     # 2. Check ROSETTA_ROOT
-    rosetta_root = _get_rosetta_root(ROSETTA_ENV_SCRIPT) if env_exists else None
+    rosetta_root = _get_rosetta_root(env_script) if env_exists else None
     if env_exists and not rosetta_root:
         blocking_reasons.append("ROSETTA_ROOT not set after sourcing env script.")
 
@@ -150,7 +155,7 @@ def probe_flexpepdock_environment() -> FlexPepDockEnvironmentReport:
     flex_ok = False
     flex_path = None
     if env_exists:
-        flex_ok, flex_path = _find_any_binary(FLEXPEPDOCK_CANDIDATES, ROSETTA_ENV_SCRIPT)
+        flex_ok, flex_path = _find_any_binary(FLEXPEPDOCK_CANDIDATES, env_script)
         if not flex_ok:
             blocking_reasons.append(
                 f"FlexPepDock binary not found after sourcing env. "
@@ -163,7 +168,7 @@ def probe_flexpepdock_environment() -> FlexPepDockEnvironmentReport:
     # 4. Check rosetta_scripts binary (used for pre-processing)
     scripts_ok = False
     if env_exists:
-        scripts_ok, _ = _find_any_binary(ROSETTA_SCRIPTS_CANDIDATES, ROSETTA_ENV_SCRIPT)
+        scripts_ok, _ = _find_any_binary(ROSETTA_SCRIPTS_CANDIDATES, env_script)
         if not scripts_ok:
             blocking_reasons.append(
                 f"Rosetta scripts binary not found after sourcing env. "

@@ -14,10 +14,8 @@ from __future__ import annotations
 
 import os
 import tempfile
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
 
 from app.services.batch_compute_runner import (
     compute_batch_status_from_items,
@@ -467,10 +465,9 @@ def test_no_fabricated_docking_score_in_summary():
 
 def test_retry_failed_items_resets_status():
     """P3: retry-failed resets FAILED and BLOCKED items to PENDING."""
-    from app.crud.batch_computations import update_batch_item_status
     from unittest.mock import MagicMock
 
-    db = MagicMock()
+    MagicMock()
     item_failed = _make_mock_item("i1", "c1", status="FAILED", error_message="timeout")
     item_blocked = _make_mock_item("i2", "c2", status="BLOCKED", error_message="no env")
     item_ok = _make_mock_item("i3", "c3", status="SUCCEEDED")

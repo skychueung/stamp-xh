@@ -18,7 +18,6 @@ from pathlib import Path
 from typing import Any, Dict
 
 from .config import get_model_config
-from .security import safe_relative_path
 
 
 def write_manifest(

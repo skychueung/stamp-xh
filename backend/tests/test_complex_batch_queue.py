@@ -7,8 +7,6 @@ interface_quality import.
 
 from __future__ import annotations
 
-import json
-import os
 from pathlib import Path
 
 import pytest
@@ -19,7 +17,6 @@ from app.crud.projects import create_project
 from app.crud.stamp_candidates import create_stamp_candidate
 from app.crud.target_proteins import create_target_protein
 from app.database import Base
-from app.models.orm import TargetProtein
 from app.schemas import (
     ProjectCreate,
     StampCandidateCreate,
@@ -86,7 +83,7 @@ def test_candidates(db_session, test_project):
                 project_id=test_project.id,
                 targeting_peptide_seq="ACDEFGHIKLMNPQR",
                 linker_seq="EAAAK",
-                full_sequence=f"ACDEFGHIKLMNPQREAAAKFSRFLRRVRRYRPKISFNLEPFFKF",
+                full_sequence="ACDEFGHIKLMNPQREAAAKFSRFLRRVRRYRPKISFNLEPFFKF",
                 composite_score=float(90 - i * 10),  # 90, 80, 70, 60, 50
                 metrics={"biophysical": {"length": 39}},
             ),
@@ -532,7 +529,7 @@ def test_import_batch_does_not_pollute_structure_prediction(db_session, test_pro
             pae_src.read_text(encoding="utf-8"), encoding="utf-8"
         )
 
-    result = import_batch_interface_quality(db_session, str(tmp_path), overwrite=True)
+    import_batch_interface_quality(db_session, str(tmp_path), overwrite=True)
     # Refresh candidate
     from app.crud.stamp_candidates import get_stamp_candidate
     refreshed = get_stamp_candidate(db_session, cand.id)

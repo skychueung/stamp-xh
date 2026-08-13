@@ -19,13 +19,11 @@ from app.crud.project_results import (
     list_generation_runs_by_project,
     list_project_stamp_results,
 )
-from app.crud.projects import get_project
 from app.crud.stamp_candidates import get_stamp_candidate
 from app.database import get_db
 from app.models.schemas import ApiResponse
 from app.schemas import (
     GenerationRunListResponse,
-    GenerationRunLite,
     ProjectPipelineResultsResponse,
     ProjectStampResultsResponse,
     ProjectSummaryResponse,

@@ -18,7 +18,6 @@ from app.crud.epitopes import (
     update_epitope_scan_status,
 )
 from app.crud.jobs import get_job
-from app.models.orm import Job
 from app.schemas import EpitopeCandidateCreate, EpitopeScanCreate
 from app.services.biophys import (
     calculate_gravy,

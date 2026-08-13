@@ -20,7 +20,6 @@ import pytest
 BACKEND_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BACKEND_DIR))
 
-from app.models.final_ranking import FinalRankingComputeRequest  # noqa: E402
 from app.services.final_ranking import compute_final_ranking  # noqa: E402
 
 SAMPLE_CANDIDATES = [

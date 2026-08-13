@@ -13,10 +13,8 @@ import os
 import tempfile
 from pathlib import Path
 
-import pytest
 
 from app.services.runner_logger import (
-    LogMetadata,
     ensure_log_dir,
     execute_command,
     get_log_metadata,
@@ -26,7 +24,7 @@ from app.services.runner_logger import (
 
 
 def test_ensure_log_dir_creates_structure():
-    with tempfile.TemporaryDirectory() as tmp:
+    with tempfile.TemporaryDirectory():
         log_dir = ensure_log_dir("batch-1", "item-1", "FLEXPEPDOCK")
         assert os.path.isdir(log_dir)
         assert "batch-1" in log_dir
@@ -159,7 +157,7 @@ def test_no_secrets_in_logs():
     automatically log env vars that might contain tokens."""
     with tempfile.TemporaryDirectory() as tmp:
         log_dir = tmp
-        result = execute_command(
+        execute_command(
             cmd=["python", "-c", "print('SECRET_API_TOKEN=abc123')"],
             log_dir=log_dir,
             timeout=10,

@@ -18,7 +18,6 @@ from pathlib import Path
 import pytest
 
 from app.services.mmpbsa_result_parser import (
-    MMPBSAParsedResult,
     parse_mmpbsa_result,
     parse_mmpbsa_dat,
     to_dict,
@@ -438,7 +437,7 @@ def test_write_mmgbsa_components_csv():
     assert path.name == "mmgbsa_components.csv"
 
     rows = list(csv.DictReader(path.read_text(encoding="utf-8").splitlines()))
-    sections = {r["section"]: r for r in rows}
+    {r["section"]: r for r in rows}
     assert "delta" in {r["section"] for r in rows}
     delta_total_row = [r for r in rows if r["section"] == "delta" and r["term"] == "DELTA_TOTAL"][0]
     assert float(delta_total_row["value_kcal_mol"]) == pytest.approx(-15.2458)

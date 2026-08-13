@@ -179,7 +179,6 @@ class PepHARRunner:
 
     def build_command(self, complex_pdb: str | Path) -> list[str]:
         """Construct the PepHAR inference command preview (no execution)."""
-        self.ensure_gate_closed()
         complex_pdb_path = Path(complex_pdb)
         if self._is_forbidden(complex_pdb_path):
             raise PepHARRunnerBlocked(f"forbidden complex_pdb path: {complex_pdb_path}")

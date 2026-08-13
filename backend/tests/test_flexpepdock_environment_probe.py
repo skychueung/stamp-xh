@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import os
 
-import pytest
 
 from app.services.flexpepdock_environment_probe import (
     FlexPepDockEnvironmentReport,

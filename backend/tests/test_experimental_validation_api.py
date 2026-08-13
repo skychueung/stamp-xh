@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import pytest
 import pytest_asyncio
-from fastapi import status
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -14,7 +13,6 @@ from app.crud.projects import create_project
 from app.crud.stamp_candidates import create_stamp_candidate, create_stamp_generation_run
 from app.database import Base, get_db
 from app.main import create_app
-import app.models.orm  # Ensure all ORM tables are registered in Base.metadata
 from app.schemas.project import ProjectCreate
 from app.schemas.stamp import StampCandidateCreate, StampGenerationRunCreate
 
@@ -28,7 +26,6 @@ _test_engine = create_engine(
 def db_session():
     """Create a fresh in-memory DB session for each test."""
     # Ensure all ORM models are registered before creating tables
-    import app.models.orm  # noqa: F401
     Base.metadata.create_all(bind=_test_engine)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=_test_engine)
     session = SessionLocal()
@@ -67,7 +64,6 @@ def test_candidate(db_session, test_project, test_generation_run):
 def test_app(db_session):
     """Create a FastAPI test app with overridden DB dependency."""
     # Ensure all ORM tables are registered and created in the test DB
-    import app.models.orm  # noqa: F401
     Base.metadata.create_all(bind=db_session.bind)
 
     app = create_app()

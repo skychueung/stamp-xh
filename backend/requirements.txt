@@ -23,6 +23,7 @@ python-multipart>=0.0.6
 httpx>=0.26.0,<1.0.0
 
 # --- Optional: enhanced bio-sequence calculations -------------------------
+numpy>=1.26.0,<3.0.0
 # biopython>=1.81          # Uncomment when full pI / GRAVY pipeline is added
 # peptides>=0.3.0          # Uncomment for advanced peptide descriptors
 
@@ -34,6 +35,7 @@ httpx>=0.26.0              # Also used by TestClient
 # --- Report export (XLSX / PDF) -------------------------------------------
 openpyxl>=3.1.0
 reportlab>=4.0.0
+pdfminer.six>=20231228
 
 # --- Type checking --------------------------------------------------------
 mypy>=1.8.0

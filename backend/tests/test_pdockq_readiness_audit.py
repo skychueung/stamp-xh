@@ -13,11 +13,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 
 from app.services.pdockq_readiness_audit import (
-    INTERFACE_QUALITY_CONTRACT,
-    REQUIRED_INTERFACE_INPUTS,
     audit_pdockq_readiness,
     get_interface_quality_contract,
 )

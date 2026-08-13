@@ -157,7 +157,7 @@ async def test_submit_blocks_when_server_unreachable(async_client: AsyncClient):
         "duration_ns": 1,
         "topology_path": "/data/topol.tpr",
         "coordinates_path": "/data/conf.gro",
-        "server_host": "192.168.31.218",  # known unreachable during tests
+        "server_host": "192.0.2.1",  # TEST-NET-1, reserved for documentation
     }
     create_resp = await async_client.post("/api/v1/production-md/jobs", json=payload)
     assert create_resp.status_code == 201

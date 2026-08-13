@@ -71,7 +71,7 @@ class Settings(BaseSettings):
 
     # --- Filesystem layout -------------------------------------------------
 
-    stamp_data_dir: str = str(PROJECT_ROOT / "data")
+    stamp_data_dir: str = str(PROJECT_ROOT / "app" / "data")
     stamp_database_url: str = f"sqlite:///{(PROJECT_ROOT / 'stamp_p5_lite.db').as_posix()}"
     stamp_batch_jobs_dir: str = str(PROJECT_ROOT / "data" / "batch_jobs")
     stamp_dist_dir: str = str(PROJECT_ROOT / "dist")

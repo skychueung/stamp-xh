@@ -16,8 +16,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.database import Base, get_db
 from app.main import create_app
-from app.models.orm import Project
-from app.schemas import JobCreate, ProjectCreate
+from app.schemas import ProjectCreate
 from app.crud import create_project, get_stamp_generation_run, list_stamp_candidates_by_generation_run
 
 TEST_DB_URL = "sqlite:///:memory:"

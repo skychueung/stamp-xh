@@ -17,7 +17,6 @@ from sqlalchemy.orm import sessionmaker
 
 from app.database import Base, get_db
 from app.main import create_app
-from app.models.orm import EpitopeCandidate, EpitopeScan, Project, TargetProtein
 from app.schemas import (
     EpitopeCandidateCreate,
     EpitopeScanCreate,

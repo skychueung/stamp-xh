@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-04-28T17:34:45.759Z",
+  "version": "v0.6a-fix2",
+  "note": "Real AMP data. P4/P15 sequences from manual curation.",
+  "candidates": [
+    {
+      "ampName": "P4",
+      "rawSequence": "FSRFLRRVRRYRPKISFNLEPFFKF5",
+      "cleanSequence": "FSRFLRRVRRYRPKISFNLEPFFKF",
+      "source": "cosmetic_preservative_screening",
+      "priority": "high",
+      "role": "killing_domain",
+      "note": "raw sequence contains trailing non-amino-acid character 5; needs confirmation from experimental team",
+      "illegalCharFound": "5",
+      "illegalCharPosition": "25",
+      "structureAvailable": false,
+      "structurePath": null,
+      "confidenceData": null
+    },
+    {
+      "ampName": "P15",
+      "rawSequence": "RIKRVWPVVIRTVVAGINLYRAIKRK",
+      "cleanSequence": "RIKRVWPVVIRTVVAGINLYRAIKRK",
+      "source": "cosmetic_preservative_screening",
+      "priority": "high",
+      "role": "killing_domain",
+      "note": "priority AMP candidate; all characters valid amino acid codes",
+      "illegalCharFound": "none",
+      "illegalCharPosition": "",
+      "structureAvailable": false,
+      "structurePath": null,
+      "confidenceData": null
+    }
+  ]
+}

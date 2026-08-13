@@ -16,7 +16,7 @@ Version: v0.6d (Pydantic v2 compatible)
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Generic, TypeVar
+from typing import Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 

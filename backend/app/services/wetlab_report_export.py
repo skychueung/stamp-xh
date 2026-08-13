@@ -11,13 +11,12 @@ from __future__ import annotations
 import csv
 import io
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from sqlalchemy.orm import Session
 
 from app.services.candidate_prioritization_service import (
     build_project_candidate_prioritization,
-    compute_priority_status,
 )
 
 
@@ -70,7 +69,7 @@ def build_wetlab_validation_report_data(
     # Format candidates for report
     report_candidates = []
     for c in candidates_raw:
-        exp_summary = c.get("experimental_summary") or {}
+        c.get("experimental_summary") or {}
         comp_summary = c.get("computational_summary") or {}
 
         # Extract individual measurement values (user-entered only)
@@ -481,7 +480,7 @@ def render_wetlab_report_xlsx(report_data: dict[str, Any]) -> bytes:
         XLSX file as bytes.
     """
     from openpyxl import Workbook
-    from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+    from openpyxl.styles import Font, PatternFill
 
     wb = Workbook()
 

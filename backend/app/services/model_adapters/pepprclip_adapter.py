@@ -16,7 +16,6 @@ import os
 import subprocess
 import uuid
 from pathlib import Path
-from typing import Any
 
 from app.schemas.model_registry import (
     ModelArtifactsResponse,
@@ -325,10 +324,10 @@ class PepPrCLIPAdapter(BaseModelAdapter):
         """Plan a PepPrCLIP ranking run without executing it."""
         run_id = f"pepprclip_dryrun_{uuid.uuid4().hex[:12]}"
         paths = _build_run_artifact_paths(run_id)
-        seq = _parse_target_sequence(payload.target_sequence)
+        _parse_target_sequence(payload.target_sequence)
         top_k = payload.top_k or 3
         device = payload.device or "auto"
-        candidate_peptides = _parse_candidate_peptides(payload.candidate_peptides)
+        _parse_candidate_peptides(payload.candidate_peptides)
 
         command_preview = [
             str(PEPPRCLIP_ENV_PYTHON),

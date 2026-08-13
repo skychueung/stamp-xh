@@ -26,19 +26,17 @@ from pydantic import BaseModel, Field, field_validator
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models.orm import BatchComputation, BatchComputationItem
+from app.models.orm import BatchComputationItem
 from app.crud.batch_computations import (
     create_batch_computation,
     create_batch_item,
     get_batch_computation,
     list_batch_computations,
     list_batch_items,
-    update_batch_computation_status,
     cancel_batch_computation,
-    update_batch_item_status,
 )
 from app.models.schemas import ApiResponse
-from app.services.batch_compute_runner import dispatch_batch_item, validate_job_params
+from app.services.batch_compute_runner import dispatch_batch_item
 from app.services.batch_dir_service import ensure_batch_dir, ensure_item_dir, get_item_log_path
 from app.services.mmpbsa_result_parser import (
     parse_mmpbsa_result,

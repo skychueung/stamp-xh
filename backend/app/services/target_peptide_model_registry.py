@@ -55,15 +55,16 @@ ARTIFACT_MANIFEST = "manifest"
 ARTIFACT_INPUT = "input"
 
 # P33K product-group classification for UI governance (display-only)
-_PRODUCT_GROUP_AVAILABLE_FIVE: frozenset[str] = frozenset({
+_PRODUCT_GROUP_AVAILABLE_SIX: frozenset[str] = frozenset({
     "pepmlm",
     "evobind2",
     "diffpepbuilder",
     "pepflow",
     "pephar",
+    "ppflow",
 })
-_PRODUCT_GROUP_BLOCKED: frozenset[str] = frozenset({"ppflow"})
-_PRODUCT_GROUP_BACKLOG: frozenset[str] = frozenset({"pepprclip", "pepglad", "rfpeptides"})
+_PRODUCT_GROUP_RESERVED_PLACEHOLDER: frozenset[str] = frozenset({"pepglad", "rfpeptides"})
+_PRODUCT_GROUP_EXCLUDED: frozenset[str] = frozenset({"pepprclip"})
 
 
 # P32A readiness metadata (display-only, does not overwrite canonical stage)
@@ -190,48 +191,48 @@ _READINESS_META: dict[str, dict[str, Any]] = {
 
 def _derive_product_group(model_id: str) -> str:
     mid = model_id.lower().strip()
-    if mid in _PRODUCT_GROUP_AVAILABLE_FIVE:
-        return "available_five"
-    if mid in _PRODUCT_GROUP_BLOCKED:
-        return "blocked"
-    if mid in _PRODUCT_GROUP_BACKLOG:
-        return "backlog"
+    if mid in _PRODUCT_GROUP_AVAILABLE_SIX:
+        return "available_six"
+    if mid in _PRODUCT_GROUP_RESERVED_PLACEHOLDER:
+        return "reserved_placeholder"
+    if mid in _PRODUCT_GROUP_EXCLUDED:
+        return "excluded"
     return "unknown"
 
 
 def _derive_ui_execution_state(product_group: str) -> str:
-    if product_group == "available_five":
-        return "closed_available"
-    if product_group == "blocked":
-        return "license_blocked"
-    if product_group == "backlog":
-        return "backlog"
+    if product_group == "available_six":
+        return "probe_dry_run_available"
+    if product_group == "reserved_placeholder":
+        return "locked_placeholder"
+    if product_group == "excluded":
+        return "excluded"
     return "unknown"
 
 
 def _derive_ui_selectable(product_group: str) -> bool:
-    return product_group == "available_five"
+    return product_group == "available_six"
 
 
 def _derive_activation_requirements(model_id: str, product_group: str) -> str:
     mid = model_id.lower().strip()
-    if product_group == "available_five":
-        return "dev only; auth required; run_id + gate JSON required; GPU usage warning; never production 8001/8080"
-    if mid == "ppflow":
-        return "no upstream LICENSE / authorization unclear"
-    if product_group == "backlog":
-        return "not closed; roadmap only"
+    if product_group == "available_six":
+        return "NEW_EXPLICIT_AUTH_REQUIRED before future execution"
+    if product_group == "reserved_placeholder":
+        return "NEW_EXPLICIT_AUTH_REQUIRED plus fresh compliant controlled smoke"
+    if mid == "pepprclip":
+        return "MiniCLIP checkpoint and runtime configuration required"
     return "explicit authorization required"
 
 
 def _derive_delivery_status(model_id: str, product_group: str) -> str:
     mid = model_id.lower().strip()
-    if product_group == "available_five":
-        return "closed"
-    if mid == "ppflow":
-        return "blocked_license"
-    if product_group == "backlog":
-        return "backlog_pending"
+    if product_group == "available_six":
+        return "delivered_for_probe_dry_run_ui"
+    if product_group == "reserved_placeholder":
+        return "out_of_scope_evidence_preserved"
+    if mid == "pepprclip":
+        return "blocked_pending_miniclip_license_token"
     return "unknown"
 
 
@@ -259,12 +260,6 @@ def _enrich_readiness_fields(model: dict[str, object]) -> dict[str, object]:
         "activation_requirements", _derive_activation_requirements(model_id, product_group)
     )
     enriched["delivery_status"] = enriched.get("delivery_status", _derive_delivery_status(model_id, product_group))
-    if product_group == "available_five":
-        enriched.update(status="closed", status_reason="d18_authoritative_closed", readiness_level="closed", blocker_code=None)
-    elif product_group == "blocked":
-        enriched.update(status="blocked_license", status_reason="no upstream LICENSE / authorization unclear", readiness_level="blocked_license", blocker_code="LICENSE_BLOCKED", supports_probe=False, supports_dry_run=False, supports_real_run=False, real_run_enabled=False, execution_locked=True)
-    elif product_group == "backlog":
-        enriched.update(status="backlog", status_reason="not closed; roadmap only", readiness_level="backlog", blocker_code="NOT_CLOSED", supports_probe=False, supports_dry_run=False, supports_real_run=False, real_run_enabled=False, execution_locked=True)
     return enriched
 
 

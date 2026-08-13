@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
 
 from app.services.task_recovery_service import (
     _is_recoverable,

@@ -85,7 +85,7 @@ async def async_client(test_app):
 
 def test_build_report_data_structure(db_session):
     """Report data must have correct top-level structure."""
-    from app.crud.batch_computations import create_batch_computation, create_batch_item
+    from app.crud.batch_computations import create_batch_computation
 
     batch = create_batch_computation(
         db_session,
@@ -151,7 +151,6 @@ def test_build_report_missing_batch_raises(db_session):
 def test_failed_reason_for_failed_item(db_session):
     """FAILED items must have a failed_reason."""
     from app.crud.batch_computations import create_batch_computation, create_batch_item
-    from app.models.orm import BatchComputationItem
 
     batch = create_batch_computation(
         db_session,
@@ -184,7 +183,6 @@ def test_failed_reason_for_failed_item(db_session):
 def test_blocked_reason_for_blocked_item(db_session):
     """BLOCKED items must have a failed_reason with explanation."""
     from app.crud.batch_computations import create_batch_computation, create_batch_item
-    from app.models.orm import BatchComputationItem
 
     batch = create_batch_computation(
         db_session,
@@ -217,7 +215,6 @@ def test_blocked_reason_for_blocked_item(db_session):
 def test_succeeded_item_has_no_failed_reason(db_session):
     """SUCCEEDED items must have None failed_reason."""
     from app.crud.batch_computations import create_batch_computation, create_batch_item
-    from app.models.orm import BatchComputationItem
 
     batch = create_batch_computation(
         db_session,
@@ -647,9 +644,7 @@ async def test_api_report_contains_failed_reason(async_client: AsyncClient):
 
     # Update item to FAILED
     items_resp = await async_client.get(f"/api/v1/batch-computations/{batch_id}/items")
-    item_id = items_resp.json()[0]["id"]
-    from app.crud.batch_computations import update_batch_item_status
-    from app.database import get_db
+    items_resp.json()[0]["id"]
     # We need a db session; use the test_app override indirectly via direct crud call
     # Since async_client uses the test app with overridden get_db, we can do a direct
     # DB update here using the db_session fixture pattern, but we don't have it in async test.

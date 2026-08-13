@@ -104,7 +104,7 @@ def run_loop(interval: int = 5) -> None:
             processed = run_once(db)
             if not processed:
                 time.sleep(interval)
-        except Exception as exc:
+        except Exception:
             logger.exception("Worker loop error")
             time.sleep(interval)
         finally:

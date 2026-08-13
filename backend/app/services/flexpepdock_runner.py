@@ -21,8 +21,8 @@ from typing import Optional
 from app.services.batch_dir_service import ensure_item_dir
 from app.services.flexpepdock_environment_probe import (
     FLEXPEPDOCK_CANDIDATES,
-    ROSETTA_ENV_SCRIPT,
     _find_any_binary,
+    get_rosetta_env_script,
     probe_flexpepdock_environment,
 )
 from app.services.runner_logger import ensure_log_dir, execute_command
@@ -38,9 +38,10 @@ DEFAULT_NSTRUCT = 5  # Pilot: small nstruct for fast turnaround
 
 def _get_flexpepdock_binary() -> str | None:
     """Return the first available FlexPepDock binary name, or None."""
-    if not os.path.isfile(ROSETTA_ENV_SCRIPT):
+    env_script = get_rosetta_env_script()
+    if not os.path.isfile(env_script):
         return None
-    ok, path = _find_any_binary(FLEXPEPDOCK_CANDIDATES, ROSETTA_ENV_SCRIPT)
+    ok, path = _find_any_binary(FLEXPEPDOCK_CANDIDATES, env_script)
     if ok and path:
         return os.path.basename(path)
     return None
@@ -153,14 +154,15 @@ def smoke_run() -> tuple[bool, Optional[str]]:
     Returns:
         (success, error_message)
     """
-    if not os.path.isfile(ROSETTA_ENV_SCRIPT):
-        return False, f"Rosetta env script not found: {ROSETTA_ENV_SCRIPT}"
+    env_script = get_rosetta_env_script()
+    if not os.path.isfile(env_script):
+        return False, f"Rosetta env script not found: {env_script}"
 
     binary = _get_flexpepdock_binary()
     if not binary:
         return False, "FlexPepDock binary not found. Tried: " + ", ".join(FLEXPEPDOCK_CANDIDATES)
 
-    cmd = f"source '{ROSETTA_ENV_SCRIPT}' && {binary} -help"
+    cmd = f"source '{env_script}' && {binary} -help"
     try:
         result = subprocess.run(
             ["bash", "-c", cmd],
@@ -329,7 +331,7 @@ def run_single_docking(
         return "BLOCKED", f"Server reachability check failed: {exc}", None
 
     # 2. Check Rosetta env on server
-    env_script = ROSETTA_ENV_SCRIPT
+    env_script = get_rosetta_env_script()
     rc, stdout, _ = _run_server_command(
         f"test -f '{env_script}' && echo yes || echo no",
         log_dir=log_dir,

@@ -8,7 +8,7 @@ No fabricated experimental or structural metrics are written.
 from __future__ import annotations
 
 import logging
-from typing import Any, List, Optional
+from typing import Any, List
 
 from sqlalchemy.orm import Session
 
@@ -18,7 +18,6 @@ from app.crud.stamp_candidates import (
     create_stamp_generation_run,
     mark_stamp_generation_run_completed,
 )
-from app.models.orm import Job
 from app.schemas import StampCandidateCreate, StampGenerationRunCreate
 
 logger = logging.getLogger(__name__)

@@ -6,14 +6,11 @@ energy term extraction, quality flag computation, and error handling.
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 import pytest
 
 from app.services.foldx_output_parser import (
-    INTERACTION_ENERGY_FAVORABLE_THRESHOLD,
-    VDW_CLASHES_HIGH_THRESHOLD,
     FoldXParserError,
     _build_quality_flags,
     parse_foldx_interaction_fxout,

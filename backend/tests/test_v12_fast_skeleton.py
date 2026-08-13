@@ -10,13 +10,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from app.crud.audit_logs import create_audit_log, list_audit_logs
+from app.crud.audit_logs import list_audit_logs
 from app.crud.compute_batches import create_batch, get_batch, list_batches_by_project, update_batch_status
 from app.crud.file_assets import create_asset, get_asset, list_assets_by_job
 from app.crud.jobs import create_job, get_job
 from app.database import Base, get_db
 from app.main import create_app
-from app.models.orm import AuditLogEntry, ComputeBatch, FileAsset, Job
 from app.schemas import JobCreate
 from app.services.audit_log_service import log_job_failed, log_job_submit, log_job_success
 from app.services.retry_policy import should_retry

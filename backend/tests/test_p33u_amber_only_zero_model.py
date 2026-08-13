@@ -33,7 +33,6 @@ if str(BACKEND_DIR) not in sys.path:
 
 from app.services.p33u import config, gate, runner, runner_contracts, state  # noqa: E402
 from app.services.p33u.additive_amber_only import (  # noqa: E402
-    DiffPepBuilderAmberOnlyContract,
     ROSETTA_DDG_UNAVAILABLE_REASON,
     all_amber_only_contracts,
     get_contract_amber_only,

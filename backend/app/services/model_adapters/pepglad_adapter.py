@@ -499,7 +499,6 @@ class PepGLADAdapter(BaseModelAdapter):
 
         dependency_summary = _dependency_summary()
         required_dependency_modules = ["torch", "torch_scatter", "numpy", "Bio", "rdkit", "scipy", "ray", "yaml", "tqdm", "openmm", "pdbfixer", "freesasa"]
-        project_wide_optional_modules = ["pytorch_lightning", "dgl", "torch_geometric"]
         missing_dependencies = [m for m in required_dependency_modules if not dependency_summary.get(m, {}).get("ok")]
         optional_missing_dependencies = [m for m in ("pyrosetta",) if not dependency_summary.get(m, {}).get("ok")]
         dependency_ok = not missing_dependencies
@@ -684,7 +683,6 @@ class PepGLADAdapter(BaseModelAdapter):
         # Input resolution: prefer explicit PDB/pocket, otherwise plan with placeholder paths
         target_pdb_path = payload.target_pdb_path or str(paths["input_dir"] / "target.pdb")
         pocket_json_path = str(paths["input_dir"] / "pocket.json")
-        pocket_residues = payload.pocket_residues or ["A:45", "A:46"]
 
         peptide_length = max(1, min(payload.peptide_length, 100))
         length_min = max(1, peptide_length - 2)
@@ -797,7 +795,7 @@ class PepGLADAdapter(BaseModelAdapter):
             for module in ("torch", "torch_scatter", "numpy", "Bio", "rdkit", "scipy", "ray", "yaml", "tqdm", "openmm", "pdbfixer", "freesasa")
             if not environment_summary["dependency_summary"].get(module, {}).get("ok")
         ]
-        project_wide_optional_missing = [
+        [
             module
             for module in ("pytorch_lightning", "dgl", "torch_geometric")
             if not environment_summary["dependency_summary"].get(module, {}).get("ok")

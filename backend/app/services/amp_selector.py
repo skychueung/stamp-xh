@@ -12,7 +12,7 @@ import logging
 from typing import Any
 
 from app.core.exceptions import AmpLibraryEmptyError, AmpNotFoundError
-from app.models.schemas import AmpRecord, AmpRole, PriorityLevel
+from app.models.schemas import AmpRecord
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +53,7 @@ def select_amp(
         if name:
             by_name[name.upper()] = record
 
-    target_name = (preferred_name or DEFAULT_AMP_NAME).strip()
+    (preferred_name or DEFAULT_AMP_NAME).strip()
 
     raw_record: dict[str, Any] | None = None
 

@@ -32,7 +32,6 @@ from app.database import get_db
 from app.crud.batch_computations import get_batch_computation
 from app.models.orm import BatchComputationItem
 from app.services.runner_logger import (
-    LogMetadata,
     get_log_metadata,
     read_log,
     read_log_tail,

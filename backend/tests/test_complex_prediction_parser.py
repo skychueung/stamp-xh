@@ -9,7 +9,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 
 from app.services.complex_prediction_parser import parse_complex_output
 

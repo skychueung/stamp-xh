@@ -6,7 +6,6 @@ import tempfile
 import time
 from pathlib import Path
 
-import pytest
 
 from app.services.gpu_lock_service import (
     acquire_gpu_lock,

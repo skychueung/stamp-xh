@@ -74,7 +74,7 @@ def parse_foldx_interaction_fxout(fxout_path: str) -> dict[str, Any]:
 
     header_line = lines[header_idx]
     data_lines = lines[header_idx + 1 :]
-    data_lines = [l for l in data_lines if l.strip()]
+    data_lines = [line for line in data_lines if line.strip()]
 
     if not data_lines:
         raise FoldXParserError(f"FoldX fxout file has header but no data rows: {fxout_path}")

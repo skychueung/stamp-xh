@@ -14,22 +14,12 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Any
 
-from fastapi import APIRouter, Header, HTTPException, Request
-from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
+from fastapi import APIRouter, Header, HTTPException
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
-from app.schemas.model_registry import ModelRegistryEntry
-from app.services.model_adapters import (
-    diffpepbuilder_adapter,
-    evobind2_adapter,
-    pepflow_adapter,
-    pephar_adapter,
-    pepmlm_adapter,
-    ppflow_adapter,
-)
-from app.services.p33l import P33LOrchestrator, get_model_config, safe_relative_path
+from app.services.p33l import P33LOrchestrator, safe_relative_path
 from app.services.p33l.config import ordered_model_ids
 
 router = APIRouter(prefix="/api/v1/p33l", tags=["p33l"])

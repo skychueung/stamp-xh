@@ -25,7 +25,6 @@ from app.schemas import (
     StampCandidateCreate,
 )
 from app.services.interface_quality_persistence import (
-    FORBIDDEN_METRIC_KEYS,
     persist_interface_quality_to_candidate,
 )
 

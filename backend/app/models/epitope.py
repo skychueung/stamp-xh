@@ -7,7 +7,6 @@ Request/response schemas for the 15 aa sliding-window epitope scanner.
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 

@@ -26,14 +26,14 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Dict, Optional
 
 from app.services.gpu_lock_service import acquire_gpu_lock, release_gpu_lock
 
 from .config import get_model_config, ordered_model_ids, validate_job_id
 from .gate import P33LGate
 from .manifest import write_manifest
-from .security import compute_file_sha256, safe_relative_path, validate_run_dir
+from .security import compute_file_sha256, validate_run_dir
 from .state import P33LState
 from .wrapper import ModelRealRunWrapper
 
@@ -165,7 +165,7 @@ class P33LOrchestrator:
         return None
 
     def _validate_input(self, model_id: str, input_payload: dict) -> tuple[bool, str]:
-        cfg = get_model_config(model_id)
+        get_model_config(model_id)
         allowed = {
             "pepmlm": {"target_sequence", "peptide_length", "num_candidates", "seed", "top_k", "device"},
             "evobind2": {"receptor_fasta_path", "receptor_sequence", "peptide_length", "peptide_sequence", "max_recycles", "num_iterations", "device", "seed"},
@@ -183,7 +183,7 @@ class P33LOrchestrator:
     def create_job(self, model_id: str, input_payload: dict) -> P33LJob:
         """Create a new P33L job if and only if it is the next allowed model."""
         model_id = model_id.lower().strip()
-        cfg = get_model_config(model_id)
+        get_model_config(model_id)
 
         # 1. Idempotency / one attempt per model
         if self.state.is_model_attempted(model_id):
@@ -237,7 +237,7 @@ class P33LOrchestrator:
             os.makedirs(job.run_dir, exist_ok=True)
 
             # Create gate
-            gate_doc = gate.create()
+            gate.create()
             job.gate_path = gate.gate_path
 
             # Acquire GPU lock

@@ -1,0 +1,8 @@
+{
+  "status": "SUCCEEDED",
+  "flexpepdock": {
+    "total_score": -42.5,
+    "interface_score_isc": -8.75
+  },
+  "validation_status": "NOT_EXPERIMENTALLY_VALIDATED"
+}

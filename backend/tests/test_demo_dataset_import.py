@@ -11,7 +11,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 DEMO_DATASET = FIXTURES_DIR / "v1.0_demo_dataset.json"

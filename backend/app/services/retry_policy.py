@@ -6,7 +6,7 @@ from typing import Optional
 
 from sqlalchemy.orm import Session
 
-from app.crud.jobs import get_job, update_job_status
+from app.crud.jobs import get_job
 from app.models.orm import Job
 from app.services.audit_log_service import log_job_retry
 

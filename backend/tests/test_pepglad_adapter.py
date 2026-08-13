@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import uuid
 
-import pytest
 
 from app.schemas.model_registry import ModelDryRunPayload
 from app.services.model_adapters import PepGLADAdapter

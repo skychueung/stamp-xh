@@ -22,7 +22,6 @@ from pydantic import BaseModel, Field, field_validator
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models.orm import IntegrationConfig
 from app.crud.lims_integration import (
     create_integration_config,
     delete_integration_config,

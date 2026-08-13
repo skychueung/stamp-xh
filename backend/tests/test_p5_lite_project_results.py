@@ -14,14 +14,6 @@ from sqlalchemy.orm import sessionmaker
 
 from app.database import Base, get_db
 from app.main import create_app
-from app.models.orm import (
-    EpitopeCandidate,
-    EpitopeScan,
-    Project,
-    StampCandidate,
-    StampGenerationRun,
-    TargetProtein,
-)
 from app.schemas import (
     EpitopeCandidateCreate,
     EpitopeScanCreate,
@@ -37,9 +29,7 @@ from app.crud import (
     create_stamp_candidate,
     create_stamp_generation_run,
     create_target_protein,
-    update_stamp_candidate,
 )
-from app.schemas import StampCandidateUpdate
 
 TEST_DB_URL = "sqlite:///:memory:"
 

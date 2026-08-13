@@ -13,7 +13,6 @@ from pydantic import BaseModel, Field, field_validator
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models.orm import Job
 from app.services.production_md_service import (
     create_production_md_job,
     submit_production_md_to_server,

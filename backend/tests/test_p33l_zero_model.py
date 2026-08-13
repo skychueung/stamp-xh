@@ -13,7 +13,6 @@ import os
 import subprocess
 import tempfile
 import time
-import uuid
 from pathlib import Path
 from unittest.mock import patch
 
@@ -487,7 +486,7 @@ def test_manifest_writer_includes_not_experimentally_validated(orchestrator):
 
 
 def test_manifest_writer_records_model_configs_pephar(isolated_state_path):
-    cfg = get_model_config("pephar")
+    get_model_config("pephar")
     orch = P33LOrchestrator(manifest_sha=TEST_MANIFEST_SHA, state_path=isolated_state_path)
     # Advance to PepHAR by recording earlier models attempted
     for m in ["pepmlm", "evobind2", "diffpepbuilder", "pepflow"]:

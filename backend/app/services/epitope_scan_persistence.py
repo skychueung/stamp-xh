@@ -17,13 +17,12 @@ from sqlalchemy.orm import Session
 from app.crud.epitopes import (
     create_epitope_candidates_bulk,
     create_epitope_scan,
-    get_epitope_scan,
     mark_epitope_scan_completed,
     mark_epitope_scan_failed,
     mark_epitope_scan_running,
 )
 from app.crud.target_proteins import get_target_protein
-from app.models.epitope import EpitopeScanFilters, FilterStatus
+from app.models.epitope import EpitopeScanFilters
 from app.schemas import (
     EpitopeCandidateCreate,
     EpitopeScanCandidateItem,

@@ -15,12 +15,11 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
 
 from app.models.schemas import ApiResponse
 from app.services.md_environment_probe import probe_md_environment
 from app.services.mmgbsa_pilot_runner import (
-    check_environment,
     create_workdir,
     dry_run,
     smoke_run,

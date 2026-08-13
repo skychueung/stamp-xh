@@ -8,14 +8,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.database import Base
-import app.models.orm  # Ensure all ORM tables are registered in Base.metadata
 from app.crud.experimental_validation import (
     add_measurement,
     create_validation_run,
-    get_measurement,
-    get_validation_run,
-    list_measurements_by_candidate,
-    list_measurements_by_run,
     list_validation_runs_by_candidate,
     summarize_candidate_experimental_validation,
 )
@@ -24,7 +19,6 @@ from app.services.experimental_validation_service import (
 )
 from app.crud.projects import create_project
 from app.crud.stamp_candidates import create_stamp_candidate, create_stamp_generation_run
-from app.models.orm import ExperimentalMeasurement, ExperimentalValidationRun
 from app.schemas.experimental_validation import (
     ExperimentalMeasurementCreate,
     ExperimentalValidationRunCreate,
@@ -42,7 +36,6 @@ _test_engine = create_engine(
 def db_session():
     """Create a fresh in-memory DB session for each test."""
     # Ensure all ORM models are registered before creating tables
-    import app.models.orm  # noqa: F401
     Base.metadata.create_all(bind=_test_engine)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=_test_engine)
     session = SessionLocal()

@@ -16,12 +16,10 @@ from sqlalchemy.orm import sessionmaker
 
 from app.database import Base, get_db
 from app.main import create_app
-from app.models.orm import EpitopeCandidate, EpitopeScan, Project, TargetProtein
-from app.schemas import TargetProteinCreate, ProjectCreate, EpitopeScanCreate
+from app.schemas import TargetProteinCreate, ProjectCreate
 from app.crud import (
     create_project,
     create_target_protein,
-    create_epitope_scan,
     get_epitope_scan,
     list_epitope_candidates_by_scan,
 )

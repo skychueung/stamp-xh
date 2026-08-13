@@ -8,7 +8,6 @@ every window and ranks them by a composite scoring function.
 from __future__ import annotations
 
 from app.models.epitope import (
-    DisulfideRisk,
     EpitopeCandidate,
     EpitopeScanFilters,
     FilterStatus,

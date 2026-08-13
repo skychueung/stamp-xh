@@ -12,7 +12,6 @@ re-loading data for every test function.
 
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 from typing import Any
@@ -219,7 +218,6 @@ def app() -> Any:
         generic_exception_handler,
         stamp_exception_handler,
     )
-    from app.models.schemas import ApiResponse
 
     # Import routers (these will be implemented during task execution)
     # For now, we create a minimal app that can be extended

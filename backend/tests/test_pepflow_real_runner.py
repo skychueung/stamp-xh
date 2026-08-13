@@ -1,6 +1,5 @@
 """Tests for PepFlow real runner skeleton (P31C)."""
 
-from pathlib import Path
 
 import pytest
 
@@ -8,7 +7,6 @@ from app.services.pepflow_real_runner import (
     PepFlowRunner,
     PepFlowRunnerBlocked,
     ENV_PYTHON,
-    GATE_FILE,
     ARTIFACTS_BASE,
     DEFAULT_CHECKPOINT,
     DEFAULT_CONFIG,

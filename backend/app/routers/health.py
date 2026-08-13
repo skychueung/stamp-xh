@@ -97,12 +97,10 @@ async def health_storage() -> ApiResponse[dict]:
 async def health_queue() -> ApiResponse[dict]:
     """Check job queue status by counting jobs in each state."""
     try:
-        from app.crud.jobs import list_jobs_by_project
         from app.database import SessionLocal
 
         db = SessionLocal()
         # Simple count query across all jobs
-        from sqlalchemy import func
         from app.models.orm import Job
 
         counts = {

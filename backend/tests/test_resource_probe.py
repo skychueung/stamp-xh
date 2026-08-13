@@ -10,7 +10,6 @@ import pytest
 from httpx import AsyncClient
 
 from app.services.resource_probe import probe_resources
-from app.services.gpu_lock_service import acquire_gpu_lock, release_gpu_lock
 
 
 def test_probe_resources_returns_expected_shape():

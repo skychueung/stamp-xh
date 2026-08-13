@@ -464,7 +464,6 @@ def render_computation_report_pdf(report_data: dict[str, Any]) -> bytes:
     from reportlab.lib import colors
     from reportlab.lib.pagesizes import letter
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.lib.units import inch
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 
     buffer = io.BytesIO()

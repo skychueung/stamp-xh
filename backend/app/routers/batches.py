@@ -2,16 +2,15 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Optional
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from sqlalchemy.orm import Session
 
-from app.crud.compute_batches import create_batch, get_batch, list_batches_by_project, update_batch_status
-from app.crud.jobs import get_job, list_jobs_by_project
+from app.crud.compute_batches import create_batch, get_batch, list_batches_by_project
+from app.crud.jobs import list_jobs_by_project
 from app.database import get_db
 from app.models.schemas import ApiResponse
-from app.services.audit_log_service import log_job_retry
 from app.services.retry_policy import retry_job
 
 router = APIRouter(prefix="/api/v1/batches", tags=["Batch Jobs"])
@@ -53,7 +52,7 @@ async def get_batch_endpoint(
     if batch is None:
         raise HTTPException(status_code=404, detail="Batch not found")
     # Fetch related jobs
-    jobs = db.query(list_jobs_by_project).filter_by(batch_id=batch_id).all() if hasattr(list_jobs_by_project, 'filter') else []
+    db.query(list_jobs_by_project).filter_by(batch_id=batch_id).all() if hasattr(list_jobs_by_project, 'filter') else []
     return ApiResponse.success(data={
         "batch_id": batch.id,
         "project_id": batch.project_id,

@@ -17,9 +17,7 @@ NO FoldX, NO FlexPepDock, NO delta_G, NO docking_score.
 
 from __future__ import annotations
 
-import json
 import logging
-import os
 from pathlib import Path
 from typing import Any
 

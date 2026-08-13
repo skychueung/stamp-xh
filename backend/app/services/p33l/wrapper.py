@@ -17,11 +17,10 @@ from __future__ import annotations
 import json
 import logging
 import os
-import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Dict
 
 from .config import copy_fixture_to_run_dir, get_model_config
 from .gate import P33LGate

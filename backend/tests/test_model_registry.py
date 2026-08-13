@@ -2,15 +2,11 @@
 
 from __future__ import annotations
 
-import uuid
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
 
 from app.main import app
-from app.schemas.evobind2 import EvoBind2JobSubmitRequest
-from app.services import evobind2_job_service as job_service_module
 
 client = TestClient(app)
 

@@ -15,8 +15,6 @@ import os
 from dataclasses import dataclass
 from typing import Optional
 
-import numpy as np
-
 logger = logging.getLogger("stamp")
 
 

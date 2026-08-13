@@ -17,7 +17,6 @@ from __future__ import annotations
 import os
 import tempfile
 
-import pytest
 
 from app.services.md_pilot_runner import (
     check_environment,

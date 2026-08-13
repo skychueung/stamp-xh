@@ -24,7 +24,6 @@ from app.services.compute_wrappers.evobind2_wrapper import (
     probe,
 )
 from app.services.evobind2_job_service import (
-    EVOBIND2_ARTIFACT_ROOT,
     get_evobind2_job,
     get_evobind2_job_artifacts,
 )

@@ -13,7 +13,6 @@ No ML, no database, no experimental validation.
 from __future__ import annotations
 
 import hashlib
-import uuid
 from datetime import datetime, timezone
 
 from app.models.stamp_assembly import (

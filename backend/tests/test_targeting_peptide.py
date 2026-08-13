@@ -22,7 +22,6 @@ sys.path.insert(0, str(BACKEND_DIR))
 
 from app.models.targeting_peptide import (  # noqa: E402
     SourceEpitope,
-    TargetingPeptideGenerateRequest,
 )
 from app.services.targeting_peptide_generator import generate_targeting_peptides  # noqa: E402
 

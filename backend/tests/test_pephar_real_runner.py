@@ -1,6 +1,5 @@
 """Tests for PepHAR real runner skeleton (P31C)."""
 
-from pathlib import Path
 
 import pytest
 
@@ -8,8 +7,6 @@ from app.services.pephar_real_runner import (
     PepHARRunner,
     PepHARRunnerBlocked,
     ENV_PYTHON,
-    GATE_FILE,
-    ARTIFACTS_BASE,
     DENSITY_CHECKPOINT,
     PREDICTION_CHECKPOINT,
     DEFAULT_DENSITY_CONFIG,

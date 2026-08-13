@@ -13,7 +13,6 @@ from app.services.target_peptide_model_registry import (
     MODEL_STATUS_DISABLED,
     MODEL_STATUS_PENDING_REGISTRY,
     SCIENTIFIC_BOUNDARY_NOTE,
-    build_default_safety_flags,
     get_model,
 )
 

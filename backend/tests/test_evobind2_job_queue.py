@@ -15,7 +15,6 @@ No subprocess. No server access. No model execution.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
 
 import pytest
 from fastapi import FastAPI
@@ -24,7 +23,6 @@ from sqlalchemy.orm import Session
 
 from app.core.public_safety import compute_endpoints_enabled
 from app.database import SessionLocal, init_db
-from app.models.orm import Job
 from app.routers.evobind2_compute import router as evobind2_compute_router
 from app.schemas.evobind2 import EvoBind2JobSubmitRequest
 

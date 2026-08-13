@@ -6,7 +6,7 @@ REST endpoints for wet-lab validation runs, measurements, and candidate priority
 from __future__ import annotations
 
 import io
-from typing import Annotated, Any, Optional
+from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, Path, Query, Response, UploadFile, status
 from fastapi.responses import PlainTextResponse, StreamingResponse
@@ -16,14 +16,11 @@ from app.database import get_db
 from app.models.schemas import ApiResponse
 from app.schemas.experimental_validation import (
     CandidateExperimentalPriorityResponse,
-    CandidatePrioritizationItem,
-    CsvImportError,
     CsvImportResultResponse,
     ExperimentalMeasurementCreate,
     ExperimentalMeasurementResponse,
     ExperimentalValidationRunCreate,
     ExperimentalValidationRunResponse,
-    ExperimentalValidationRunUpdate,
     ExperimentalValidationSummaryResponse,
     PriorityDecisionCreate,
     PriorityDecisionResponse,
@@ -189,7 +186,6 @@ def get_candidate_validation(
     """Get experimental validation summary for a candidate."""
     from app.crud.experimental_validation import (
         list_measurements_by_candidate,
-        list_validation_runs_by_candidate,
         summarize_candidate_experimental_validation,
     )
 

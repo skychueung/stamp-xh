@@ -19,7 +19,6 @@ from app.crud.projects import create_project
 from app.crud.stamp_candidates import create_stamp_candidate
 from app.database import Base, get_db
 from app.main import create_app
-from app.models.orm import Job
 from app.schemas import (
     JobCreate,
     ProjectCreate,
@@ -27,7 +26,6 @@ from app.schemas import (
 )
 from app.crud.stamp_candidates import get_stamp_candidate
 from app.services.structure_prediction_persistence import (
-    FORBIDDEN_METRIC_KEYS,
     persist_structure_prediction_to_candidate,
 )
 

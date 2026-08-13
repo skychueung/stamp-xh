@@ -19,7 +19,6 @@ from app.crud import create_project, create_target_protein
 from app.crud.jobs import create_job, update_job_status
 from app.database import Base, get_db
 from app.main import create_app
-from app.models.orm import Project
 from app.schemas import JobCreate, ProjectCreate, TargetProteinCreate
 from app.services.job_service import run_real_job
 

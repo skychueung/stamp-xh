@@ -7,13 +7,11 @@ from __future__ import annotations
 
 import os
 
-import pytest
 
 from app.services.compute_wrappers.evobind2_wrapper import (
     ALLOWED_MODEL_NAMES,
     BLOCKED_MODEL_NAMES,
     DEFAULT_MODEL_NAME,
-    EVOBIND_ENV,
     EVOBIND_ROOT,
     EVOBIND2_ENV_PYTHON,
     HHBLITS_BIN,

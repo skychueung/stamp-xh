@@ -13,7 +13,6 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Body, Path, Query, status
 
-from app.core.exceptions import CandidateNotFoundError
 from app.data.loader import (
     get_pepmlm_candidates,
     get_priority_amp_library,
@@ -25,11 +24,9 @@ from app.models.schemas import (
     PaginatedResponse,
     StampBuildRequest,
     StampCandidate,
-    StampListItem,
-    ValidationStatus,
 )
 from app.services.stamp_builder import build_stamp
-from app.utils.response import created, ok, paginated
+from app.utils.response import ok, paginated
 
 logger = logging.getLogger(__name__)
 

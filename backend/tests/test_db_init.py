@@ -13,11 +13,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.database import Base
 from app.models.orm import (
-    EpitopeCandidate,
-    EpitopeScan,
     Project,
-    StampCandidate,
-    StampGenerationRun,
     TargetProtein,
 )
 from app.schemas import (

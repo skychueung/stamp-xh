@@ -13,7 +13,6 @@ Tests cover:
 
 from __future__ import annotations
 
-import uuid
 
 import pytest
 import pytest_asyncio
@@ -224,7 +223,8 @@ async def test_check_command_available():
 @pytest.mark.asyncio
 async def test_batch_dir_service():
     from app.services.batch_dir_service import ensure_batch_dir, ensure_item_dir, get_item_log_path
-    import tempfile, os
+    import tempfile
+    import os
 
     with tempfile.TemporaryDirectory() as tmpdir:
         os.environ["STAMP_BATCH_JOBS_DIR"] = tmpdir
@@ -249,7 +249,8 @@ async def test_batch_dir_service():
 @pytest.mark.asyncio
 async def test_finalize_without_artifacts_fails():
     """SUCCEEDED requires real artifacts. Empty dir -> FAILED."""
-    import tempfile, os
+    import tempfile
+    import os
     from app.services.batch_compute_runner import finalize_batch_item
     from app.database import SessionLocal
     from app.models.orm import BatchComputationItem
@@ -317,7 +318,7 @@ async def test_get_mmgbsa_results_not_available(async_client: AsyncClient):
 @pytest.mark.asyncio
 async def test_get_mmgbsa_results_real_file(async_client: AsyncClient):
     """When FINAL_RESULTS_MMPBSA.dat exists, return real parsed data."""
-    import tempfile, os
+    import os
 
     payload = {
         "project_id": "proj-mmgbsa",

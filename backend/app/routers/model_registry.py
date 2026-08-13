@@ -120,10 +120,6 @@ def _get_adapter(model_id: str) -> Any:
         )
     adapter_id = str(model.get("adapter_id", ""))
     model_status = str(model.get("status", ""))
-    # D19-A hard safety boundary: blocked/backlog entries are metadata-only.
-    # Route them through the zero-execution placeholder before any concrete adapter.
-    if str(model.get("product_group", "")) in {"blocked", "backlog"}:
-        return PlaceholderAdapter(model_id)
     if model_id == "diffpepbuilder" or adapter_id == "diffpepbuilder":
         return DiffPepBuilderAdapter(model_id)
     if model_id == "ppflow" or adapter_id == "ppflow":

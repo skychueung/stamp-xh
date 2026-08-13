@@ -2,7 +2,7 @@ import os
 import re
 import shutil
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List
 
 
 @dataclass(frozen=True)
@@ -156,11 +156,11 @@ def _pephar_command(ctx: Dict[str, Any]) -> List[str]:
     variant = ctx.get("model_variant", "prediction")
     configs_by_name = {m["name"]: m for m in cfg.model_configs}
     if variant == "density":
-        ckpt = configs_by_name["density_checkpoint"]["path"]
-        config = configs_by_name["density_config"]["path"]
+        configs_by_name["density_checkpoint"]["path"]
+        configs_by_name["density_config"]["path"]
     else:
-        ckpt = configs_by_name["prediction_checkpoint"]["path"]
-        config = configs_by_name["prediction_config"]["path"]
+        configs_by_name["prediction_checkpoint"]["path"]
+        configs_by_name["prediction_config"]["path"]
     return [
         cfg.env_python,
         cfg.runner_script_path,

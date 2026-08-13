@@ -5,7 +5,6 @@ probe, dry-run and submit behave according to the P6A safety gates.
 """
 from __future__ import annotations
 
-import pytest
 
 from app.schemas.model_registry import ModelDryRunPayload
 from app.services.model_adapters.pepprclip_adapter import (

@@ -15,7 +15,7 @@ import json
 import logging
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Final
+from typing import Any
 
 from app.core.config import settings
 from app.core.exceptions import DataLoadError

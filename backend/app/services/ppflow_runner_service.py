@@ -31,9 +31,6 @@ from app.services.ppflow_real_runner import (
     build_command,
     build_manifest_post,
     build_failure,
-    validate_out_root,
-    validate_source_path,
-    validate_checkpoint_path,
     PPFlowRunnerBlocked,
     GATE_FILE,
     SOURCE_ROOT,
@@ -43,7 +40,6 @@ from app.services.ppflow_real_runner import (
     JOBS_BASE,
     ARTIFACTS_BASE,
     LOGS_BASE,
-    FORBIDDEN_PREFIXES,
 )
 
 # Re-export constants for external consumers

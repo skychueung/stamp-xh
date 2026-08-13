@@ -135,7 +135,7 @@ def _write_receptor_fasta(target_sequence: str, path: str) -> str:
     if not lines:
         raise ValueError("Empty target_sequence")
 
-    if lines[0].startswith(>"):
+    if lines[0].startswith(">"):
         header = lines[0]
         seq_lines = lines[1:]
     else:
@@ -223,7 +223,7 @@ def _run_mc_design(
     selected_gpu: int,
 ) -> int:
     inp = _build_input_from_job(job)
-    sequence = _write_receptor_fasta(inp.receptor_fasta, paths["receptor_fasta_path"])
+    _write_receptor_fasta(inp.receptor_fasta, paths["receptor_fasta_path"])
 
     # EvoBind2 foldonly.py requires at least one MSA even in single_sequence mode.
     # Generate a single-sequence a3m from the receptor FASTA when none is supplied.

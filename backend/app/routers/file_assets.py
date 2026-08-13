@@ -8,7 +8,7 @@ import tarfile
 from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.crud.file_assets import create_asset, get_asset, list_assets_by_batch, list_assets_by_job

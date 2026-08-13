@@ -6,9 +6,9 @@ No writes, no calculations, no fabricated data.
 
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import Optional
 
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session
 
 from app.models.orm import (
     EpitopeCandidate,

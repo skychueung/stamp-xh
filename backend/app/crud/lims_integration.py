@@ -5,7 +5,6 @@ v1.2-lab-production-fast — P6 REAL_API_READY framework.
 
 from __future__ import annotations
 
-from typing import Optional
 
 from sqlalchemy.orm import Session
 

@@ -1,0 +1,683 @@
+{
+  "generatedAt": "2026-04-28T17:04:31.907Z",
+  "version": "v0.6a",
+  "note": "STAMP hybrid peptide candidates with biophysical parameters. Mock scores are formula-based, NOT experimental values. All experimental fields are null pending real data.",
+  "total_candidates": 9,
+  "candidates": [
+    {
+      "candidate_id": "R7_ref",
+      "target_molecule": "Pseudomonas aeruginosa LPS",
+      "targeting_domain": {
+        "name": "LBP14",
+        "sequence": "RVQGRWKVRASFFK",
+        "length": 14,
+        "net_charge": 5,
+        "gravy": -0.7928571428571428,
+        "validation": {
+          "isValid": true,
+          "illegalChar": null,
+          "illegalPosition": null,
+          "length": 14,
+          "warning": null
+        }
+      },
+      "linker": {
+        "name": "cleavable_RKRR",
+        "sequence": "RKRR",
+        "length": 4,
+        "type": "cleavable"
+      },
+      "killing_domain": {
+        "name": "L7",
+        "sequence": "FKAWRWAWRMKKLAAPS",
+        "length": 17,
+        "net_charge": 5,
+        "gravy": -0.5941176470588236,
+        "validation": {
+          "isValid": true,
+          "illegalChar": null,
+          "illegalPosition": null,
+          "length": 17,
+          "warning": null
+        }
+      },
+      "orientation": "N-to-C",
+      "terminal_modification": "not specified in Wang 2023 Table 1; needs synthesis-order confirmation",
+      "reference": "Wang 2023",
+      "raw_full_sequence": "RVQGRWKVRASFFKRKRRFKAWRWAWRMKKLAAPS",
+      "display_full_sequence": "RVQGRWKVRASFFK-RKRR-FKAWRWAWRMKKLAAPS [terminal_modification: not specified in Wang 2023 Table 1; needs synthesis-order confirmation]",
+      "is_complete": true,
+      "biophysical": {
+        "length": 35,
+        "net_charge": 14,
+        "pI": 10.1,
+        "GRAVY": -1.1,
+        "hydrophobicity_fraction": 0.51
+      },
+      "mock_scores": {
+        "AMP_score": 88.5,
+        "toxicity_score": 82.5,
+        "hemolysis_score": 62.2,
+        "LPS_binding_score": 90.8,
+        "final_score": 40.9,
+        "note": "Mock formulas based on sequence composition; NOT experimental values"
+      },
+      "experimental": {
+        "MIC_ug_ml": null,
+        "MBC_ug_ml": null,
+        "hemolysis_percent": null,
+        "LPS_binding_Kd_nM": null,
+        "pLDDT": null,
+        "ipTM": null,
+        "pDockQ": null,
+        "note": "Reserved for real experimental data; currently null"
+      },
+      "structure_status": {
+        "monomer_predicted": false,
+        "complex_predicted": false,
+        "experimental_structure": false,
+        "note": "Awaiting AlphaFold-Multimer prediction after sequence confirmation"
+      }
+    },
+    {
+      "candidate_id": "A7_ref",
+      "target_molecule": "Pseudomonas aeruginosa LPS",
+      "targeting_domain": {
+        "name": "LBP14",
+        "sequence": "RVQGRWKVRASFFK",
+        "length": 14,
+        "net_charge": 5,
+        "gravy": -0.7928571428571428,
+        "validation": {
+          "isValid": true,
+          "illegalChar": null,
+          "illegalPosition": null,
+          "length": 14,
+          "warning": null
+        }
+      },
+      "linker": {
+        "name": "rigid_EAAAK2",
+        "sequence": "EAAAKEAAAK",
+        "length": 10,
+        "type": "rigid"
+      },
+      "killing_domain": {
+        "name": "L7",
+        "sequence": "FKAWRWAWRMKKLAAPS",
+        "length": 17,
+        "net_charge": 5,
+        "gravy": -0.5941176470588236,
+        "validation": {
+          "isValid": true,
+          "illegalChar": null,
+          "illegalPosition": null,
+          "length": 17,
+          "warning": null
+        }
+      },
+      "orientation": "N-to-C",
+      "terminal_modification": "not specified in Wang 2023 Table 1; needs synthesis-order confirmation",
+      "reference": "Wang 2023",
+      "raw_full_sequence": "RVQGRWKVRASFFKEAAAKEAAAKFKAWRWAWRMKKLAAPS",
+      "display_full_sequence": "RVQGRWKVRASFFK-EAAAKEAAAK-FKAWRWAWRMKKLAAPS [terminal_modification: not specified in Wang 2023 Table 1; needs synthesis-order confirmation]",
+      "is_complete": true,
+      "biophysical": {
+        "length": 41,
+        "net_charge": 10,
+        "pI": 10.2,
+        "GRAVY": -0.61,
+        "hydrophobicity_fraction": 0.59
+      },
+      "mock_scores": {
+        "AMP_score": 80.6,
+        "toxicity_score": 69.2,
+        "hemolysis_score": 44.4,
+        "LPS_binding_score": 74.9,
+        "final_score": 37.7,
+        "note": "Mock formulas based on sequence composition; NOT experimental values"
+      },
+      "experimental": {
+        "MIC_ug_ml": null,
+        "MBC_ug_ml": null,
+        "hemolysis_percent": null,
+        "LPS_binding_Kd_nM": null,
+        "pLDDT": null,
+        "ipTM": null,
+        "pDockQ": null,
+        "note": "Reserved for real experimental data; currently null"
+      },
+      "structure_status": {
+        "monomer_predicted": false,
+        "complex_predicted": false,
+        "experimental_structure": false,
+        "note": "Awaiting AlphaFold-Multimer prediction after sequence confirmation"
+      }
+    },
+    {
+      "candidate_id": "G7_ref",
+      "target_molecule": "Pseudomonas aeruginosa LPS",
+      "targeting_domain": {
+        "name": "LBP14",
+        "sequence": "RVQGRWKVRASFFK",
+        "length": 14,
+        "net_charge": 5,
+        "gravy": -0.7928571428571428,
+        "validation": {
+          "isValid": true,
+          "illegalChar": null,
+          "illegalPosition": null,
+          "length": 14,
+          "warning": null
+        }
+      },
+      "linker": {
+        "name": "flexible_G4S",
+        "sequence": "GGGGS",
+        "length": 5,
+        "type": "flexible"
+      },
+      "killing_domain": {
+        "name": "L7",
+        "sequence": "FKAWRWAWRMKKLAAPS",
+        "length": 17,
+        "net_charge": 5,
+        "gravy": -0.5941176470588236,
+        "validation": {
+          "isValid": true,
+          "illegalChar": null,
+          "illegalPosition": null,
+          "length": 17,
+          "warning": null
+        }
+      },
+      "orientation": "N-to-C",
+      "terminal_modification": "not specified in Wang 2023 Table 1; needs synthesis-order confirmation",
+      "reference": "Wang 2023",
+      "raw_full_sequence": "RVQGRWKVRASFFKGGGGSFKAWRWAWRMKKLAAPS",
+      "display_full_sequence": "RVQGRWKVRASFFK-GGGGS-FKAWRWAWRMKKLAAPS [terminal_modification: not specified in Wang 2023 Table 1; needs synthesis-order confirmation]",
+      "is_complete": true,
+      "biophysical": {
+        "length": 36,
+        "net_charge": 10,
+        "pI": 10.4,
+        "GRAVY": -0.66,
+        "hydrophobicity_fraction": 0.61
+      },
+      "mock_scores": {
+        "AMP_score": 83.6,
+        "toxicity_score": 69.8,
+        "hemolysis_score": 44.9,
+        "LPS_binding_score": 75.2,
+        "final_score": 38.8,
+        "note": "Mock formulas based on sequence composition; NOT experimental values"
+      },
+      "experimental": {
+        "MIC_ug_ml": null,
+        "MBC_ug_ml": null,
+        "hemolysis_percent": null,
+        "LPS_binding_Kd_nM": null,
+        "pLDDT": null,
+        "ipTM": null,
+        "pDockQ": null,
+        "note": "Reserved for real experimental data; currently null"
+      },
+      "structure_status": {
+        "monomer_predicted": false,
+        "complex_predicted": false,
+        "experimental_structure": false,
+        "note": "Awaiting AlphaFold-Multimer prediction after sequence confirmation"
+      }
+    },
+    {
+      "candidate_id": "R7_P4",
+      "target_molecule": "Pseudomonas aeruginosa LPS",
+      "targeting_domain": {
+        "name": "LBP14",
+        "sequence": "RVQGRWKVRASFFK",
+        "length": 14,
+        "net_charge": 5,
+        "gravy": -0.7928571428571428,
+        "validation": {
+          "isValid": true,
+          "illegalChar": null,
+          "illegalPosition": null,
+          "length": 14,
+          "warning": null
+        }
+      },
+      "linker": {
+        "name": "cleavable_RKRR",
+        "sequence": "RKRR",
+        "length": 4,
+        "type": "cleavable"
+      },
+      "killing_domain": {
+        "name": "P4",
+        "sequence": "FSRFLRRVRRYRPKISFNLEPFFKF",
+        "length": 25,
+        "net_charge": 7,
+        "gravy": -0.5919999999999999,
+        "validation": {
+          "isValid": true,
+          "illegalChar": null,
+          "illegalPosition": null,
+          "length": 25,
+          "warning": null
+        }
+      },
+      "orientation": "N-to-C",
+      "terminal_modification": "terminal_modification: pending confirmation",
+      "reference": "Wang 2023 template + P4 hybrid",
+      "raw_full_sequence": "RVQGRWKVRASFFKRKRRFSRFLRRVRRYRPKISFNLEPFFKF",
+      "display_full_sequence": "RVQGRWKVRASFFK-RKRR-FSRFLRRVRRYRPKISFNLEPFFKF [terminal_modification: terminal_modification: pending confirmation]",
+      "is_complete": true,
+      "biophysical": {
+        "length": 43,
+        "net_charge": 16,
+        "pI": 10.4,
+        "GRAVY": -1.01,
+        "hydrophobicity_fraction": 0.47
+      },
+      "mock_scores": {
+        "AMP_score": 83.6,
+        "toxicity_score": 99.1,
+        "hemolysis_score": 67.1,
+        "LPS_binding_score": 96.1,
+        "final_score": 37.3,
+        "note": "Mock formulas based on sequence composition; NOT experimental values"
+      },
+      "experimental": {
+        "MIC_ug_ml": null,
+        "MBC_ug_ml": null,
+        "hemolysis_percent": null,
+        "LPS_binding_Kd_nM": null,
+        "pLDDT": null,
+        "ipTM": null,
+        "pDockQ": null,
+        "note": "Reserved for real experimental data; currently null"
+      },
+      "structure_status": {
+        "monomer_predicted": false,
+        "complex_predicted": false,
+        "experimental_structure": false,
+        "note": "Awaiting AlphaFold-Multimer prediction after sequence confirmation"
+      }
+    },
+    {
+      "candidate_id": "A7_P4",
+      "target_molecule": "Pseudomonas aeruginosa LPS",
+      "targeting_domain": {
+        "name": "LBP14",
+        "sequence": "RVQGRWKVRASFFK",
+        "length": 14,
+        "net_charge": 5,
+        "gravy": -0.7928571428571428,
+        "validation": {
+          "isValid": true,
+          "illegalChar": null,
+          "illegalPosition": null,
+          "length": 14,
+          "warning": null
+        }
+      },
+      "linker": {
+        "name": "rigid_EAAAK2",
+        "sequence": "EAAAKEAAAK",
+        "length": 10,
+        "type": "rigid"
+      },
+      "killing_domain": {
+        "name": "P4",
+        "sequence": "FSRFLRRVRRYRPKISFNLEPFFKF",
+        "length": 25,
+        "net_charge": 7,
+        "gravy": -0.5919999999999999,
+        "validation": {
+          "isValid": true,
+          "illegalChar": null,
+          "illegalPosition": null,
+          "length": 25,
+          "warning": null
+        }
+      },
+      "orientation": "N-to-C",
+      "terminal_modification": "terminal_modification: pending confirmation",
+      "reference": "Wang 2023 template + P4 hybrid",
+      "raw_full_sequence": "RVQGRWKVRASFFKEAAAKEAAAKFSRFLRRVRRYRPKISFNLEPFFKF",
+      "display_full_sequence": "RVQGRWKVRASFFK-EAAAKEAAAK-FSRFLRRVRRYRPKISFNLEPFFKF [terminal_modification: terminal_modification: pending confirmation]",
+      "is_complete": true,
+      "biophysical": {
+        "length": 49,
+        "net_charge": 12,
+        "pI": 10.1,
+        "GRAVY": -0.61,
+        "hydrophobicity_fraction": 0.53
+      },
+      "mock_scores": {
+        "AMP_score": 76.6,
+        "toxicity_score": 77.2,
+        "hemolysis_score": 50.3,
+        "LPS_binding_score": 80.9,
+        "final_score": 35.8,
+        "note": "Mock formulas based on sequence composition; NOT experimental values"
+      },
+      "experimental": {
+        "MIC_ug_ml": null,
+        "MBC_ug_ml": null,
+        "hemolysis_percent": null,
+        "LPS_binding_Kd_nM": null,
+        "pLDDT": null,
+        "ipTM": null,
+        "pDockQ": null,
+        "note": "Reserved for real experimental data; currently null"
+      },
+      "structure_status": {
+        "monomer_predicted": false,
+        "complex_predicted": false,
+        "experimental_structure": false,
+        "note": "Awaiting AlphaFold-Multimer prediction after sequence confirmation"
+      }
+    },
+    {
+      "candidate_id": "G7_P4",
+      "target_molecule": "Pseudomonas aeruginosa LPS",
+      "targeting_domain": {
+        "name": "LBP14",
+        "sequence": "RVQGRWKVRASFFK",
+        "length": 14,
+        "net_charge": 5,
+        "gravy": -0.7928571428571428,
+        "validation": {
+          "isValid": true,
+          "illegalChar": null,
+          "illegalPosition": null,
+          "length": 14,
+          "warning": null
+        }
+      },
+      "linker": {
+        "name": "flexible_G4S",
+        "sequence": "GGGGS",
+        "length": 5,
+        "type": "flexible"
+      },
+      "killing_domain": {
+        "name": "P4",
+        "sequence": "FSRFLRRVRRYRPKISFNLEPFFKF",
+        "length": 25,
+        "net_charge": 7,
+        "gravy": -0.5919999999999999,
+        "validation": {
+          "isValid": true,
+          "illegalChar": null,
+          "illegalPosition": null,
+          "length": 25,
+          "warning": null
+        }
+      },
+      "orientation": "N-to-C",
+      "terminal_modification": "terminal_modification: pending confirmation",
+      "reference": "Wang 2023 template + P4 hybrid",
+      "raw_full_sequence": "RVQGRWKVRASFFKGGGGSFSRFLRRVRRYRPKISFNLEPFFKF",
+      "display_full_sequence": "RVQGRWKVRASFFK-GGGGS-FSRFLRRVRRYRPKISFNLEPFFKF [terminal_modification: terminal_modification: pending confirmation]",
+      "is_complete": true,
+      "biophysical": {
+        "length": 44,
+        "net_charge": 12,
+        "pI": 10.1,
+        "GRAVY": -0.64,
+        "hydrophobicity_fraction": 0.55
+      },
+      "mock_scores": {
+        "AMP_score": 79.4,
+        "toxicity_score": 77.6,
+        "hemolysis_score": 50.7,
+        "LPS_binding_score": 81.1,
+        "final_score": 36.8,
+        "note": "Mock formulas based on sequence composition; NOT experimental values"
+      },
+      "experimental": {
+        "MIC_ug_ml": null,
+        "MBC_ug_ml": null,
+        "hemolysis_percent": null,
+        "LPS_binding_Kd_nM": null,
+        "pLDDT": null,
+        "ipTM": null,
+        "pDockQ": null,
+        "note": "Reserved for real experimental data; currently null"
+      },
+      "structure_status": {
+        "monomer_predicted": false,
+        "complex_predicted": false,
+        "experimental_structure": false,
+        "note": "Awaiting AlphaFold-Multimer prediction after sequence confirmation"
+      }
+    },
+    {
+      "candidate_id": "R7_P15",
+      "target_molecule": "Pseudomonas aeruginosa LPS",
+      "targeting_domain": {
+        "name": "LBP14",
+        "sequence": "RVQGRWKVRASFFK",
+        "length": 14,
+        "net_charge": 5,
+        "gravy": -0.7928571428571428,
+        "validation": {
+          "isValid": true,
+          "illegalChar": null,
+          "illegalPosition": null,
+          "length": 14,
+          "warning": null
+        }
+      },
+      "linker": {
+        "name": "cleavable_RKRR",
+        "sequence": "RKRR",
+        "length": 4,
+        "type": "cleavable"
+      },
+      "killing_domain": {
+        "name": "P15",
+        "sequence": "RIKRVWPVVIRTVVAGINLYRAIKRK",
+        "length": 26,
+        "net_charge": 8,
+        "gravy": 0.14615384615384605,
+        "validation": {
+          "isValid": true,
+          "illegalChar": null,
+          "illegalPosition": null,
+          "length": 26,
+          "warning": null
+        }
+      },
+      "orientation": "N-to-C",
+      "terminal_modification": "terminal_modification: pending confirmation",
+      "reference": "Wang 2023 template + P15 hybrid",
+      "raw_full_sequence": "RVQGRWKVRASFFKRKRRRIKRVWPVVIRTVVAGINLYRAIKRK",
+      "display_full_sequence": "RVQGRWKVRASFFK-RKRR-RIKRVWPVVIRTVVAGINLYRAIKRK [terminal_modification: terminal_modification: pending confirmation]",
+      "is_complete": true,
+      "biophysical": {
+        "length": 44,
+        "net_charge": 17,
+        "pI": 10.5,
+        "GRAVY": -0.56,
+        "hydrophobicity_fraction": 0.52
+      },
+      "mock_scores": {
+        "AMP_score": 78.6,
+        "toxicity_score": 96.4,
+        "hemolysis_score": 64.7,
+        "LPS_binding_score": 95.5,
+        "final_score": 35.9,
+        "note": "Mock formulas based on sequence composition; NOT experimental values"
+      },
+      "experimental": {
+        "MIC_ug_ml": null,
+        "MBC_ug_ml": null,
+        "hemolysis_percent": null,
+        "LPS_binding_Kd_nM": null,
+        "pLDDT": null,
+        "ipTM": null,
+        "pDockQ": null,
+        "note": "Reserved for real experimental data; currently null"
+      },
+      "structure_status": {
+        "monomer_predicted": false,
+        "complex_predicted": false,
+        "experimental_structure": false,
+        "note": "Awaiting AlphaFold-Multimer prediction after sequence confirmation"
+      }
+    },
+    {
+      "candidate_id": "A7_P15",
+      "target_molecule": "Pseudomonas aeruginosa LPS",
+      "targeting_domain": {
+        "name": "LBP14",
+        "sequence": "RVQGRWKVRASFFK",
+        "length": 14,
+        "net_charge": 5,
+        "gravy": -0.7928571428571428,
+        "validation": {
+          "isValid": true,
+          "illegalChar": null,
+          "illegalPosition": null,
+          "length": 14,
+          "warning": null
+        }
+      },
+      "linker": {
+        "name": "rigid_EAAAK2",
+        "sequence": "EAAAKEAAAK",
+        "length": 10,
+        "type": "rigid"
+      },
+      "killing_domain": {
+        "name": "P15",
+        "sequence": "RIKRVWPVVIRTVVAGINLYRAIKRK",
+        "length": 26,
+        "net_charge": 8,
+        "gravy": 0.14615384615384605,
+        "validation": {
+          "isValid": true,
+          "illegalChar": null,
+          "illegalPosition": null,
+          "length": 26,
+          "warning": null
+        }
+      },
+      "orientation": "N-to-C",
+      "terminal_modification": "terminal_modification: pending confirmation",
+      "reference": "Wang 2023 template + P15 hybrid",
+      "raw_full_sequence": "RVQGRWKVRASFFKEAAAKEAAAKRIKRVWPVVIRTVVAGINLYRAIKRK",
+      "display_full_sequence": "RVQGRWKVRASFFK-EAAAKEAAAK-RIKRVWPVVIRTVVAGINLYRAIKRK [terminal_modification: terminal_modification: pending confirmation]",
+      "is_complete": true,
+      "biophysical": {
+        "length": 50,
+        "net_charge": 13,
+        "pI": 10.4,
+        "GRAVY": -0.23,
+        "hydrophobicity_fraction": 0.58
+      },
+      "mock_scores": {
+        "AMP_score": 72.3,
+        "toxicity_score": 75.4,
+        "hemolysis_score": 48.7,
+        "LPS_binding_score": 80.8,
+        "final_score": 34.5,
+        "note": "Mock formulas based on sequence composition; NOT experimental values"
+      },
+      "experimental": {
+        "MIC_ug_ml": null,
+        "MBC_ug_ml": null,
+        "hemolysis_percent": null,
+        "LPS_binding_Kd_nM": null,
+        "pLDDT": null,
+        "ipTM": null,
+        "pDockQ": null,
+        "note": "Reserved for real experimental data; currently null"
+      },
+      "structure_status": {
+        "monomer_predicted": false,
+        "complex_predicted": false,
+        "experimental_structure": false,
+        "note": "Awaiting AlphaFold-Multimer prediction after sequence confirmation"
+      }
+    },
+    {
+      "candidate_id": "G7_P15",
+      "target_molecule": "Pseudomonas aeruginosa LPS",
+      "targeting_domain": {
+        "name": "LBP14",
+        "sequence": "RVQGRWKVRASFFK",
+        "length": 14,
+        "net_charge": 5,
+        "gravy": -0.7928571428571428,
+        "validation": {
+          "isValid": true,
+          "illegalChar": null,
+          "illegalPosition": null,
+          "length": 14,
+          "warning": null
+        }
+      },
+      "linker": {
+        "name": "flexible_G4S",
+        "sequence": "GGGGS",
+        "length": 5,
+        "type": "flexible"
+      },
+      "killing_domain": {
+        "name": "P15",
+        "sequence": "RIKRVWPVVIRTVVAGINLYRAIKRK",
+        "length": 26,
+        "net_charge": 8,
+        "gravy": 0.14615384615384605,
+        "validation": {
+          "isValid": true,
+          "illegalChar": null,
+          "illegalPosition": null,
+          "length": 26,
+          "warning": null
+        }
+      },
+      "orientation": "N-to-C",
+      "terminal_modification": "terminal_modification: pending confirmation",
+      "reference": "Wang 2023 template + P15 hybrid",
+      "raw_full_sequence": "RVQGRWKVRASFFKGGGGSRIKRVWPVVIRTVVAGINLYRAIKRK",
+      "display_full_sequence": "RVQGRWKVRASFFK-GGGGS-RIKRVWPVVIRTVVAGINLYRAIKRK [terminal_modification: terminal_modification: pending confirmation]",
+      "is_complete": true,
+      "biophysical": {
+        "length": 45,
+        "net_charge": 13,
+        "pI": 10.3,
+        "GRAVY": -0.22,
+        "hydrophobicity_fraction": 0.6
+      },
+      "mock_scores": {
+        "AMP_score": 74.7,
+        "toxicity_score": 75.2,
+        "hemolysis_score": 48.6,
+        "LPS_binding_score": 80.7,
+        "final_score": 35.5,
+        "note": "Mock formulas based on sequence composition; NOT experimental values"
+      },
+      "experimental": {
+        "MIC_ug_ml": null,
+        "MBC_ug_ml": null,
+        "hemolysis_percent": null,
+        "LPS_binding_Kd_nM": null,
+        "pLDDT": null,
+        "ipTM": null,
+        "pDockQ": null,
+        "note": "Reserved for real experimental data; currently null"
+      },
+      "structure_status": {
+        "monomer_predicted": false,
+        "complex_predicted": false,
+        "experimental_structure": false,
+        "note": "Awaiting AlphaFold-Multimer prediction after sequence confirmation"
+      }
+    }
+  ]
+}

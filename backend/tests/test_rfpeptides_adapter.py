@@ -3,13 +3,11 @@
 from __future__ import annotations
 
 from pathlib import Path
-from types import ModuleType
 from typing import Any
-from unittest.mock import MagicMock
 
 import pytest
 
-from app.schemas.model_registry import ModelDryRunPayload, ModelProbeResult, ModelDryRunResult, ModelArtifactsResponse
+from app.schemas.model_registry import ModelDryRunPayload, ModelProbeResult, ModelDryRunResult
 from app.services.model_adapters import RFpeptidesAdapter
 from app.services.model_adapters import rfpeptides_adapter as module
 from app.services.target_peptide_model_registry import get_model

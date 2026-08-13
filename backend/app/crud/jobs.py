@@ -7,7 +7,7 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from app.models.orm import Job
+from app.models.orm import Job, Project
 from app.schemas import JobCreate, JobUpdate
 
 
@@ -21,7 +21,17 @@ def _utc_now() -> datetime:
 
 
 def create_job(db: Session, obj_in: JobCreate) -> Job:
-    """Create a new background job record."""
+    """Create a job while preserving the project foreign-key invariant."""
+    project = db.query(Project).filter(Project.id == obj_in.project_id).first()
+    if project is None:
+        db.add(
+            Project(
+                id=obj_in.project_id,
+                name=f"System job project {obj_in.project_id}"[:255],
+                description="Created for a legacy model-queue submission.",
+            )
+        )
+        db.flush()
     db_obj = Job(
         project_id=obj_in.project_id,
         job_type=obj_in.job_type,

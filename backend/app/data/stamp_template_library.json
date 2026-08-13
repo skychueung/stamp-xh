@@ -1,0 +1,187 @@
+{
+  "generatedAt": "2026-04-28T17:34:45.760Z",
+  "version": "v0.6a-fix2",
+  "note": "STAMP templates with Wang 2023 sequences.",
+  "templates": [
+    {
+      "templateId": "R7_ref",
+      "targetMolecule": "Pseudomonas aeruginosa LPS",
+      "targetingDomain": {
+        "name": "LBP14",
+        "sequence": "RVQGRWKVRASFFK"
+      },
+      "linker": {
+        "name": "cleavable_RKRR",
+        "sequence": "RKRR"
+      },
+      "killingDomain": {
+        "name": "L7",
+        "sequence": "FKAWRWAWRMKKLAAPS"
+      },
+      "orientation": "N-to-C",
+      "terminalModification": "not specified in Wang 2023 Table 1; needs synthesis-order confirmation",
+      "reference": "Wang 2023",
+      "isComplete": true
+    },
+    {
+      "templateId": "A7_ref",
+      "targetMolecule": "Pseudomonas aeruginosa LPS",
+      "targetingDomain": {
+        "name": "LBP14",
+        "sequence": "RVQGRWKVRASFFK"
+      },
+      "linker": {
+        "name": "rigid_EAAAK2",
+        "sequence": "EAAAKEAAAK"
+      },
+      "killingDomain": {
+        "name": "L7",
+        "sequence": "FKAWRWAWRMKKLAAPS"
+      },
+      "orientation": "N-to-C",
+      "terminalModification": "not specified in Wang 2023 Table 1; needs synthesis-order confirmation",
+      "reference": "Wang 2023",
+      "isComplete": true
+    },
+    {
+      "templateId": "G7_ref",
+      "targetMolecule": "Pseudomonas aeruginosa LPS",
+      "targetingDomain": {
+        "name": "LBP14",
+        "sequence": "RVQGRWKVRASFFK"
+      },
+      "linker": {
+        "name": "flexible_G4S",
+        "sequence": "GGGGS"
+      },
+      "killingDomain": {
+        "name": "L7",
+        "sequence": "FKAWRWAWRMKKLAAPS"
+      },
+      "orientation": "N-to-C",
+      "terminalModification": "not specified in Wang 2023 Table 1; needs synthesis-order confirmation",
+      "reference": "Wang 2023",
+      "isComplete": true
+    },
+    {
+      "templateId": "R7_P4",
+      "targetMolecule": "Pseudomonas aeruginosa LPS",
+      "targetingDomain": {
+        "name": "LBP14",
+        "sequence": "RVQGRWKVRASFFK"
+      },
+      "linker": {
+        "name": "cleavable_RKRR",
+        "sequence": "RKRR"
+      },
+      "killingDomain": {
+        "name": "P4",
+        "sequence": "FSRFLRRVRRYRPKISFNLEPFFKF"
+      },
+      "orientation": "N-to-C",
+      "terminalModification": "terminal_modification: pending confirmation",
+      "reference": "Wang 2023 template + P4 hybrid",
+      "isComplete": true
+    },
+    {
+      "templateId": "A7_P4",
+      "targetMolecule": "Pseudomonas aeruginosa LPS",
+      "targetingDomain": {
+        "name": "LBP14",
+        "sequence": "RVQGRWKVRASFFK"
+      },
+      "linker": {
+        "name": "rigid_EAAAK2",
+        "sequence": "EAAAKEAAAK"
+      },
+      "killingDomain": {
+        "name": "P4",
+        "sequence": "FSRFLRRVRRYRPKISFNLEPFFKF"
+      },
+      "orientation": "N-to-C",
+      "terminalModification": "terminal_modification: pending confirmation",
+      "reference": "Wang 2023 template + P4 hybrid",
+      "isComplete": true
+    },
+    {
+      "templateId": "G7_P4",
+      "targetMolecule": "Pseudomonas aeruginosa LPS",
+      "targetingDomain": {
+        "name": "LBP14",
+        "sequence": "RVQGRWKVRASFFK"
+      },
+      "linker": {
+        "name": "flexible_G4S",
+        "sequence": "GGGGS"
+      },
+      "killingDomain": {
+        "name": "P4",
+        "sequence": "FSRFLRRVRRYRPKISFNLEPFFKF"
+      },
+      "orientation": "N-to-C",
+      "terminalModification": "terminal_modification: pending confirmation",
+      "reference": "Wang 2023 template + P4 hybrid",
+      "isComplete": true
+    },
+    {
+      "templateId": "R7_P15",
+      "targetMolecule": "Pseudomonas aeruginosa LPS",
+      "targetingDomain": {
+        "name": "LBP14",
+        "sequence": "RVQGRWKVRASFFK"
+      },
+      "linker": {
+        "name": "cleavable_RKRR",
+        "sequence": "RKRR"
+      },
+      "killingDomain": {
+        "name": "P15",
+        "sequence": "RIKRVWPVVIRTVVAGINLYRAIKRK"
+      },
+      "orientation": "N-to-C",
+      "terminalModification": "terminal_modification: pending confirmation",
+      "reference": "Wang 2023 template + P15 hybrid",
+      "isComplete": true
+    },
+    {
+      "templateId": "A7_P15",
+      "targetMolecule": "Pseudomonas aeruginosa LPS",
+      "targetingDomain": {
+        "name": "LBP14",
+        "sequence": "RVQGRWKVRASFFK"
+      },
+      "linker": {
+        "name": "rigid_EAAAK2",
+        "sequence": "EAAAKEAAAK"
+      },
+      "killingDomain": {
+        "name": "P15",
+        "sequence": "RIKRVWPVVIRTVVAGINLYRAIKRK"
+      },
+      "orientation": "N-to-C",
+      "terminalModification": "terminal_modification: pending confirmation",
+      "reference": "Wang 2023 template + P15 hybrid",
+      "isComplete": true
+    },
+    {
+      "templateId": "G7_P15",
+      "targetMolecule": "Pseudomonas aeruginosa LPS",
+      "targetingDomain": {
+        "name": "LBP14",
+        "sequence": "RVQGRWKVRASFFK"
+      },
+      "linker": {
+        "name": "flexible_G4S",
+        "sequence": "GGGGS"
+      },
+      "killingDomain": {
+        "name": "P15",
+        "sequence": "RIKRVWPVVIRTVVAGINLYRAIKRK"
+      },
+      "orientation": "N-to-C",
+      "terminalModification": "terminal_modification: pending confirmation",
+      "reference": "Wang 2023 template + P15 hybrid",
+      "isComplete": true
+    }
+  ]
+}

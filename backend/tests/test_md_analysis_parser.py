@@ -11,11 +11,8 @@ from __future__ import annotations
 import os
 import tempfile
 
-import pytest
 
 from app.services.md_analysis_parser import (
-    MdAnalysisResult,
-    XvgData,
     analyze_md_pilot,
     parse_xvg,
 )

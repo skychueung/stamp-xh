@@ -86,7 +86,6 @@ import logging
 import os
 import subprocess
 import threading
-import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -1011,7 +1010,8 @@ def _run_scorer_thread(job: dict[str, Any], req: ScorerRunRequest) -> None:
                 job["status"] = "blocked_dependency"; job["failure_reason"] = "colabfold_batch not installed"
                 job["end_time"] = _now_iso(); _write_job(job); return
             out = job_dir / "af2_out"; out.mkdir(parents=True, exist_ok=True)
-            import subprocess, os as _os
+            import subprocess
+            import os as _os
             env = dict(_os.environ)
             _gpu = req.gpu_device or "1"
             if _gpu.startswith("cuda:"):
@@ -1032,7 +1032,8 @@ def _run_scorer_thread(job: dict[str, Any], req: ScorerRunRequest) -> None:
             job["output_path"] = str(out)
             # Parse pLDDT/pTM/ipTM from colabfold scores JSON
             try:
-                import json as _json, glob as _glob
+                import json as _json
+                import glob as _glob
                 _sf = _glob.glob(str(out / "*_scores_rank_001_*.json"))
                 if _sf:
                     _j = _json.loads(Path(_sf[0]).read_text(encoding="utf-8"))
@@ -1153,7 +1154,7 @@ async def get_job_logs(job_id: str) -> JSONResponse:
     if not lp.is_file():
         # fall back to adapter log if referenced in job
         job = _read_job(job_id) or {}
-        op = job.get("output_path", "")
+        job.get("output_path", "")
         return JSONResponse(status_code=200, content={"code": 200, "data": {
             "job_id": job_id, "log": "", "note": "no log.txt yet; job may still be running"},
             "validation_status": VALIDATION_STATUS})

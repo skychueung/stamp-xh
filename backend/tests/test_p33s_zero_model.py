@@ -55,7 +55,7 @@ def test_provenance():
             input_sha256=sha256_bytes(b"ACDEFGHIK"), weight_sha256="w",
             code_sha256="c", env="env", seed=2024, gpu_device=None,
             gpu_free_mib_at_start=None, started_at="2026-07-02T00:00:00Z", exit_code=0)
-        p2 = write_manifest(m2, d)
+        write_manifest(m2, d)
         loaded = json.loads(Path(p1).read_text())
         check("manifest written", p1.is_file())
         check("manifest_sha256 present (64 hex)", len(loaded["manifest_sha256"]) == 64)

@@ -1,6 +1,5 @@
 """Tests for mmgbsa_pilot_runner.py (v1.5 P3)."""
 
-import pytest
 from unittest.mock import patch, MagicMock
 
 from app.services.mmgbsa_pilot_runner import (
@@ -9,7 +8,6 @@ from app.services.mmgbsa_pilot_runner import (
     smoke_run,
     dry_run,
     dispatch,
-    create_workdir,
 )
 
 

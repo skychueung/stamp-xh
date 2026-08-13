@@ -18,7 +18,6 @@ import json
 import os
 import re
 import stat
-import subprocess
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import patch
@@ -28,11 +27,9 @@ import pytest
 from app.services.compute_wrappers.evobind2_gate import (
     DEFAULT_GATE_ROOT,
     GateClosedError,
-    GateInvalidError,
     GatePathUnsafeError,
     _get_gate_root,
     check_run_gate,
-    close_run_gate,
     create_run_gate,
     require_run_gate,
     run_gate_context,
@@ -53,7 +50,6 @@ from app.services.compute_wrappers.evobind2_wrapper import (
     build_run_paths,
     dry_run_plan,
     validate_fasta_local,
-    validate_input_local,
 )
 
 

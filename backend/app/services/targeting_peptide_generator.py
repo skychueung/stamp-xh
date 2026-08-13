@@ -13,7 +13,6 @@ Rules:
 
 from __future__ import annotations
 
-import itertools
 
 from app.models.epitope import FilterStatus
 from app.models.targeting_peptide import (
@@ -27,8 +26,6 @@ from app.services.biophys import (
     calculate_net_charge,
     calculate_pi,
     count_cys,
-    disulfide_risk,
-    hydrophobicity_class,
 )
 
 # ---------------------------------------------------------------------------

@@ -18,8 +18,8 @@ stdout/stderr/returncode are captured and persisted to disk.
 from __future__ import annotations
 
 import logging
-import os
 import subprocess
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -111,8 +111,12 @@ def execute_command(
     # Normalize command for recording
     if isinstance(cmd, list):
         command_str = " ".join(cmd)
+        execution_cmd = list(cmd)
+        if execution_cmd and execution_cmd[0] in {"python", "python3"}:
+            execution_cmd[0] = sys.executable
     else:
         command_str = cmd
+        execution_cmd = cmd
         if not shell:
             shell = True
 
@@ -128,7 +132,7 @@ def execute_command(
 
     try:
         result = subprocess.run(
-            cmd,
+            execution_cmd,
             capture_output=True,
             text=True,
             timeout=timeout,

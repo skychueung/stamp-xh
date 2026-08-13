@@ -319,9 +319,9 @@ def _assemble_single_candidate(
     if not tp_seq:
         raise ValueError(f"Candidate {candidate.id} has empty targeting_peptide_seq")
     if not linker_seq:
-        raise ValueError(f"Request linker_seq is empty")
+        raise ValueError("Request linker_seq is empty")
     if not kp_seq:
-        raise ValueError(f"Request killing_peptide_seq is empty")
+        raise ValueError("Request killing_peptide_seq is empty")
 
     full_sequence = tp_seq + linker_seq + kp_seq
     length = len(full_sequence)
