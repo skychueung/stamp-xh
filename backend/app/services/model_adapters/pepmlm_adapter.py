@@ -9,6 +9,7 @@ All outputs are computational predictions only and marked NOT_EXPERIMENTALLY_VAL
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 import os
 import subprocess
@@ -195,13 +196,29 @@ def _relocate_manifests(
     peptide_length: int,
     num_candidates: int,
     device: str,
+    seed: int | None,
 ) -> None:
     """Move manifest files produced by pepmlm_infer.py into manifest/ and merge metadata."""
     paths["manifest_dir"].mkdir(parents=True, exist_ok=True)
+    checkpoint = PEPMLM_MODEL_PATH / "model.safetensors"
+    if not checkpoint.is_file():
+        checkpoint = PEPMLM_MODEL_PATH / "pytorch_model.bin"
+    checkpoint_sha256 = None
+    if checkpoint.is_file():
+        digest = hashlib.sha256()
+        with checkpoint.open("rb") as handle:
+            for chunk in iter(lambda: handle.read(8 * 1024 * 1024), b""):
+                digest.update(chunk)
+        checkpoint_sha256 = digest.hexdigest()
+    input_hash = hashlib.sha256(seq.encode("utf-8")).hexdigest()
     base_metadata = {
         "model_id": "pepmlm",
+        "model_version": "PepMLM-650M",
         "run_id": run_id,
         "model_path": str(PEPMLM_MODEL_PATH),
+        "checkpoint_sha256": checkpoint_sha256,
+        "input_hash": input_hash,
+        "seed": seed,
         "target_sequence_length": len(seq),
         "peptide_length": peptide_length,
         "num_candidates": num_candidates,
@@ -494,7 +511,7 @@ class PepMLMAdapter(BaseModelAdapter):
 
         if success:
             _post_process_candidates(paths, run_id)
-            _relocate_manifests(paths, run_id, seq, peptide_length, num_candidates, device)
+            _relocate_manifests(paths, run_id, seq, peptide_length, num_candidates, device, seed)
 
         artifacts = {
             "input/target.fasta": str(paths["input_dir"] / "target.fasta"),

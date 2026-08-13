@@ -38,6 +38,8 @@ def _get_secret_key() -> str:
     if not key:
         # Fallback only for dev. In production this must be set explicitly.
         key = "dev-insecure-fallback-secret-do-not-use-in-production"
+    if getattr(settings, "environment", "development").lower() == "production":
+        settings.validate_runtime_security()
     return key
 
 

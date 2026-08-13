@@ -8,7 +8,6 @@ works both in local development and inside a Docker container.
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from typing import Final
 
@@ -61,6 +60,9 @@ class Settings(BaseSettings):
 
     debug: bool = False
     """Enable debug mode (stack traces in error responses)."""
+
+    environment: str = "development"
+    """Runtime profile: development, test, or production."""
 
     # --- HTTP / CORS -------------------------------------------------------
 
@@ -153,6 +155,18 @@ class Settings(BaseSettings):
 
     enable_file_asset_registration: bool = False
     """Enable file asset registration outside public-demo mode."""
+
+    def validate_runtime_security(self) -> None:
+        """Reject deployment defaults when the production profile is selected."""
+        if self.environment.lower() != "production":
+            return
+        if not self.secret_key or self.secret_key in {
+            "change-me-in-production",
+            "dev-insecure-fallback-secret-do-not-use-in-production",
+        } or len(self.secret_key) < 32:
+            raise RuntimeError("STAMP_SECRET_KEY must be a strong value in production")
+        if self.cors_allow_credentials and "*" in self.cors_origins:
+            raise RuntimeError("Explicit CORS origins are required with credentials in production")
 
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,49 @@
+{
+  "generatedBy": "analyze_dssp.py",
+  "version": "1.0.0",
+  "count": 3,
+  "structures": [
+    {
+      "id": "candidate_1",
+      "name": "Candidate 1",
+      "sequence": "MKWVTFISL",
+      "length": 9,
+      "netCharge": 1.0,
+      "meanPlddt": 85.0,
+      "pdbUrl": "/structures/candidate_1.pdb",
+      "secondaryStructure": {
+        "helix": 0.0,
+        "sheet": 0.0,
+        "coil": 1.0
+      }
+    },
+    {
+      "id": "candidate_2",
+      "name": "Candidate 2",
+      "sequence": "GGSGGS",
+      "length": 6,
+      "netCharge": 0.0,
+      "meanPlddt": 85.0,
+      "pdbUrl": "/structures/candidate_2.pdb",
+      "secondaryStructure": {
+        "helix": 0.0,
+        "sheet": 0.0,
+        "coil": 1.0
+      }
+    },
+    {
+      "id": "candidate_3",
+      "name": "Candidate 3",
+      "sequence": "KFFKFFKKV",
+      "length": 9,
+      "netCharge": 4.0,
+      "meanPlddt": 85.0,
+      "pdbUrl": "/structures/candidate_3.pdb",
+      "secondaryStructure": {
+        "helix": 0.0,
+        "sheet": 0.0,
+        "coil": 1.0
+      }
+    }
+  ]
+}

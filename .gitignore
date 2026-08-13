@@ -112,6 +112,10 @@ V011_P4_CANDIDATE_PRIORITIZATION_PANEL_REPORT.md
 # Local model weights and generated runtime data
 models_dev/
 data/
+!backend/app/data/
+!backend/app/data/**
+!src/data/
+!src/data/**
 data_dev/
 logs_dev/
 *.safetensors

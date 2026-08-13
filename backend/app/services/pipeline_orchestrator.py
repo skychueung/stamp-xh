@@ -18,17 +18,15 @@ from __future__ import annotations
 import json
 import logging
 import os
-import shutil
+import traceback
 import threading
 import zipfile
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any
 
 from sqlalchemy.orm import Session
 
-from app.core.config import settings
 from app.core.exceptions import InvalidSequenceError
-from app.database import get_db
 from app.models.orm import (
     BatchComputation,
     BatchComputationItem,
@@ -36,25 +34,26 @@ from app.models.orm import (
     EpitopeScan,
     PipelineRun,
     PipelineStep,
-    Project,
     StampCandidate,
     StampGenerationRun,
     TargetProtein,
 )
 from app.services.biophys import (
-    calculate_gravy,
-    calculate_net_charge,
     calculate_pi,
-    count_cys,
 )
-from app.services.epitope_scanner import scan_epitopes
 from app.services.sequence_validator import (
-    LINKER_SEQUENCE,
     compute_gravy,
     compute_net_charge,
     validate_sequence,
 )
-from app.services.targeting_peptide_generator import generate_targeting_peptides
+from app.services.pipeline_artifacts import (
+    initialize_run_artifacts,
+    mark_manifest_status,
+    reset_step_state,
+    run_root,
+    sequence_sha256,
+    update_step_state,
+)
 
 logger = logging.getLogger("stamp")
 
@@ -102,21 +101,19 @@ def _utc_now() -> datetime:
 
 
 def _artifact_dir(run_id: str) -> str:
-    base = settings.stamp_data_dir
-    path = os.path.join(base, "pipeline_runs", run_id)
-    os.makedirs(path, exist_ok=True)
-    return path
+    return str(run_root(run_id))
 
 
 def _step_dir(run_id: str, step_name: str) -> str:
-    path = os.path.join(_artifact_dir(run_id), step_name.lower())
+    # Keep legacy step paths readable while all new state lives below steps/.
+    path = os.path.join(_artifact_dir(run_id), "steps", step_name.lower(), "artifacts")
     os.makedirs(path, exist_ok=True)
     return path
 
 
 def _pipeline_log_path(run_id: str) -> str:
     """Return the durable, per-run execution log path."""
-    return os.path.join(_artifact_dir(run_id), "pipeline.log")
+    return os.path.join(_artifact_dir(run_id), "logs.jsonl")
 
 
 def _append_pipeline_log(
@@ -125,6 +122,9 @@ def _append_pipeline_log(
     message: str,
     *,
     step: str | None = None,
+    model_id: str | None = None,
+    request_id: str | None = None,
+    exception_trace: str | None = None,
 ) -> None:
     """Append one structured line to the run log without breaking execution."""
     record = {
@@ -132,7 +132,10 @@ def _append_pipeline_log(
         "level": level.upper(),
         "run_id": run_id,
         "step": step,
+        "model_id": model_id,
+        "request_id": request_id or run_id,
         "message": message,
+        "exception_trace": exception_trace,
     }
     try:
         with _pipeline_log_lock:
@@ -180,6 +183,11 @@ def _update_step(
     output_json: dict | None = None,
     error_message: str | None = None,
 ) -> None:
+    previous_started_at = step.started_at
+    attempt_data = dict(step.input_json or {})
+    if status == "RUNNING" and previous_started_at is None:
+        attempt_data["attempt"] = int(attempt_data.get("attempt", 0)) + 1
+        step.input_json = attempt_data
     step.status = status
     if status == "RUNNING" and step.started_at is None:
         step.started_at = _utc_now()
@@ -189,6 +197,17 @@ def _update_step(
         step.output_json = output_json
     if error_message is not None:
         step.error_message = error_message
+    update_step_state(
+        step.pipeline_run_id,
+        step.step_name,
+        status,
+        attempt=int(attempt_data.get("attempt", 0)),
+        input_hash=str(attempt_data.get("input_hash", "")),
+        error=error_message,
+        artifacts=(output_json or {}).get("artifact_files") if output_json else None,
+        started_at=step.started_at.isoformat() if step.started_at else None,
+        finished_at=step.finished_at.isoformat() if step.finished_at else None,
+    )
 
 
 def _update_run(
@@ -228,6 +247,15 @@ def create_pipeline_run(
     db.add(run)
     db.flush()
 
+    input_hash = sequence_sha256(run.target_sequence)
+    initialize_run_artifacts(
+        run.id,
+        target_name=run.target_name,
+        target_sequence=run.target_sequence,
+        project_id=run.project_id,
+        created_by=created_by,
+    )
+
     for i, step_name in enumerate(STEP_ORDER):
         step = PipelineStep(
             pipeline_run_id=run.id,
@@ -236,6 +264,7 @@ def create_pipeline_run(
             status="PENDING",
             method=STEP_METHODS.get(step_name),
             scientific_boundary_note=STEP_BOUNDARIES.get(step_name),
+            input_json={"input_hash": input_hash, "attempt": 0},
         )
         db.add(step)
 
@@ -334,22 +363,28 @@ def run_target_input_step(db: Session, run: PipelineRun) -> bool:
         project_id = proj.id
         run.project_id = project_id
 
-    # Persist TargetProtein
-    tp = TargetProtein(
-        project_id=project_id,
-        name=run.target_name,
-        sequence=cleaned,
-        sequence_hash=hash(cleaned) & 0xFFFFFFFF,
-        length=length,
-        metadata_json={
-            "aa_counts": aa_counts,
-            "net_charge": round(net_charge, 2),
-            "gravy": gravy,
-            "mw_approx_da": mw_approx,
-        },
-    )
-    db.add(tp)
-    db.flush()
+    # Stable, idempotent target identity. A retry reuses the project target.
+    stable_hash = sequence_sha256(cleaned)
+    tp = db.query(TargetProtein).filter(
+        TargetProtein.project_id == project_id,
+        TargetProtein.sequence_hash == stable_hash,
+    ).first()
+    if tp is None:
+        tp = TargetProtein(
+            project_id=project_id,
+            name=run.target_name,
+            sequence=cleaned,
+            sequence_hash=stable_hash,
+            length=length,
+            metadata_json={
+                "aa_counts": aa_counts,
+                "net_charge": round(net_charge, 2),
+                "gravy": gravy,
+                "mw_approx_da": mw_approx,
+            },
+        )
+        db.add(tp)
+        db.flush()
 
     artifact_dir = _step_dir(run.id, "TARGET_INPUT")
     summary = {
@@ -553,6 +588,58 @@ def run_peptide_generation_step(
         db.commit()
         return False
 
+    selected_models = list(((run.output_json or {}).get("request") or {}).get("selected_models") or [])
+    model_execution: dict[str, Any] | None = None
+    if selected_models:
+        from app.services.production_model_registry import production_registry
+
+        try:
+            probes = [production_registry.get(model_id).probe() for model_id in selected_models]
+        except KeyError:
+            _update_step(step, "BLOCKED", error_message="Unknown selected model")
+            _update_run(run, status="BLOCKED", current_step="PEPTIDE_GENERATION")
+            db.commit()
+            return False
+        unavailable = [probe for probe in probes if probe["state"] != "ready"]
+        unsupported = [model_id for model_id in selected_models if model_id != "pepmlm"]
+        if unavailable or unsupported:
+            detail = {"selected_models": selected_models, "probes": probes, "unsupported_runtime": unsupported}
+            _update_step(step, "BLOCKED", output_json=detail, error_message="Selected model runtime is not ready")
+            _update_run(run, status="BLOCKED", current_step="PEPTIDE_GENERATION")
+            db.commit()
+            _append_pipeline_log(
+                run.id,
+                "WARNING",
+                "Selected model execution blocked by runtime probe.",
+                step="PEPTIDE_GENERATION",
+                model_id=",".join(selected_models),
+            )
+            return False
+        from app.schemas.model_registry import ModelDryRunPayload
+        from app.services.model_adapters.pepmlm_adapter import PepMLMAdapter
+
+        model_result = PepMLMAdapter("pepmlm").submit(
+            ModelDryRunPayload(
+                target_sequence=run.target_sequence,
+                peptide_length=12,
+                num_candidates=max(1, peptides_per_epitope * len(epitopes)),
+                seed=int(sequence_sha256(run.target_sequence)[:8], 16),
+                device="cuda",
+            ),
+            run_id=f"pipeline_{run.id}",
+        )
+        if model_result.status != "SUCCEEDED":
+            _update_step(step, "BLOCKED", output_json={"model_result": model_result.model_dump()}, error_message=model_result.message)
+            _update_run(run, status="BLOCKED", current_step="PEPTIDE_GENERATION")
+            db.commit()
+            return False
+        model_execution = {
+            "model_id": "pepmlm",
+            "status": model_result.status,
+            "artifacts": model_result.artifacts,
+            "provenance": "real_model",
+        }
+
     all_peptides: list[dict[str, Any]] = []
     generation_run = StampGenerationRun(
         project_id=run.project_id,
@@ -662,6 +749,7 @@ def run_peptide_generation_step(
             "record_count": len(all_peptides),
             "artifact_files": ["generated_peptides.json", "generated_peptides.csv"],
             "peptides": all_peptides[:50],
+            "model_execution": model_execution,
         },
     )
     _update_run(run, current_step="PEPTIDE_OPTIMIZATION")
@@ -678,7 +766,8 @@ def _generate_complementary_peptide(
 ) -> str | None:
     """Generate a targeting peptide candidate from an epitope using deterministic rules."""
     import random
-    random.seed(hash(epitope_seq) + idx)
+    deterministic_seed = int(sequence_sha256(f"{epitope_seq}:{idx}")[:16], 16)
+    random.seed(deterministic_seed)
 
     positive_pool = list("KKRRHH")
     negative_pool = list("DDEE")
@@ -1480,6 +1569,7 @@ def run_pipeline_once(
         return run
 
     _append_pipeline_log(run_id, "INFO", "Pipeline execution started.")
+    mark_manifest_status(run_id, "RUNNING")
     _update_run(run, status="RUNNING")
     db.commit()
 
@@ -1495,6 +1585,17 @@ def run_pipeline_once(
     ]
 
     for step_name, step_func in steps_to_run:
+        db.refresh(run)
+        queue_metadata = dict((run.output_json or {}).get("queue") or {})
+        if queue_metadata.get("cancel_requested"):
+            step = _get_step(db, run.id, step_name)
+            if step.status not in {"SUCCEEDED", "CANCELLED"}:
+                _update_step(step, "CANCELLED", error_message="Run cancellation requested")
+            _update_run(run, status="CANCELLED", current_step=step_name)
+            db.commit()
+            _append_pipeline_log(run_id, "INFO", "Pipeline execution cancelled.", step=step_name)
+            mark_manifest_status(run_id, "CANCELLED")
+            return run
         # Skip steps already succeeded
         step = _get_step(db, run.id, step_name)
         if step.status == "SUCCEEDED":
@@ -1508,7 +1609,13 @@ def run_pipeline_once(
             ok = step_func()
         except Exception as exc:
             logger.exception("Step %s failed for run %s: %s", step_name, run_id, exc)
-            _append_pipeline_log(run_id, "ERROR", f"{type(exc).__name__}: {exc}", step=step_name)
+            _append_pipeline_log(
+                run_id,
+                "ERROR",
+                f"{type(exc).__name__}: {exc}",
+                step=step_name,
+                exception_trace=traceback.format_exc(),
+            )
             # A database exception leaves SQLAlchemy's transaction unusable.
             # Roll it back before persisting the visible FAILED state.
             db.rollback()
@@ -1517,13 +1624,17 @@ def run_pipeline_once(
             _update_step(step, "FAILED", error_message=f"[{step_name}] {type(exc).__name__}: {exc}")
             _update_run(run, status="FAILED", current_step=step_name, error_message=f"{type(exc).__name__}: {exc}")
             db.commit()
+            mark_manifest_status(run_id, "FAILED")
             return run
 
         if not ok:
+            db.refresh(run)
             logger.error("Step %s returned False for run %s", step_name, run_id)
             _append_pipeline_log(run_id, "ERROR", step.error_message or "Step returned False.", step=step_name)
-            _update_run(run, status="FAILED", current_step=step_name)
+            if run.status != "BLOCKED":
+                _update_run(run, status="FAILED", current_step=step_name)
             db.commit()
+            mark_manifest_status(run_id, run.status)
             return run
 
         db.refresh(run)
@@ -1535,6 +1646,7 @@ def run_pipeline_once(
     db.refresh(run)
     logger.info("PipelineRun %s completed successfully.", run_id)
     _append_pipeline_log(run_id, "INFO", "Pipeline execution completed successfully.")
+    mark_manifest_status(run_id, "SUCCEEDED")
     return run
 
 
@@ -1562,8 +1674,19 @@ def retry_pipeline_from_step(db: Session, run_id: str, from_step: str) -> Pipeli
             step.finished_at = None
             step.output_json = {}
             step.error_message = None
+            step.input_json = {
+                **dict(step.input_json or {}),
+                "attempt": int((step.input_json or {}).get("attempt", 0)),
+            }
+            reset_step_state(
+                run_id,
+                step.step_name,
+                attempt=int(step.input_json.get("attempt", 0)),
+                input_hash=str(step.input_json.get("input_hash", "")),
+            )
 
     _update_run(run, status="PENDING", current_step=from_step, error_message=None)
+    mark_manifest_status(run_id, "PENDING")
     db.commit()
     db.refresh(run)
     _append_pipeline_log(run_id, "INFO", "Retry requested; this step and following steps were reset.", step=from_step)

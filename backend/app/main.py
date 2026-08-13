@@ -30,7 +30,7 @@ from app.core.exceptions import (
 from app.data.loader import eager_load_all
 from app.database import init_db
 from app.models.schemas import ApiResponse
-from app.routers import amp, epitope, epitope_scans, final_ranking, health, legacy_predict, pepmlm, projects, stamp, stamp_assembly, targeting_peptide, target_peptide_design
+from app.routers import amp, epitope, epitope_scans, final_ranking, health, pepmlm, projects, stamp, stamp_assembly, targeting_peptide, target_peptide_design
 from app.routers.pipeline_runs import router as pipeline_runs_router
 from app.routers.evobind2 import router as evobind2_router
 from app.routers.evobind2_compute import router as evobind2_compute_router
@@ -89,6 +89,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     On shutdown: nothing to clean up (data is in-memory and immutable).
     """
     logger.info("STAMP backend starting up — version %s", settings.app_version)
+    settings.validate_runtime_security()
     try:
         init_db()
         logger.info("Database initialized (tables created if missing).")
@@ -148,7 +149,6 @@ def create_app() -> FastAPI:
     app.include_router(health.router)              # /health
     app.include_router(health.router, prefix="/api")  # /api/health (overrides legacy sidecar)
     app.include_router(projects.router)
-    app.include_router(legacy_predict.router)
     app.include_router(pepmlm.router)
     app.include_router(amp.router)
     app.include_router(stamp.router)

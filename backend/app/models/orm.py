@@ -44,6 +44,7 @@ class Project(Base):
         String(36), primary_key=True, default=lambda: str(uuid.uuid4())
     )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
+    owner_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
     description: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
     species: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     project_type: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
@@ -661,6 +662,9 @@ class PipelineStep(Base):
     """A single step within a PipelineRun."""
 
     __tablename__ = "pipeline_steps"
+    __table_args__ = (
+        UniqueConstraint("pipeline_run_id", "step_name", name="uq_pipeline_run_step"),
+    )
 
     id: Mapped[str] = mapped_column(
         String(36), primary_key=True, default=lambda: str(uuid.uuid4())

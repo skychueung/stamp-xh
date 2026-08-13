@@ -55,6 +55,7 @@ from app.services.target_peptide_model_registry import (
     list_models,
 )
 from app.workers.pepmlm_worker import process_pepmlm_job
+from app.services.production_model_registry import production_registry
 
 logger = logging.getLogger(__name__)
 
@@ -388,6 +389,13 @@ def _resolve_evidence(model_id: str, evidence_id: str) -> pathlib.Path:
 # ---------------------------------------------------------------------------
 # GET /api/v1/models
 # ---------------------------------------------------------------------------
+
+
+@router.get("/production/status", response_model=ApiResponse[dict[str, Any]])
+async def production_models_status() -> ApiResponse[dict[str, Any]]:
+    """Return live, filesystem-derived status for exactly five production models."""
+    models = production_registry.probe_all()
+    return ApiResponse.success(data={"models": models, "count": len(models)})
 
 
 @router.get(

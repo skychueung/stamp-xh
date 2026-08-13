@@ -7,6 +7,7 @@ or one-time token PEPMLM_REAL_RUN_TOKEN).
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 from typing import Optional
 
 from sqlalchemy.orm import Session
@@ -133,8 +134,6 @@ def get_pepmlm_job(db: Session, job_id: str) -> Optional[Job]:
 
 def _run_dir_for_job(job: Job) -> Optional[Path]:
     """Return the absolute run directory for a job, hardened against traversal."""
-    from pathlib import Path
-
     root = Path(PEPMLM_ARTIFACT_ROOT).resolve()
     run_dir = (root / str(job.id)).resolve()
     try:
@@ -150,8 +149,6 @@ def get_pepmlm_job_artifacts(db: Session, job_id: str) -> list[dict]:
 
     Returns relative paths and never exposes absolute server paths.
     """
-    from pathlib import Path
-
     job = get_pepmlm_job(db, job_id)
     if job is None:
         return []

@@ -19,6 +19,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.database import Base, get_db
+from app.core.security import require_active
+from app.models.user import User
 from app.main import create_app
 from app.services.pipeline_orchestrator import (
     create_pipeline_run,
@@ -53,6 +55,11 @@ def test_app(db_session):
             pass
 
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[require_active] = lambda: User(
+        id="test-admin", username="test-admin", password_hash="unused", role="admin", status="active"
+    )
+    from app.routers.pipeline_runs import _csrf
+    app.dependency_overrides[_csrf] = lambda: None
     return app
 
 
@@ -101,8 +108,8 @@ async def test_report_endpoint_reads_from_lowercase_dir(async_client: AsyncClien
 
     # 2. Verify real files exist on disk in lower-case directory
     base = _artifact_dir(run_id)
-    report_json_path = os.path.join(base, "report_export", "pipeline_report.json")
-    report_md_path = os.path.join(base, "report_export", "pipeline_report.md")
+    report_json_path = os.path.join(base, "steps", "report_export", "artifacts", "pipeline_report.json")
+    report_md_path = os.path.join(base, "steps", "report_export", "artifacts", "pipeline_report.md")
     assert os.path.exists(report_json_path), f"Expected {report_json_path} to exist"
     assert os.path.exists(report_md_path), f"Expected {report_md_path} to exist"
 
@@ -223,16 +230,63 @@ async def test_download_single_artifact(async_client: AsyncClient, db_session):
     # Download a known artifact using lower-case path
     resp = await async_client.get(
         f"/api/v1/pipeline-runs/{run.id}/artifacts/download",
-        params={"path": "report_export/pipeline_report.json"},
+        params={"path": "steps/report_export/artifacts/pipeline_report.json"},
     )
     assert resp.status_code == status.HTTP_200_OK, resp.text
     assert len(resp.content) > 0
 
     # Upper-case path should fail on case-sensitive systems
-    resp_bad = await async_client.get(
+    await async_client.get(
         f"/api/v1/pipeline-runs/{run.id}/artifacts/download",
         params={"path": "REPORT_EXPORT/pipeline_report.json"},
     )
     # On Windows this might succeed (case-insensitive), on Linux it will 404.
     # We assert that at least the lower-case path works.
     assert resp.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_pipeline_endpoints_require_authentication(test_app, db_session):
+    """Pipeline metadata is private even when a run UUID is known."""
+    test_app.dependency_overrides.pop(require_active, None)
+    transport = ASGITransport(app=test_app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        resp = await client.get("/api/v1/pipeline-runs")
+    assert resp.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+@pytest.mark.asyncio
+async def test_cross_user_run_access_is_hidden(test_app, db_session):
+    run = create_pipeline_run(
+        db_session, None, "private", "MKKLLPTAAAGLLLLAAQPAMA", created_by="owner-user"
+    )
+    test_app.dependency_overrides[require_active] = lambda: User(
+        id="other-user", username="other", password_hash="unused", role="user", status="active"
+    )
+    transport = ASGITransport(app=test_app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        resp = await client.get(f"/api/v1/pipeline-runs/{run.id}")
+    assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.asyncio
+async def test_artifact_path_traversal_is_rejected(async_client: AsyncClient, db_session):
+    run = create_pipeline_run(db_session, None, "path-test", "MKKLLPTAAAGLLLLAAQPAMA")
+    resp = await async_client.get(
+        f"/api/v1/pipeline-runs/{run.id}/artifacts/download",
+        params={"path": "../../stamp_p5_lite.db"},
+    )
+    assert resp.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@pytest.mark.asyncio
+async def test_queued_pipeline_can_be_cancelled(async_client: AsyncClient, db_session):
+    run = create_pipeline_run(db_session, None, "cancel-test", "MKKLLPTAAAGLLLLAAQPAMA")
+    from app.workers.pipeline_worker import enqueue_pipeline
+
+    enqueue_pipeline(db_session, run, top_epitopes=2, peptides_per_epitope=1, top_stamp_candidates=3)
+    resp = await async_client.post(f"/api/v1/pipeline-runs/{run.id}/cancel")
+    assert resp.status_code == status.HTTP_200_OK, resp.text
+    assert resp.json()["data"]["status"] == "CANCELLED"
+    db_session.refresh(run)
+    assert run.output_json["queue"]["cancel_requested"] is True

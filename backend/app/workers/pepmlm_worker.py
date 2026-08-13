@@ -21,6 +21,7 @@ import argparse
 import datetime
 import logging
 import os
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -33,23 +34,23 @@ load_dotenv(_DEV_BACKEND_DIR / ".env")
 
 sys.path.insert(0, str(_DEV_BACKEND_DIR))
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session  # noqa: E402
 
-from app.database import SessionLocal
-from app.models.orm import Job
-from app.schemas.model_registry import ModelDryRunPayload
-from app.services.audit_log_service import (
+from app.database import SessionLocal  # noqa: E402
+from app.models.orm import Job  # noqa: E402
+from app.schemas.model_registry import ModelDryRunPayload  # noqa: E402
+from app.services.audit_log_service import (  # noqa: E402
     log_job_failed,
     log_job_start,
     log_job_success,
 )
-from app.services.gpu_lock_service import acquire_gpu_lock, release_gpu_lock
-from app.services.model_adapters.pepmlm_adapter import (
+from app.services.gpu_lock_service import acquire_gpu_lock, release_gpu_lock  # noqa: E402
+from app.services.model_adapters.pepmlm_adapter import (  # noqa: E402
     PEPMLM_ARTIFACT_ROOT,
     _close_real_run_gate,
     _real_run_allowed,
 )
-from app.services.pepmlm_job_service import PEPMLM_JOB_TYPE
+from app.services.pepmlm_job_service import PEPMLM_JOB_TYPE  # noqa: E402
 
 logger = logging.getLogger("stamp.pepmlm_worker")
 logging.basicConfig(

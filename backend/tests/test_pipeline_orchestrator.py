@@ -9,6 +9,7 @@ Tests the automated front-half pipeline:
 from __future__ import annotations
 
 import os
+import json
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -16,8 +17,6 @@ from sqlalchemy.pool import StaticPool
 
 from app.database import Base
 from app.models.orm import (
-    BatchComputation,
-    BatchComputationItem,
     EpitopeCandidate,
     EpitopeScan,
     PipelineRun,
@@ -29,7 +28,6 @@ from app.services.pipeline_orchestrator import (
     STEP_ORDER,
     create_pipeline_run,
     create_pipeline_zip,
-    get_pipeline_status,
     list_pipeline_artifacts,
     retry_pipeline_from_step,
     run_epitope_screening_step,
@@ -39,7 +37,6 @@ from app.services.pipeline_orchestrator import (
     run_target_input_step,
     run_structure_validation_ready_step,
     run_final_ranking_step,
-    generate_pipeline_report,
     run_pipeline_once,
     read_pipeline_log,
 )
@@ -98,6 +95,15 @@ def test_create_pipeline_run_creates_steps(db_session, demo_sequence: str):
         assert steps[i].step_name == name
         assert steps[i].status == "PENDING"
         assert steps[i].method is not None
+
+    from app.services.pipeline_orchestrator import _artifact_dir
+    root = _artifact_dir(run.id)
+    assert os.path.isfile(os.path.join(root, "request.json"))
+    assert os.path.isfile(os.path.join(root, "manifest.json"))
+    assert os.path.isfile(os.path.join(root, "logs.jsonl"))
+    with open(os.path.join(root, "request.json"), encoding="utf-8") as handle:
+        request_data = json.load(handle)
+    assert len(request_data["input_hash"]) == 64
 
 
 def test_create_pipeline_run_empty_sequence(db_session):
@@ -345,7 +351,7 @@ def test_run_pipeline_once_full(db_session, demo_sequence: str):
 def test_multiple_independent_runs_succeed(db_session, demo_sequence: str):
     """Regression: a successful first run must not poison later runs."""
     results = []
-    for index in range(3):
+    for index in range(10):
         run = create_pipeline_run(db_session, None, f"repeat-{index}", demo_sequence)
         results.append(
             run_pipeline_once(
@@ -356,8 +362,8 @@ def test_multiple_independent_runs_succeed(db_session, demo_sequence: str):
                 top_stamp_candidates=5,
             )
         )
-    assert [result.status for result in results] == ["SUCCEEDED", "SUCCEEDED", "SUCCEEDED"]
-    assert len({result.id for result in results}) == 3
+    assert [result.status for result in results] == ["SUCCEEDED"] * 10
+    assert len({result.id for result in results}) == 10
 
 
 # ---------------------------------------------------------------------------

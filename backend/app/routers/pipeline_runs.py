@@ -6,16 +6,18 @@ REST API for creating, running, and monitoring automated pipeline executions.
 
 from __future__ import annotations
 
-import logging
 import os
 from typing import Any
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.core.limiter import limiter
+from app.core.security import require_active, validate_csrf
+from app.models.user import User
 from app.models.schemas import ApiResponse
 from app.services.pipeline_orchestrator import (
     create_pipeline_run,
@@ -24,12 +26,27 @@ from app.services.pipeline_orchestrator import (
     list_pipeline_artifacts,
     read_pipeline_log,
     retry_pipeline_from_step,
-    run_pipeline_once,
 )
-
-logger = logging.getLogger("stamp")
+from app.services.pipeline_artifacts import resolve_artifact
+from app.workers.pipeline_worker import enqueue_pipeline
 
 router = APIRouter(prefix="/api/v1/pipeline-runs", tags=["Pipeline Runs"])
+
+
+def _owned_run(db: Session, run_id: str, user: User):
+    from app.models.orm import PipelineRun
+
+    query = db.query(PipelineRun).filter(PipelineRun.id == run_id)
+    if user.role != "admin":
+        query = query.filter(PipelineRun.created_by == user.id)
+    run = query.first()
+    if run is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pipeline run not found")
+    return run
+
+
+def _csrf(request: Request) -> None:
+    validate_csrf(request)
 
 
 # ---------------------------------------------------------------------------
@@ -100,7 +117,10 @@ class PipelineLogRecord(BaseModel):
     level: str
     run_id: str
     step: str | None
+    model_id: str | None = None
+    request_id: str | None = None
     message: str
+    exception_trace: str | None = None
 
 
 class PipelineLogResponse(BaseModel):
@@ -114,17 +134,29 @@ class PipelineLogResponse(BaseModel):
 
 
 @router.post("", response_model=ApiResponse[PipelineRunResponse])
+@limiter.limit(os.environ.get("STAMP_PIPELINE_CREATE_RATE_LIMIT", "10/minute"))
 def create_run(
+    request: Request,
     body: PipelineRunCreate,
-    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
+    user: User = Depends(require_active),
+    _: None = Depends(_csrf),
 ):
     """Create a new pipeline run. If mode='run_all', start execution in background."""
+    if body.project_id:
+        from app.models.orm import Project
+
+        project_query = db.query(Project).filter(Project.id == body.project_id)
+        if user.role != "admin":
+            project_query = project_query.filter(Project.owner_id == user.id)
+        if project_query.first() is None:
+            raise HTTPException(status_code=404, detail="Project not found")
     run = create_pipeline_run(
         db=db,
         project_id=body.project_id,
         target_name=body.target_name,
         target_sequence=body.target_sequence,
+        created_by=user.id,
     )
 
     # Persist unified-workbench request params into the existing output_json
@@ -142,12 +174,12 @@ def create_run(
         db.refresh(run)
 
     if body.mode == "run_all":
-        background_tasks.add_task(
-            _run_pipeline_bg,
-            run.id,
-            body.top_epitopes,
-            body.peptides_per_epitope,
-            body.top_stamp_candidates,
+        run = enqueue_pipeline(
+            db,
+            run,
+            top_epitopes=body.top_epitopes,
+            peptides_per_epitope=body.peptides_per_epitope,
+            top_stamp_candidates=body.top_stamp_candidates,
         )
 
     return ApiResponse.success(data=_run_to_response(run))
@@ -160,11 +192,14 @@ def list_runs(
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db),
+    user: User = Depends(require_active),
 ):
     """List pipeline runs with optional filtering."""
     from app.models.orm import PipelineRun
 
     q = db.query(PipelineRun)
+    if user.role != "admin":
+        q = q.filter(PipelineRun.created_by == user.id)
     if project_id:
         q = q.filter(PipelineRun.project_id == project_id)
     if status:
@@ -181,9 +216,10 @@ def list_runs(
 
 
 @router.get("/{run_id}", response_model=ApiResponse[PipelineStatusResponse])
-def get_run(run_id: str, db: Session = Depends(get_db)):
+def get_run(run_id: str, db: Session = Depends(get_db), user: User = Depends(require_active)):
     """Get full pipeline run status with step details."""
     try:
+        _owned_run(db, run_id, user)
         status = get_pipeline_status(db, run_id)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
@@ -191,9 +227,10 @@ def get_run(run_id: str, db: Session = Depends(get_db)):
 
 
 @router.get("/{run_id}/steps", response_model=ApiResponse[list[PipelineStepSummary]])
-def get_steps(run_id: str, db: Session = Depends(get_db)):
+def get_steps(run_id: str, db: Session = Depends(get_db), user: User = Depends(require_active)):
     """Get step list for a pipeline run."""
     try:
+        _owned_run(db, run_id, user)
         status = get_pipeline_status(db, run_id)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
@@ -205,79 +242,113 @@ def get_run_logs(
     run_id: str,
     tail: int = Query(500, ge=1, le=5000),
     db: Session = Depends(get_db),
+    user: User = Depends(require_active),
 ):
     """Return durable execution events for one pipeline run."""
-    from app.models.orm import PipelineRun
 
-    if not db.query(PipelineRun.id).filter(PipelineRun.id == run_id).first():
-        raise HTTPException(status_code=404, detail="Pipeline run not found")
+    _owned_run(db, run_id, user)
     return ApiResponse.success(
         data=PipelineLogResponse(run_id=run_id, records=read_pipeline_log(run_id, tail=tail))
     )
 
 
 @router.post("/{run_id}/run", response_model=ApiResponse[PipelineRunResponse])
+@limiter.limit(os.environ.get("STAMP_PIPELINE_RUN_RATE_LIMIT", "10/minute"))
 def run_pipeline(
+    request: Request,
     run_id: str,
-    background_tasks: BackgroundTasks,
     top_epitopes: int = Query(20, ge=1, le=100),
     peptides_per_epitope: int = Query(5, ge=1, le=20),
     top_stamp_candidates: int = Query(100, ge=1, le=500),
     db: Session = Depends(get_db),
+    user: User = Depends(require_active),
+    _: None = Depends(_csrf),
 ):
     """Trigger pipeline execution for an existing run."""
-    from app.models.orm import PipelineRun
 
-    run = db.query(PipelineRun).filter(PipelineRun.id == run_id).first()
-    if not run:
-        raise HTTPException(status_code=404, detail="Pipeline run not found")
+    run = _owned_run(db, run_id, user)
     if run.status == "RUNNING":
         raise HTTPException(status_code=409, detail="Pipeline is already running")
+    if run.status == "SUCCEEDED":
+        raise HTTPException(status_code=409, detail="Pipeline already succeeded; create a new run or use retry")
 
-    background_tasks.add_task(
-        _run_pipeline_bg,
-        run_id,
-        top_epitopes,
-        peptides_per_epitope,
-        top_stamp_candidates,
+    run = enqueue_pipeline(
+        db,
+        run,
+        top_epitopes=top_epitopes,
+        peptides_per_epitope=peptides_per_epitope,
+        top_stamp_candidates=top_stamp_candidates,
     )
-
-    run.status = "RUNNING"
-    db.commit()
-    db.refresh(run)
     return ApiResponse.success(data=_run_to_response(run))
 
 
 @router.post("/{run_id}/retry", response_model=ApiResponse[PipelineRunResponse])
+@limiter.limit(os.environ.get("STAMP_PIPELINE_RETRY_RATE_LIMIT", "10/minute"))
 def retry_pipeline(
+    request: Request,
     run_id: str,
     body: PipelineRetryRequest,
-    background_tasks: BackgroundTasks,
     top_epitopes: int = Query(20, ge=1, le=100),
     peptides_per_epitope: int = Query(5, ge=1, le=20),
     top_stamp_candidates: int = Query(100, ge=1, le=500),
     db: Session = Depends(get_db),
+    user: User = Depends(require_active),
+    _: None = Depends(_csrf),
 ):
     """Retry pipeline from a specific step."""
     try:
+        _owned_run(db, run_id, user)
         run = retry_pipeline_from_step(db, run_id, body.from_step)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
 
-    background_tasks.add_task(
-        _run_pipeline_bg,
-        run_id,
-        top_epitopes,
-        peptides_per_epitope,
-        top_stamp_candidates,
+    run = enqueue_pipeline(
+        db,
+        run,
+        top_epitopes=top_epitopes,
+        peptides_per_epitope=peptides_per_epitope,
+        top_stamp_candidates=top_stamp_candidates,
     )
     return ApiResponse.success(data=_run_to_response(run))
 
 
+@router.post("/{run_id}/cancel", response_model=ApiResponse[PipelineRunResponse])
+@limiter.limit(os.environ.get("STAMP_PIPELINE_CANCEL_RATE_LIMIT", "20/minute"))
+def cancel_pipeline(
+    request: Request,
+    run_id: str,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_active),
+    _: None = Depends(_csrf),
+):
+    """Request cooperative cancellation; queued runs stop immediately."""
+    run = _owned_run(db, run_id, user)
+    if run.status in {"SUCCEEDED", "FAILED", "CANCELLED"}:
+        return ApiResponse.success(data=_run_to_response(run))
+    metadata = dict(run.output_json or {})
+    queue = dict(metadata.get("queue") or {})
+    queue["cancel_requested"] = True
+    queue["cancel_requested_at"] = __import__("datetime").datetime.now(
+        __import__("datetime").timezone.utc
+    ).isoformat()
+    if run.status == "QUEUED":
+        queue["state"] = "cancelled"
+        run.status = "CANCELLED"
+    metadata["queue"] = queue
+    run.output_json = metadata
+    db.commit()
+    db.refresh(run)
+    from app.services.pipeline_artifacts import mark_manifest_status
+
+    mark_manifest_status(run.id, run.status)
+    return ApiResponse.success(data=_run_to_response(run))
+
+
 @router.get("/{run_id}/artifacts", response_model=ApiResponse[list[dict[str, Any]]])
-def list_artifacts(run_id: str):
+def list_artifacts(run_id: str, db: Session = Depends(get_db), user: User = Depends(require_active)):
     """List artifact files for a pipeline run."""
     try:
+        _owned_run(db, run_id, user)
         files = list_pipeline_artifacts(run_id)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
@@ -285,13 +356,14 @@ def list_artifacts(run_id: str):
 
 
 @router.get("/{run_id}/report", response_model=ApiResponse[dict[str, Any]])
-def get_report(run_id: str):
+def get_report(run_id: str, db: Session = Depends(get_db), user: User = Depends(require_active)):
     """Get pipeline report (JSON and markdown paths)."""
     import os
     from app.services.pipeline_orchestrator import _artifact_dir
 
+    _owned_run(db, run_id, user)
     base = _artifact_dir(run_id)
-    report_dir = os.path.join(base, "report_export")
+    report_dir = os.path.join(base, "steps", "report_export", "artifacts")
     report_json = os.path.join(report_dir, "pipeline_report.json")
     report_md = os.path.join(report_dir, "pipeline_report.md")
     result: dict[str, Any] = {"run_id": run_id}
@@ -306,31 +378,33 @@ def get_report(run_id: str):
 
 
 @router.get("/{run_id}/artifacts/download")
-def download_artifact(run_id: str, path: str = Query(..., description="Relative artifact path")):
+def download_artifact(
+    run_id: str,
+    path: str = Query(..., description="Relative artifact path"),
+    db: Session = Depends(get_db),
+    user: User = Depends(require_active),
+):
     """Download a single artifact file by relative path."""
-    from app.services.pipeline_orchestrator import _artifact_dir
-
-    base = _artifact_dir(run_id)
-    file_path = os.path.join(base, path)
-    # Security: ensure path is within base directory
-    real_base = os.path.realpath(base)
-    real_file = os.path.realpath(file_path)
-    if not real_file.startswith(real_base + os.sep) and real_file != real_base:
+    _owned_run(db, run_id, user)
+    try:
+        real_file = resolve_artifact(run_id, path)
+    except ValueError:
         raise HTTPException(status_code=400, detail="Invalid path")
-    if not os.path.isfile(real_file):
+    except FileNotFoundError:
         raise HTTPException(status_code=404, detail="File not found")
     return FileResponse(
-        real_file,
+        str(real_file),
         media_type="application/octet-stream",
         filename=os.path.basename(real_file),
     )
 
 
 @router.get("/{run_id}/download")
-def download_artifacts(run_id: str):
+def download_artifacts(run_id: str, db: Session = Depends(get_db), user: User = Depends(require_active)):
     """Download all pipeline artifacts as a zip file."""
     from fastapi.responses import FileResponse
 
+    _owned_run(db, run_id, user)
     try:
         zip_path = create_pipeline_zip(run_id)
     except Exception as exc:
@@ -362,27 +436,3 @@ def _run_to_response(run: Any) -> PipelineRunResponse:
         updated_at=run.updated_at.isoformat() if run.updated_at else None,
         error_message=run.error_message,
     )
-
-
-def _run_pipeline_bg(
-    run_id: str,
-    top_epitopes: int,
-    peptides_per_epitope: int,
-    top_stamp_candidates: int,
-) -> None:
-    """Background task wrapper for pipeline execution."""
-    from app.database import SessionLocal
-
-    db = SessionLocal()
-    try:
-        run_pipeline_once(
-            db=db,
-            run_id=run_id,
-            top_epitopes=top_epitopes,
-            peptides_per_epitope=peptides_per_epitope,
-            top_stamp_candidates=top_stamp_candidates,
-        )
-    except Exception:
-        logger.exception("Background pipeline run %s failed", run_id)
-    finally:
-        db.close()

@@ -10,9 +10,9 @@ from app.models.orm import Project
 from app.schemas import ProjectCreate, ProjectUpdate
 
 
-def create_project(db: Session, obj_in: ProjectCreate) -> Project:
+def create_project(db: Session, obj_in: ProjectCreate, *, owner_id: str | None = None) -> Project:
     """Create a new project."""
-    db_obj = Project(**obj_in.model_dump())
+    db_obj = Project(**obj_in.model_dump(), owner_id=owner_id)
     db.add(db_obj)
     db.commit()
     db.refresh(db_obj)
@@ -24,9 +24,12 @@ def get_project(db: Session, project_id: str) -> Optional[Project]:
     return db.query(Project).filter(Project.id == project_id).first()
 
 
-def list_projects(db: Session, *, skip: int = 0, limit: int = 100) -> List[Project]:
+def list_projects(db: Session, *, skip: int = 0, limit: int = 100, owner_id: str | None = None) -> List[Project]:
     """List projects with pagination."""
-    return db.query(Project).offset(skip).limit(limit).all()
+    query = db.query(Project)
+    if owner_id is not None:
+        query = query.filter(Project.owner_id == owner_id)
+    return query.offset(skip).limit(limit).all()
 
 
 def update_project(
