@@ -1,0 +1,383 @@
+[
+  {
+    "seed": 41,
+    "job_id": "e2cfd44b-7e68-43d7-9827-fb76f65d2c0d",
+    "status": "SUCCEEDED",
+    "duration": 6.2,
+    "error": {},
+    "result": {
+      "run_id": "real_pepflow_20260814",
+      "job_id": "e2cfd44b-7e68-43d7-9827-fb76f65d2c0d",
+      "model_id": "pepflow",
+      "model_version": "ICML-2024-model2",
+      "status": "SUCCEEDED",
+      "started_at": "2026-08-13T17:27:32.434270",
+      "finished_at": "2026-08-13T17:27:38.550070+00:00",
+      "duration_seconds": 6.184,
+      "device": "cuda:1",
+      "checkpoint_sha256": "80ef4d7a07eddd877067859b5df95c50833cb72c40ef10d6ff5aa1263f0dba21",
+      "input_sha256": "91fe4057d925c027813f1fa081605fe30ed5288cac80c32c4726e7672828c5bc",
+      "candidates": [
+        {
+          "candidate_id": "pepflow_0001",
+          "sequence": "EWEDIKEIWAEEWPNEVNPHES",
+          "length": 22,
+          "rank": 1,
+          "score": null,
+          "structure_path": null,
+          "source_model": "pepflow"
+        }
+      ],
+      "artifacts": [
+        {
+          "name": "request.json",
+          "path": "input/request.json",
+          "size_bytes": 168,
+          "sha256": "91fe4057d925c027813f1fa081605fe30ed5288cac80c32c4726e7672828c5bc"
+        },
+        {
+          "name": "runner.log",
+          "path": "logs/runner.log",
+          "size_bytes": 2340,
+          "sha256": "8b610a102d1da0520afb03e4dafd2ba80e9671ce701f3c1e34856e2a2a35d66e"
+        },
+        {
+          "name": "converter_manifest.json",
+          "path": "output/input/converter_manifest.json",
+          "size_bytes": 1704,
+          "sha256": "dab913da95ab7d023f8d228abe3ce463521136a71d0250e4b8bd11b580fc7344"
+        },
+        {
+          "name": "dataset_config.yaml",
+          "path": "output/input/dataset_config.yaml",
+          "size_bytes": 281,
+          "sha256": "09f724f8aa4272f24e1aa120035bf05b6b069d332b9f6e8f7006d7cf0393b24c"
+        },
+        {
+          "name": "full_config.yaml",
+          "path": "output/input/full_config.yaml",
+          "size_bytes": 1539,
+          "sha256": "63f06868361faa34428580c3794d971f7e6378d35bfd578576b1a5e67f553b9b"
+        },
+        {
+          "name": "inference_seeded.py",
+          "path": "output/input/inference_seeded.py",
+          "size_bytes": 4016,
+          "sha256": "2179691ed916d66367fed8801bb24083ce1578fc1d8a6c34b32e5c000309d912"
+        },
+        {
+          "name": "pep_structure_cache.lmdb",
+          "path": "output/input/pep_structure_cache.lmdb",
+          "size_bytes": 28672,
+          "sha256": "efad45140607629a955532d96446c57f0bcc2c1d82e58173497d6b156e5a08ef"
+        },
+        {
+          "name": "pep_structure_cache.lmdb-lock",
+          "path": "output/input/pep_structure_cache.lmdb-lock",
+          "size_bytes": 8192,
+          "sha256": "e56630506824fe0e01ad9a7d6ed0759f38ff6c034806d2032605e37969964235"
+        },
+        {
+          "name": "runtime_config.yaml",
+          "path": "output/input/runtime_config.yaml",
+          "size_bytes": 1739,
+          "sha256": "94a44c560a60287676a100a38265008e5fa515a411c5e5e6fd9dc99249e4539a"
+        },
+        {
+          "name": "peptide.pdb",
+          "path": "output/input/structure_dir/case0/peptide.pdb",
+          "size_bytes": 14746,
+          "sha256": "4ddd0a6f41e86d960f94fc6246cbb543ca19c36a122a92dec1839050ca3c79f1"
+        },
+        {
+          "name": "pocket.pdb",
+          "path": "output/input/structure_dir/case0/pocket.pdb",
+          "size_bytes": 20011,
+          "sha256": "93b59336f4734b95272716153fdbadff1d5fe7e88f2ade2e1f3259f4491d49d8"
+        },
+        {
+          "name": "case0.pt",
+          "path": "output/outputs/case0.pt",
+          "size_bytes": 31407,
+          "sha256": "b7ad0ddb5c0221e737cf63bad6517a864e2f4e8db5368a7396d64c43bc7a9b7a"
+        },
+        {
+          "name": "outputs.csv",
+          "path": "output/outputs.csv",
+          "size_bytes": 142,
+          "sha256": "1be2df6e3ad37083ef2c2ffbf02f67f1685dfd9d4eb367e1208425ea054ed2ea"
+        },
+        {
+          "name": "result.json",
+          "path": "output/result.json",
+          "size_bytes": 1246,
+          "sha256": "5a61b5ec29b27e48f1e09bd18d9745ebc8a85d4cc3134fbca907f0fcb8ea1646"
+        }
+      ],
+      "metrics": {
+        "num_steps": 3,
+        "job_seed": 41
+      },
+      "warnings": [
+        "Uses the server's proven case0 receptor/pocket fixture for structural input."
+      ],
+      "error": null,
+      "provenance": "real_model",
+      "validation_status": "NOT_EXPERIMENTALLY_VALIDATED"
+    }
+  },
+  {
+    "seed": 42,
+    "job_id": "43736874-14d9-4361-a384-c83be0e0d1b9",
+    "status": "SUCCEEDED",
+    "duration": 6.21,
+    "error": {},
+    "result": {
+      "run_id": "real_pepflow_20260814",
+      "job_id": "43736874-14d9-4361-a384-c83be0e0d1b9",
+      "model_id": "pepflow",
+      "model_version": "ICML-2024-model2",
+      "status": "SUCCEEDED",
+      "started_at": "2026-08-13T17:27:38.689278",
+      "finished_at": "2026-08-13T17:27:44.809955+00:00",
+      "duration_seconds": 6.19,
+      "device": "cuda:1",
+      "checkpoint_sha256": "80ef4d7a07eddd877067859b5df95c50833cb72c40ef10d6ff5aa1263f0dba21",
+      "input_sha256": "1029b8db4e90dbae75b9ef39c7d4b48e6332e63da2af37aa74255ba102763972",
+      "candidates": [
+        {
+          "candidate_id": "pepflow_0001",
+          "sequence": "ENEENCWDHWPEEFPESNEPTP",
+          "length": 22,
+          "rank": 1,
+          "score": null,
+          "structure_path": null,
+          "source_model": "pepflow"
+        }
+      ],
+      "artifacts": [
+        {
+          "name": "request.json",
+          "path": "input/request.json",
+          "size_bytes": 168,
+          "sha256": "1029b8db4e90dbae75b9ef39c7d4b48e6332e63da2af37aa74255ba102763972"
+        },
+        {
+          "name": "runner.log",
+          "path": "logs/runner.log",
+          "size_bytes": 2337,
+          "sha256": "22696986dfa2b1d7a243f74f3be15db78c778470a8906b8fe605eda131b1d615"
+        },
+        {
+          "name": "converter_manifest.json",
+          "path": "output/input/converter_manifest.json",
+          "size_bytes": 1704,
+          "sha256": "dab913da95ab7d023f8d228abe3ce463521136a71d0250e4b8bd11b580fc7344"
+        },
+        {
+          "name": "dataset_config.yaml",
+          "path": "output/input/dataset_config.yaml",
+          "size_bytes": 281,
+          "sha256": "09f724f8aa4272f24e1aa120035bf05b6b069d332b9f6e8f7006d7cf0393b24c"
+        },
+        {
+          "name": "full_config.yaml",
+          "path": "output/input/full_config.yaml",
+          "size_bytes": 1539,
+          "sha256": "63f06868361faa34428580c3794d971f7e6378d35bfd578576b1a5e67f553b9b"
+        },
+        {
+          "name": "inference_seeded.py",
+          "path": "output/input/inference_seeded.py",
+          "size_bytes": 4016,
+          "sha256": "7ca992fb396b5ecde59f82fbebcf34772b59abe29a71b1620dc41b466632903c"
+        },
+        {
+          "name": "pep_structure_cache.lmdb",
+          "path": "output/input/pep_structure_cache.lmdb",
+          "size_bytes": 28672,
+          "sha256": "65e31e6df10425c5ed2b8be0e822023e3d5d3c51574b295f80992292a366ef35"
+        },
+        {
+          "name": "pep_structure_cache.lmdb-lock",
+          "path": "output/input/pep_structure_cache.lmdb-lock",
+          "size_bytes": 8192,
+          "sha256": "3f0ae12f7705c1b68e6db3e6aa11d23f098723b75b321786b2c8245c1fc97235"
+        },
+        {
+          "name": "runtime_config.yaml",
+          "path": "output/input/runtime_config.yaml",
+          "size_bytes": 1739,
+          "sha256": "2f78802bda9251a4bf2a046ebbccbc2b2a6429df32124dcaa8c9cd8a150f030e"
+        },
+        {
+          "name": "peptide.pdb",
+          "path": "output/input/structure_dir/case0/peptide.pdb",
+          "size_bytes": 14746,
+          "sha256": "4ddd0a6f41e86d960f94fc6246cbb543ca19c36a122a92dec1839050ca3c79f1"
+        },
+        {
+          "name": "pocket.pdb",
+          "path": "output/input/structure_dir/case0/pocket.pdb",
+          "size_bytes": 20011,
+          "sha256": "93b59336f4734b95272716153fdbadff1d5fe7e88f2ade2e1f3259f4491d49d8"
+        },
+        {
+          "name": "case0.pt",
+          "path": "output/outputs/case0.pt",
+          "size_bytes": 31407,
+          "sha256": "43de9c5e3dfccece5fb47995c09aaab7f3ea6de37c5404cb8f409b224e2b306b"
+        },
+        {
+          "name": "outputs.csv",
+          "path": "output/outputs.csv",
+          "size_bytes": 144,
+          "sha256": "9f5781fae45fd3ede176028c18003845a011f510b8348b20b594bd8df8d15e67"
+        },
+        {
+          "name": "result.json",
+          "path": "output/result.json",
+          "size_bytes": 1246,
+          "sha256": "f39683411aa56b2e08058a929ea2e609d45f4bc654cc7448872509a25d0cf405"
+        }
+      ],
+      "metrics": {
+        "num_steps": 3,
+        "job_seed": 42
+      },
+      "warnings": [
+        "Uses the server's proven case0 receptor/pocket fixture for structural input."
+      ],
+      "error": null,
+      "provenance": "real_model",
+      "validation_status": "NOT_EXPERIMENTALLY_VALIDATED"
+    }
+  },
+  {
+    "seed": 43,
+    "job_id": "5d1fcd0b-1c0d-45aa-a522-9510cbf94647",
+    "status": "SUCCEEDED",
+    "duration": 6.2,
+    "error": {},
+    "result": {
+      "run_id": "real_pepflow_20260814",
+      "job_id": "5d1fcd0b-1c0d-45aa-a522-9510cbf94647",
+      "model_id": "pepflow",
+      "model_version": "ICML-2024-model2",
+      "status": "SUCCEEDED",
+      "started_at": "2026-08-13T17:27:44.949665",
+      "finished_at": "2026-08-13T17:27:51.057793+00:00",
+      "duration_seconds": 6.178,
+      "device": "cuda:1",
+      "checkpoint_sha256": "80ef4d7a07eddd877067859b5df95c50833cb72c40ef10d6ff5aa1263f0dba21",
+      "input_sha256": "6bbd047f49058f0df15fb550deb3f21ddc3118f0445b58cd87369ec92e3be449",
+      "candidates": [
+        {
+          "candidate_id": "pepflow_0001",
+          "sequence": "DMEPTDDWEGSIIASNEINFEE",
+          "length": 22,
+          "rank": 1,
+          "score": null,
+          "structure_path": null,
+          "source_model": "pepflow"
+        }
+      ],
+      "artifacts": [
+        {
+          "name": "request.json",
+          "path": "input/request.json",
+          "size_bytes": 168,
+          "sha256": "6bbd047f49058f0df15fb550deb3f21ddc3118f0445b58cd87369ec92e3be449"
+        },
+        {
+          "name": "runner.log",
+          "path": "logs/runner.log",
+          "size_bytes": 2323,
+          "sha256": "0c6eb8d14300fee6b25cf0a3d8c16f919c879ca9e1ab85d0abc8838d9c4651c0"
+        },
+        {
+          "name": "converter_manifest.json",
+          "path": "output/input/converter_manifest.json",
+          "size_bytes": 1704,
+          "sha256": "dab913da95ab7d023f8d228abe3ce463521136a71d0250e4b8bd11b580fc7344"
+        },
+        {
+          "name": "dataset_config.yaml",
+          "path": "output/input/dataset_config.yaml",
+          "size_bytes": 281,
+          "sha256": "09f724f8aa4272f24e1aa120035bf05b6b069d332b9f6e8f7006d7cf0393b24c"
+        },
+        {
+          "name": "full_config.yaml",
+          "path": "output/input/full_config.yaml",
+          "size_bytes": 1539,
+          "sha256": "63f06868361faa34428580c3794d971f7e6378d35bfd578576b1a5e67f553b9b"
+        },
+        {
+          "name": "inference_seeded.py",
+          "path": "output/input/inference_seeded.py",
+          "size_bytes": 4016,
+          "sha256": "72691de6491839f0f8f445a0f4b9f6b1445cae49f140a42381b84d9a7e2f3f8a"
+        },
+        {
+          "name": "pep_structure_cache.lmdb",
+          "path": "output/input/pep_structure_cache.lmdb",
+          "size_bytes": 28672,
+          "sha256": "07a8f83bc1c59a4300480a2f6f8ee42a5c9785d9167c11e9e16837d4e0dd5488"
+        },
+        {
+          "name": "pep_structure_cache.lmdb-lock",
+          "path": "output/input/pep_structure_cache.lmdb-lock",
+          "size_bytes": 8192,
+          "sha256": "fd456e900102697b5b263001d2762c57ea0a34ba16aec287290ceee26de3eabf"
+        },
+        {
+          "name": "runtime_config.yaml",
+          "path": "output/input/runtime_config.yaml",
+          "size_bytes": 1739,
+          "sha256": "39b661560719fb8db3e17c257fe95a6be49c4f18a2fdd8aa33e6e0e38c6914fd"
+        },
+        {
+          "name": "peptide.pdb",
+          "path": "output/input/structure_dir/case0/peptide.pdb",
+          "size_bytes": 14746,
+          "sha256": "4ddd0a6f41e86d960f94fc6246cbb543ca19c36a122a92dec1839050ca3c79f1"
+        },
+        {
+          "name": "pocket.pdb",
+          "path": "output/input/structure_dir/case0/pocket.pdb",
+          "size_bytes": 20011,
+          "sha256": "93b59336f4734b95272716153fdbadff1d5fe7e88f2ade2e1f3259f4491d49d8"
+        },
+        {
+          "name": "case0.pt",
+          "path": "output/outputs/case0.pt",
+          "size_bytes": 31407,
+          "sha256": "37d0247446582a128e78658cca3ec52741e26d7d730b78700cc14adcd926c566"
+        },
+        {
+          "name": "outputs.csv",
+          "path": "output/outputs.csv",
+          "size_bytes": 125,
+          "sha256": "00639a6193b6ae85afa92289b869e334392097aae74ebc8c91fe37fa13e9b4db"
+        },
+        {
+          "name": "result.json",
+          "path": "output/result.json",
+          "size_bytes": 1246,
+          "sha256": "b5df52ff02e8e850b4f5b1f98220501cd24320c29ca2c4dd0e75e237630367b7"
+        }
+      ],
+      "metrics": {
+        "num_steps": 3,
+        "job_seed": 43
+      },
+      "warnings": [
+        "Uses the server's proven case0 receptor/pocket fixture for structural input."
+      ],
+      "error": null,
+      "provenance": "real_model",
+      "validation_status": "NOT_EXPERIMENTALLY_VALIDATED"
+    }
+  }
+]

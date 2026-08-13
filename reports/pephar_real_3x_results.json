@@ -1,0 +1,278 @@
+[
+  {
+    "seed": 41,
+    "job_id": "fc152cc0-09f4-4067-bd83-4af910079425",
+    "status": "SUCCEEDED",
+    "duration": 53.23,
+    "error": {},
+    "result": {
+      "run_id": "real_pephar_20260814",
+      "job_id": "fc152cc0-09f4-4067-bd83-4af910079425",
+      "model_id": "pephar",
+      "model_version": "ICLR-2025",
+      "status": "SUCCEEDED",
+      "started_at": "2026-08-13T17:10:37.326948",
+      "finished_at": "2026-08-13T17:11:30.491920+00:00",
+      "duration_seconds": 53.212,
+      "device": "cuda:1",
+      "checkpoint_sha256": "06b9a2701a9594158de2650d10da756c51dda3cc410ea98c47cf9fd1dbc32d15",
+      "input_sha256": "e5b51be491b79baa9f408a5404bb85684999a00614f6564859c2b2543ea1b1cd",
+      "candidates": [
+        {
+          "candidate_id": "pephar_0001",
+          "sequence": "PPAVVAAPPVVV",
+          "length": 12,
+          "rank": 1,
+          "score": 0.1666666716337204,
+          "structure_path": "pephar_run/result/new_10_0_single_gt_sto_1/case0/gen_0.pdb",
+          "source_model": "pephar"
+        }
+      ],
+      "artifacts": [
+        {
+          "name": "request.json",
+          "path": "input/request.json",
+          "size_bytes": 150,
+          "sha256": "e5b51be491b79baa9f408a5404bb85684999a00614f6564859c2b2543ea1b1cd"
+        },
+        {
+          "name": "runner.log",
+          "path": "logs/runner.log",
+          "size_bytes": 923,
+          "sha256": "669062fcce00c5bf90101e7b6084cab587f22a1cd1be6829523f100a39516fb4"
+        },
+        {
+          "name": "gen_0.pdb",
+          "path": "output/pephar_run/result/new_10_0_single_gt_sto_1/case0/gen_0.pdb",
+          "size_bytes": 24876,
+          "sha256": "3398f5b1f74fa2644657d42e1e7c7b3cb85d1a9a1c38bb6f94a5244b3b58948d"
+        },
+        {
+          "name": "gt.pdb",
+          "path": "output/pephar_run/result/new_10_0_single_gt_sto_1/case0/gt.pdb",
+          "size_bytes": 24795,
+          "sha256": "cba943cfce94ab8be4fa73d2bcac90ab9493db41b9724a91e72cccbe4c2baccb"
+        },
+        {
+          "name": "test.csv",
+          "path": "output/pephar_run/result/new_10_0_single_gt_sto_1/test.csv",
+          "size_bytes": 106,
+          "sha256": "731bff59125829473629a0b49d3e35024c9684041c3c81c3e0f20f56a6855601"
+        },
+        {
+          "name": "test_data_12aa.pkl",
+          "path": "output/pephar_run/test_data_12aa.pkl",
+          "size_bytes": 19268,
+          "sha256": "2794f84c6f9f7a9e3fa46dd8fbffdd9e9debedbd63231769c20436e46d7fcf77"
+        },
+        {
+          "name": "result.json",
+          "path": "output/result.json",
+          "size_bytes": 995,
+          "sha256": "2984b3dde7cc3baa317ff264c2365f4b56cd73fd5e19bfdfde6c6801c7867030"
+        }
+      ],
+      "metrics": {
+        "rows": [
+          {
+            "name": "case0",
+            "rmsd": "5.067183017730713",
+            "recovery": "0.1666666716337204",
+            "rec_length": "30",
+            "pep_length": "12",
+            "num": "0",
+            "valid": "1.0"
+          }
+        ]
+      },
+      "warnings": [],
+      "error": null,
+      "provenance": "real_model",
+      "validation_status": "NOT_EXPERIMENTALLY_VALIDATED"
+    }
+  },
+  {
+    "seed": 42,
+    "job_id": "4b6130a2-0ae2-43b8-b008-ed762e9ad8a0",
+    "status": "SUCCEEDED",
+    "duration": 4.14,
+    "error": {},
+    "result": {
+      "run_id": "real_pephar_20260814",
+      "job_id": "4b6130a2-0ae2-43b8-b008-ed762e9ad8a0",
+      "model_id": "pephar",
+      "model_version": "ICLR-2025",
+      "status": "SUCCEEDED",
+      "started_at": "2026-08-13T17:11:30.606905",
+      "finished_at": "2026-08-13T17:11:34.675582+00:00",
+      "duration_seconds": 4.111,
+      "device": "cuda:1",
+      "checkpoint_sha256": "06b9a2701a9594158de2650d10da756c51dda3cc410ea98c47cf9fd1dbc32d15",
+      "input_sha256": "2f63a69658dbac76eed357acb5ca8508d147a0867f4c7e5021471c317a70f21d",
+      "candidates": [
+        {
+          "candidate_id": "pephar_0001",
+          "sequence": "PVPPPPAPPVAI",
+          "length": 12,
+          "rank": 1,
+          "score": 0.0833333358168602,
+          "structure_path": "pephar_run/result/new_10_0_single_gt_sto_1/case0/gen_0.pdb",
+          "source_model": "pephar"
+        }
+      ],
+      "artifacts": [
+        {
+          "name": "request.json",
+          "path": "input/request.json",
+          "size_bytes": 150,
+          "sha256": "2f63a69658dbac76eed357acb5ca8508d147a0867f4c7e5021471c317a70f21d"
+        },
+        {
+          "name": "runner.log",
+          "path": "logs/runner.log",
+          "size_bytes": 923,
+          "sha256": "4404222bcec6eda6d166ca68eb41cf449303691682674a4a8259ab1aec09f5ea"
+        },
+        {
+          "name": "gen_0.pdb",
+          "path": "output/pephar_run/result/new_10_0_single_gt_sto_1/case0/gen_0.pdb",
+          "size_bytes": 24876,
+          "sha256": "dcd86a1da83464409d651a14cce2b634c388026c22e382b49464db29d1972717"
+        },
+        {
+          "name": "gt.pdb",
+          "path": "output/pephar_run/result/new_10_0_single_gt_sto_1/case0/gt.pdb",
+          "size_bytes": 24795,
+          "sha256": "cba943cfce94ab8be4fa73d2bcac90ab9493db41b9724a91e72cccbe4c2baccb"
+        },
+        {
+          "name": "test.csv",
+          "path": "output/pephar_run/result/new_10_0_single_gt_sto_1/test.csv",
+          "size_bytes": 107,
+          "sha256": "2ecdf8d322379597c7da84c87d2ee233231616498ea1df116d9bbac1b294a154"
+        },
+        {
+          "name": "test_data_12aa.pkl",
+          "path": "output/pephar_run/test_data_12aa.pkl",
+          "size_bytes": 19268,
+          "sha256": "2794f84c6f9f7a9e3fa46dd8fbffdd9e9debedbd63231769c20436e46d7fcf77"
+        },
+        {
+          "name": "result.json",
+          "path": "output/result.json",
+          "size_bytes": 996,
+          "sha256": "60efd692dd6a2881d2066338ac492d288ae8c4516645838e2d25bf2dd9906179"
+        }
+      ],
+      "metrics": {
+        "rows": [
+          {
+            "name": "case0",
+            "rmsd": "4.8510918617248535",
+            "recovery": "0.0833333358168602",
+            "rec_length": "30",
+            "pep_length": "12",
+            "num": "0",
+            "valid": "1.0"
+          }
+        ]
+      },
+      "warnings": [],
+      "error": null,
+      "provenance": "real_model",
+      "validation_status": "NOT_EXPERIMENTALLY_VALIDATED"
+    }
+  },
+  {
+    "seed": 43,
+    "job_id": "06ccc72a-6125-43ab-9a8c-74e8ab290e79",
+    "status": "SUCCEEDED",
+    "duration": 3.17,
+    "error": {},
+    "result": {
+      "run_id": "real_pephar_20260814",
+      "job_id": "06ccc72a-6125-43ab-9a8c-74e8ab290e79",
+      "model_id": "pephar",
+      "model_version": "ICLR-2025",
+      "status": "SUCCEEDED",
+      "started_at": "2026-08-13T17:11:34.816251",
+      "finished_at": "2026-08-13T17:11:37.915685+00:00",
+      "duration_seconds": 3.147,
+      "device": "cuda:1",
+      "checkpoint_sha256": "06b9a2701a9594158de2650d10da756c51dda3cc410ea98c47cf9fd1dbc32d15",
+      "input_sha256": "b87ed52864adf5d3fa774d8337a21d2c99843d2f65af2838a73f09703b76d211",
+      "candidates": [
+        {
+          "candidate_id": "pephar_0001",
+          "sequence": "PPVPGPAPAVVP",
+          "length": 12,
+          "rank": 1,
+          "score": 0.0833333358168602,
+          "structure_path": "pephar_run/result/new_10_0_single_gt_sto_1/case0/gen_0.pdb",
+          "source_model": "pephar"
+        }
+      ],
+      "artifacts": [
+        {
+          "name": "request.json",
+          "path": "input/request.json",
+          "size_bytes": 150,
+          "sha256": "b87ed52864adf5d3fa774d8337a21d2c99843d2f65af2838a73f09703b76d211"
+        },
+        {
+          "name": "runner.log",
+          "path": "logs/runner.log",
+          "size_bytes": 923,
+          "sha256": "04f8ea49b08bbb82c472185740b2fec1bbe10016f43958378f258886295f443d"
+        },
+        {
+          "name": "gen_0.pdb",
+          "path": "output/pephar_run/result/new_10_0_single_gt_sto_1/case0/gen_0.pdb",
+          "size_bytes": 24795,
+          "sha256": "93a16d58475f4a57d221bba5e09f20ed9f7df9c431eb9f357ca6810de70e8878"
+        },
+        {
+          "name": "gt.pdb",
+          "path": "output/pephar_run/result/new_10_0_single_gt_sto_1/case0/gt.pdb",
+          "size_bytes": 24795,
+          "sha256": "cba943cfce94ab8be4fa73d2bcac90ab9493db41b9724a91e72cccbe4c2baccb"
+        },
+        {
+          "name": "test.csv",
+          "path": "output/pephar_run/result/new_10_0_single_gt_sto_1/test.csv",
+          "size_bytes": 106,
+          "sha256": "3b31004e3e5dd65b8612f8dda4fed3ed7d2d6a6c0aa9318f4289163b2c876a89"
+        },
+        {
+          "name": "test_data_12aa.pkl",
+          "path": "output/pephar_run/test_data_12aa.pkl",
+          "size_bytes": 19268,
+          "sha256": "2794f84c6f9f7a9e3fa46dd8fbffdd9e9debedbd63231769c20436e46d7fcf77"
+        },
+        {
+          "name": "result.json",
+          "path": "output/result.json",
+          "size_bytes": 995,
+          "sha256": "061fde1818d4b4c49c8e52e89031b075523bd34a05f27fde9ea284db7a79673a"
+        }
+      ],
+      "metrics": {
+        "rows": [
+          {
+            "name": "case0",
+            "rmsd": "4.959758758544922",
+            "recovery": "0.0833333358168602",
+            "rec_length": "30",
+            "pep_length": "12",
+            "num": "0",
+            "valid": "1.0"
+          }
+        ]
+      },
+      "warnings": [],
+      "error": null,
+      "provenance": "real_model",
+      "validation_status": "NOT_EXPERIMENTALLY_VALIDATED"
+    }
+  }
+]

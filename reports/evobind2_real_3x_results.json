@@ -1,0 +1,293 @@
+[
+  {
+    "seed": 41,
+    "job_id": "50c9b364-8e4e-4674-ad41-df9e259e45cc",
+    "status": "SUCCEEDED",
+    "duration": 48.49,
+    "error": {},
+    "result": {
+      "run_id": "real_evobind2_20260814",
+      "job_id": "50c9b364-8e4e-4674-ad41-df9e259e45cc",
+      "model_id": "evobind2",
+      "model_version": "EvoBind2-model_1",
+      "status": "SUCCEEDED",
+      "started_at": "2026-08-13T17:20:13.386312",
+      "finished_at": "2026-08-13T17:21:01.664999+00:00",
+      "duration_seconds": 48.473,
+      "device": "cuda:1",
+      "checkpoint_sha256": "f95e453e6a290ddf317ba1c9698d53fa110cf007ea979b0eae43e6ad38b4e364",
+      "input_sha256": "34a4e19b16141faa1abe2fa4264e44546312bf21e2c4361ac5baa1246340c68b",
+      "candidates": [
+        {
+          "candidate_id": "evobind2_0001",
+          "sequence": "HGPNMQICVADR",
+          "length": 12,
+          "rank": 1,
+          "score": -0.2016821083257845,
+          "structure_path": "design/unrelaxed_1.pdb",
+          "source_model": "evobind2"
+        }
+      ],
+      "artifacts": [
+        {
+          "name": "request.json",
+          "path": "input/request.json",
+          "size_bytes": 173,
+          "sha256": "34a4e19b16141faa1abe2fa4264e44546312bf21e2c4361ac5baa1246340c68b"
+        },
+        {
+          "name": "runner.log",
+          "path": "logs/runner.log",
+          "size_bytes": 2593,
+          "sha256": "62653ed4d746b3f2a8ce96fca4bc9aaf8e9c283d6c1d92bb02c7cf70c6f20cfd"
+        },
+        {
+          "name": "metrics.csv",
+          "path": "output/design/metrics.csv",
+          "size_bytes": 174,
+          "sha256": "8cf89ff50978dd4daf187b54988fae524c275cbe8cdc29859fd6915357d58252"
+        },
+        {
+          "name": "unrelaxed_1.pdb",
+          "path": "output/design/unrelaxed_1.pdb",
+          "size_bytes": 19653,
+          "sha256": "57cccb5d55cc3376fd36ffdb22e18e74fcaa0d4db20d804dfb617cae4ba67c0d"
+        },
+        {
+          "name": "receptor.a3m",
+          "path": "output/input/receptor.a3m",
+          "size_bytes": 31,
+          "sha256": "5825f0e5805d662ef66258b5fd23122e30755c1e12019abf564a79e398a0d561"
+        },
+        {
+          "name": "receptor.fasta",
+          "path": "output/input/receptor.fasta",
+          "size_bytes": 31,
+          "sha256": "5825f0e5805d662ef66258b5fd23122e30755c1e12019abf564a79e398a0d561"
+        },
+        {
+          "name": "result.json",
+          "path": "output/result.json",
+          "size_bytes": 1732,
+          "sha256": "126e72ac7a37d91aeb2bf32a5973822be4e2399cf9a33d68018645c79a5ce50f"
+        }
+      ],
+      "metrics": {
+        "iterations": [
+          {
+            "iteration": "init",
+            "if_dist_peptide": "12.720162",
+            "plddt": "59.81523555799595",
+            "loss": "0.21265756580243375",
+            "sequence": "HGPMMQICVADR"
+          },
+          {
+            "iteration": "1",
+            "if_dist_peptide": "12.029541",
+            "plddt": "59.64604949583947",
+            "loss": "0.2016821083257845",
+            "sequence": "HGPNMQICVADR"
+          }
+        ]
+      },
+      "warnings": [],
+      "error": null,
+      "provenance": "real_model",
+      "validation_status": "NOT_EXPERIMENTALLY_VALIDATED"
+    }
+  },
+  {
+    "seed": 42,
+    "job_id": "84241482-da32-421f-a541-1a8870918c7c",
+    "status": "SUCCEEDED",
+    "duration": 48.5,
+    "error": {},
+    "result": {
+      "run_id": "real_evobind2_20260814",
+      "job_id": "84241482-da32-421f-a541-1a8870918c7c",
+      "model_id": "evobind2",
+      "model_version": "EvoBind2-model_1",
+      "status": "SUCCEEDED",
+      "started_at": "2026-08-13T17:21:01.932494",
+      "finished_at": "2026-08-13T17:21:50.210794+00:00",
+      "duration_seconds": 48.475,
+      "device": "cuda:1",
+      "checkpoint_sha256": "f95e453e6a290ddf317ba1c9698d53fa110cf007ea979b0eae43e6ad38b4e364",
+      "input_sha256": "fb44960c59b91a6c1e0ed468e3ae8889444edfd14ad94432c1a9559f4fafbed0",
+      "candidates": [
+        {
+          "candidate_id": "evobind2_0001",
+          "sequence": "EGVITPQFDFMV",
+          "length": 12,
+          "rank": 1,
+          "score": -0.3704736066432746,
+          "structure_path": "design/unrelaxed_1.pdb",
+          "source_model": "evobind2"
+        }
+      ],
+      "artifacts": [
+        {
+          "name": "request.json",
+          "path": "input/request.json",
+          "size_bytes": 173,
+          "sha256": "fb44960c59b91a6c1e0ed468e3ae8889444edfd14ad94432c1a9559f4fafbed0"
+        },
+        {
+          "name": "runner.log",
+          "path": "logs/runner.log",
+          "size_bytes": 2593,
+          "sha256": "68a3b0ba423f11b703434b9305a9e33c380ff98c37bb8bcf80f57aad8f297f95"
+        },
+        {
+          "name": "metrics.csv",
+          "path": "output/design/metrics.csv",
+          "size_bytes": 174,
+          "sha256": "fdcae5abe9c44b13a07a332de3a6b7b4a2284e81008f3260dfe507157d9bf112"
+        },
+        {
+          "name": "unrelaxed_1.pdb",
+          "path": "output/design/unrelaxed_1.pdb",
+          "size_bytes": 20058,
+          "sha256": "e300678e8f097b621ffd9fe446e2dbaaec793f57b3d29a29617a6ff249af4ec5"
+        },
+        {
+          "name": "receptor.a3m",
+          "path": "output/input/receptor.a3m",
+          "size_bytes": 31,
+          "sha256": "5825f0e5805d662ef66258b5fd23122e30755c1e12019abf564a79e398a0d561"
+        },
+        {
+          "name": "receptor.fasta",
+          "path": "output/input/receptor.fasta",
+          "size_bytes": 31,
+          "sha256": "5825f0e5805d662ef66258b5fd23122e30755c1e12019abf564a79e398a0d561"
+        },
+        {
+          "name": "result.json",
+          "path": "output/result.json",
+          "size_bytes": 1732,
+          "sha256": "8078d0cc3661d7d2874e1123de991f28617c2e45737d11b0f34efa50eff19e34"
+        }
+      ],
+      "metrics": {
+        "iterations": [
+          {
+            "iteration": "init",
+            "if_dist_peptide": "11.468554",
+            "plddt": "70.16688041155142",
+            "loss": "0.16344682100478244",
+            "sequence": "EGVITPQFHFMV"
+          },
+          {
+            "iteration": "1",
+            "if_dist_peptide": "26.602087",
+            "plddt": "71.80562000598577",
+            "loss": "0.3704736066432746",
+            "sequence": "EGVITPQFDFMV"
+          }
+        ]
+      },
+      "warnings": [],
+      "error": null,
+      "provenance": "real_model",
+      "validation_status": "NOT_EXPERIMENTALLY_VALIDATED"
+    }
+  },
+  {
+    "seed": 43,
+    "job_id": "770986aa-b70b-4441-9ed7-3de3848d67d6",
+    "status": "SUCCEEDED",
+    "duration": 49.49,
+    "error": {},
+    "result": {
+      "run_id": "real_evobind2_20260814",
+      "job_id": "770986aa-b70b-4441-9ed7-3de3848d67d6",
+      "model_id": "evobind2",
+      "model_version": "EvoBind2-model_1",
+      "status": "SUCCEEDED",
+      "started_at": "2026-08-13T17:21:50.480066",
+      "finished_at": "2026-08-13T17:22:39.756997+00:00",
+      "duration_seconds": 49.472,
+      "device": "cuda:1",
+      "checkpoint_sha256": "f95e453e6a290ddf317ba1c9698d53fa110cf007ea979b0eae43e6ad38b4e364",
+      "input_sha256": "263bb8089a4b56267187e8b0e0ba49c0ed7b3a0921cbafefd755675d50623a52",
+      "candidates": [
+        {
+          "candidate_id": "evobind2_0001",
+          "sequence": "DWACWQHVTGEC",
+          "length": 12,
+          "rank": 1,
+          "score": -0.16982220717863883,
+          "structure_path": "design/unrelaxed_1.pdb",
+          "source_model": "evobind2"
+        }
+      ],
+      "artifacts": [
+        {
+          "name": "request.json",
+          "path": "input/request.json",
+          "size_bytes": 173,
+          "sha256": "263bb8089a4b56267187e8b0e0ba49c0ed7b3a0921cbafefd755675d50623a52"
+        },
+        {
+          "name": "runner.log",
+          "path": "logs/runner.log",
+          "size_bytes": 2592,
+          "sha256": "69872b14b80dd3be556f330194f87c873fb89f3b0f6da5b1e1fd9056be653dc5"
+        },
+        {
+          "name": "metrics.csv",
+          "path": "output/design/metrics.csv",
+          "size_bytes": 173,
+          "sha256": "54a64f89135545f63774f16081b5db697bb8387c70c11ce7ecca66502c1b4674"
+        },
+        {
+          "name": "unrelaxed_1.pdb",
+          "path": "output/design/unrelaxed_1.pdb",
+          "size_bytes": 20301,
+          "sha256": "116bff3cdfd71a3b3f466fccdb20a472c5e65c1a123962a81e43e584fee98900"
+        },
+        {
+          "name": "receptor.a3m",
+          "path": "output/input/receptor.a3m",
+          "size_bytes": 31,
+          "sha256": "5825f0e5805d662ef66258b5fd23122e30755c1e12019abf564a79e398a0d561"
+        },
+        {
+          "name": "receptor.fasta",
+          "path": "output/input/receptor.fasta",
+          "size_bytes": 31,
+          "sha256": "5825f0e5805d662ef66258b5fd23122e30755c1e12019abf564a79e398a0d561"
+        },
+        {
+          "name": "result.json",
+          "path": "output/result.json",
+          "size_bytes": 1732,
+          "sha256": "91107d2b5ae8202c1b13970eb675daa275d0d387b7026832736959e6465886b9"
+        }
+      ],
+      "metrics": {
+        "iterations": [
+          {
+            "iteration": "init",
+            "if_dist_peptide": "8.288985",
+            "plddt": "60.33347576800353",
+            "loss": "0.13738617155513264",
+            "sequence": "DWACWQHVTNEC"
+          },
+          {
+            "iteration": "1",
+            "if_dist_peptide": "8.891482",
+            "plddt": "52.35759504560761",
+            "loss": "0.16982220717863883",
+            "sequence": "DWACWQHVTGEC"
+          }
+        ]
+      },
+      "warnings": [],
+      "error": null,
+      "provenance": "real_model",
+      "validation_status": "NOT_EXPERIMENTALLY_VALIDATED"
+    }
+  }
+]
