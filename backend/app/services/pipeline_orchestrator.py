@@ -622,9 +622,11 @@ def run_peptide_generation_step(
                 {
                     "target_sequence": run.target_sequence,
                     "peptide_length": 12,
-                    "num_candidates": max(1, peptides_per_epitope * len(epitopes)),
+                    # Keep interactive pipeline runs bounded while still returning
+                    # enough candidates for cross-model ranking and top-N output.
+                    "num_candidates": min(10, max(1, peptides_per_epitope * len(epitopes))),
                     "seed": int(sequence_sha256(run.target_sequence)[:8], 16),
-                    "device": "cuda",
+                    "device": os.environ.get("STAMP_PEPMLM_DEVICE", "cuda"),
                 },
                 project_id=run.project_id or "pipeline_models",
                 run_id=f"pipeline_{run.id}",

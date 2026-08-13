@@ -24,6 +24,7 @@ stop_pidfile() {
 }
 
 stop_pidfile "$RUN/web.pid"
+stop_pidfile "$RUN/pipeline-worker.pid"
 stop_pidfile "$RUN/worker.pid"
 stop_pidfile "$RUN/backend.pid"
 
@@ -43,6 +44,10 @@ done
 nohup "$PYTHON" -m app.workers.model_worker \
   >"$RUN/worker.log" 2>&1 &
 echo $! >"$RUN/worker.pid"
+
+nohup "$PYTHON" -m app.workers.pipeline_worker --loop \
+  >"$RUN/pipeline-worker.log" 2>&1 &
+echo $! >"$RUN/pipeline-worker.pid"
 
 nohup "$PYTHON" "$ROOT/scripts/unified_web_12973.py" \
   --root "$ROOT/dist" --backend http://127.0.0.1:12974 --port 12973 \
