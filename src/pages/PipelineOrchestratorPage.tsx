@@ -109,24 +109,24 @@ const MODEL_DEFS: { id: string; label: string }[] = [
 const STANDARD_AA = 'ACDEFGHIKLMNPQRSTVWY';
 
 function modelStatusLabel(status: string | undefined): { text: string; runnable: boolean; tone: string } {
-  if (!status) return { text: '暂未接通', runnable: false, tone: 'text-gray-500' };
+  if (!status) return { text: '状态待刷新', runnable: false, tone: 'text-gray-500' };
   switch (status) {
-    case 'available':
-    case 'smoke_rerun_verified':
-      return { text: '已注册（冒烟验证）· 真实运行未授权', runnable: false, tone: 'text-amber-600' };
-    case 'closed':
-    case 'controlled_smoke_verified':
-      return { text: '已注册 · 真实运行门禁关闭（暂未接通）', runnable: false, tone: 'text-amber-600' };
-    case 'backlog':
-    case 'pending_probe':
-      return { text: '暂未接通（依赖/许可证缺失）', runnable: false, tone: 'text-red-500' };
-    case 'blocked_license':
-      return { text: '暂未接通（许可证）', runnable: false, tone: 'text-red-500' };
-    case 'disabled':
-    case 'parked':
-      return { text: '暂未接通（已停用）', runnable: false, tone: 'text-gray-500' };
+    case 'ready':
+      return { text: '运行环境与 checkpoint 就绪', runnable: true, tone: 'text-emerald-600' };
+    case 'busy':
+      return { text: '运行中，新任务将排队', runnable: true, tone: 'text-blue-600' };
+    case 'installed':
+      return { text: '已安装，正在核验运行依赖', runnable: false, tone: 'text-amber-600' };
+    case 'checkpoint_missing':
+      return { text: 'checkpoint 缺失', runnable: false, tone: 'text-red-500' };
+    case 'dependency_missing':
+      return { text: 'Python 环境或依赖缺失', runnable: false, tone: 'text-red-500' };
+    case 'degraded':
+      return { text: '运行环境降级', runnable: false, tone: 'text-amber-600' };
+    case 'offline':
+      return { text: '运行环境离线', runnable: false, tone: 'text-red-500' };
     default:
-      return { text: `暂未接通（${status}）`, runnable: false, tone: 'text-gray-500' };
+      return { text: `状态：${status}`, runnable: false, tone: 'text-gray-500' };
   }
 }
 
@@ -135,11 +135,10 @@ function modelStatusLabel(status: string | undefined): { text: string; runnable:
 // ---------------------------------------------------------------------------
 interface ModelInfo {
   model_id: string;
-  display_name: string;
-  status: string;
-  stage: string;
-  description: string;
-  requires_gpu: boolean;
+  model_version: string;
+  state: string;
+  missing: string[];
+  checkpoint_sha256?: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -299,7 +298,7 @@ export default function PipelineOrchestratorPage() {
   useEffect(() => {
     let cancelled = false;
     setModelsLoading(true);
-    fetchClient<{ models: ModelInfo[] }>('/target-peptide-design/models')
+    fetchClient<{ models: ModelInfo[]; count: number }>('/models/production/status')
       .then((res) => {
         if (!cancelled) setModels(res.models || []);
       })
@@ -519,7 +518,7 @@ export default function PipelineOrchestratorPage() {
     });
   }, [runs]);
 
-  const runnableCount = selectedModels.filter((id) => modelStatusMap.get(id)?.status === 'available').length;
+  const runnableCount = selectedModels.filter((id) => ['ready', 'busy'].includes(modelStatusMap.get(id)?.state || '')).length;
 
   return (
     <div className="space-y-6 pb-12">
@@ -554,7 +553,7 @@ export default function PipelineOrchestratorPage() {
         <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
         <p>
           <span className="font-semibold">NOT_EXPERIMENTALLY_VALIDATED · COMPUTATIONAL_PREDICTION_ONLY</span>
-          ：所有结果均为序列级计算优先级，未经实验验证。Pipeline 后端使用确定性 curated baseline 生成候选（非训练好的 ML 模型）；所选 ML 模型的真实运行门禁为关闭状态（REAL_RUN_GATE_CLOSED），不会在本轮被实际执行，请勿将计算预测写成实验验证结果。
+          ：模型生成结果用于计算筛选与排序，真实执行状态、checkpoint 指纹、任务日志和产物均以后端记录为准；生物学有效性仍需实验验证。
         </p>
       </div>
 
@@ -761,7 +760,7 @@ export default function PipelineOrchestratorPage() {
                   {MODEL_DEFS.map((m) => {
                     const checked = selectedModels.includes(m.id);
                     const info = modelStatusMap.get(m.id);
-                    const st = modelStatusLabel(info?.status);
+                    const st = modelStatusLabel(info?.state);
                     return (
                       <label
                         key={m.id}
@@ -773,8 +772,8 @@ export default function PipelineOrchestratorPage() {
                         <input type="checkbox" checked={checked} onChange={() => toggleModel(m.id)} className="accent-[#156B98]" />
                         <span className="text-sm font-medium text-gray-800">{m.label}</span>
                         <span className={cn('text-[10px] ml-auto flex items-center gap-1', st.tone)}>
-                          <Lock className="w-3 h-3" />
-                          {info ? st.text : '暂未接通'}
+                          {st.runnable ? <CheckCircle2 className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
+                          {info ? st.text : '状态待刷新'}
                         </span>
                       </label>
                     );
@@ -810,8 +809,8 @@ export default function PipelineOrchestratorPage() {
                   <PreviewRow k="已选模型" v={selectedModels.length ? selectedModels.map((id) => MODEL_DEFS.find((m) => m.id === id)?.label || id).join('、') : '未选择'} />
                   <PreviewRow k="目标蛋白状态" v={targetName.trim() ? `${targetName.trim()} · ${cleanedSeq.length}aa` : '未输入'} ok={!!targetName.trim() && seqValidation.ok} />
                   <PreviewRow k="蛋白长度" v={`${cleanedSeq.length} aa`} />
-                  <PreviewRow k="可运行模型（真实 ML）" v={`${runnableCount} / ${selectedModels.length}（门禁关闭）`} warn />
-                  <PreviewRow k="暂不可运行模型" v={`${selectedModels.length - runnableCount} / ${selectedModels.length}`} warn />
+                  <PreviewRow k="可提交真实模型任务" v={`${runnableCount} / ${selectedModels.length}`} ok={runnableCount === selectedModels.length && selectedModels.length > 0} />
+                  <PreviewRow k="待补齐运行资产" v={`${selectedModels.length - runnableCount} / ${selectedModels.length}`} warn={runnableCount !== selectedModels.length} />
                 </dl>
               </div>
             </CardContent>
