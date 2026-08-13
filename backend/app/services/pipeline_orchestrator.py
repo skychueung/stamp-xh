@@ -601,9 +601,8 @@ def run_peptide_generation_step(
             db.commit()
             return False
         unavailable = [probe for probe in probes if probe["state"] != "ready"]
-        unsupported = [model_id for model_id in selected_models if model_id != "pepmlm"]
-        if unavailable or unsupported:
-            detail = {"selected_models": selected_models, "probes": probes, "unsupported_runtime": unsupported}
+        if unavailable:
+            detail = {"selected_models": selected_models, "probes": probes}
             _update_step(step, "BLOCKED", output_json=detail, error_message="Selected model runtime is not ready")
             _update_run(run, status="BLOCKED", current_step="PEPTIDE_GENERATION")
             db.commit()
@@ -615,28 +614,41 @@ def run_peptide_generation_step(
                 model_id=",".join(selected_models),
             )
             return False
-        from app.schemas.model_registry import ModelDryRunPayload
-        from app.services.model_adapters.pepmlm_adapter import PepMLMAdapter
-
-        model_result = PepMLMAdapter("pepmlm").submit(
-            ModelDryRunPayload(
-                target_sequence=run.target_sequence,
-                peptide_length=12,
-                num_candidates=max(1, peptides_per_epitope * len(epitopes)),
-                seed=int(sequence_sha256(run.target_sequence)[:8], 16),
-                device="cuda",
-            ),
-            run_id=f"pipeline_{run.id}",
-        )
-        if model_result.status != "SUCCEEDED":
-            _update_step(step, "BLOCKED", output_json={"model_result": model_result.model_dump()}, error_message=model_result.message)
+        from app.services.unified_model_runtime import process_model_job
+        model_results = []
+        for model_id in selected_models:
+            model_job = production_registry.get(model_id).submit(
+                db,
+                {
+                    "target_sequence": run.target_sequence,
+                    "peptide_length": 12,
+                    "num_candidates": max(1, peptides_per_epitope * len(epitopes)),
+                    "seed": int(sequence_sha256(run.target_sequence)[:8], 16),
+                    "device": "cuda",
+                },
+                project_id=run.project_id or "pipeline_models",
+                run_id=f"pipeline_{run.id}",
+            )
+            process_model_job(db, model_job)
+            db.refresh(model_job)
+            model_results.append({
+                "job_id": model_job.id,
+                "model_id": model_id,
+                "status": model_job.status,
+                "result": model_job.output_json,
+                "error": model_job.error_json,
+            })
+        failed_models = [item for item in model_results if item["status"] != "SUCCEEDED"]
+        if failed_models:
+            _update_step(step, "BLOCKED", output_json={"model_results": model_results},
+                         error_message="One or more selected model jobs did not succeed")
             _update_run(run, status="BLOCKED", current_step="PEPTIDE_GENERATION")
             db.commit()
             return False
         model_execution = {
-            "model_id": "pepmlm",
-            "status": model_result.status,
-            "artifacts": model_result.artifacts,
+            "model_ids": selected_models,
+            "status": "SUCCEEDED",
+            "jobs": model_results,
             "provenance": "real_model",
         }
 

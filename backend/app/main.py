@@ -62,6 +62,7 @@ from app.routers.batch_computations import router as batch_computations_router
 from app.routers.flexpepdock_pilot import router as flexpepdock_pilot_router
 from app.routers.md_production_pilot import router as md_production_pilot_router
 from app.routers.runner_logs import router as runner_logs_router
+from app.routers.model_jobs import router as model_jobs_router
 from app.routers.mmgbsa_pilot import router as mmgbsa_pilot_router
 
 # ---------------------------------------------------------------------------
@@ -174,6 +175,7 @@ def create_app() -> FastAPI:
     app.include_router(md_production_pilot_router)
     app.include_router(flexpepdock_pilot_router)
     app.include_router(runner_logs_router)
+    app.include_router(model_jobs_router)  # durable unified five-model jobs/logs/artifacts
     app.include_router(mmgbsa_pilot_router)
     app.include_router(experimental_validation_router)
     app.include_router(pipeline_runs_router)
