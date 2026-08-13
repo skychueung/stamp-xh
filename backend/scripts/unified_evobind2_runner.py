@@ -37,9 +37,9 @@ def main() -> int:
         str(SOURCE / "src" / "mc_design.py"),
         f"--receptor_fasta_path={fasta}",
         f"--peptide_length={int(payload.get('peptide_length', 12))}",
-        f"--output_dir={design}", "--model_names=model_1",
+        f"--output_dir={str(design) + os.sep}", "--model_names=model_1",
         f"--data_dir={os.environ.get('STAMP_EVOBIND2_DATA_DIR', DATA_DIR)}",
-        "--max_recycles=1", f"--num_iterations={int(payload.get('num_iterations', 1))}",
+        "--max_recycles=1", f"--num_iterations={max(2, int(payload.get('num_iterations', 1)) + 1)}",
         f"--random_seed={int(payload.get('seed', 42))}", f"--msas={a3m}",
     ]
     env = dict(os.environ)
