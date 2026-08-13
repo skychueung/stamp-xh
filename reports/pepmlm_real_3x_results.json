@@ -1,0 +1,224 @@
+[
+  {
+    "seed": 41,
+    "job_id": "d364acfe-b715-4874-a620-1350dd58c68b",
+    "status": "SUCCEEDED",
+    "duration": 5.35,
+    "error": {},
+    "result": {
+      "run_id": "real_pepmlm_20260814",
+      "job_id": "d364acfe-b715-4874-a620-1350dd58c68b",
+      "model_id": "pepmlm",
+      "model_version": "ChatterjeeLab/PepMLM-650M",
+      "status": "SUCCEEDED",
+      "started_at": "2026-08-13T17:05:58.064883",
+      "finished_at": "2026-08-13T17:06:02.219050+00:00",
+      "duration_seconds": 5.322,
+      "device": "cuda:1",
+      "checkpoint_sha256": "e80587d2ac4a3fb84f2be2cd4f4d02d5f2127cafc75144108ba349d4796c3668",
+      "input_sha256": "69ef54dabb80571c92095b6f33e9ab0f305fc9d7e190212665b3cb6eac36768c",
+      "candidates": [
+        {
+          "candidate_id": "pepmlm_0001",
+          "sequence": "EELVVLAALLAR",
+          "length": 12,
+          "rank": 1,
+          "score": null,
+          "structure_path": null,
+          "source_model": "pepmlm"
+        }
+      ],
+      "artifacts": [
+        {
+          "name": "request.json",
+          "path": "input/request.json",
+          "size_bytes": 132,
+          "sha256": "69ef54dabb80571c92095b6f33e9ab0f305fc9d7e190212665b3cb6eac36768c"
+        },
+        {
+          "name": "runner.log",
+          "path": "logs/runner.log",
+          "size_bytes": 322,
+          "sha256": "beb05e0eb615266c57534d304f37e928294f8480af38ad765d73ebbe89eefcf1"
+        },
+        {
+          "name": "candidate_sequences.csv",
+          "path": "output/candidate_sequences.csv",
+          "size_bytes": 132,
+          "sha256": "a9b5a66568223fa8f865c1b5ec60eab4a33e5341a18a1464be1f53e98159de31"
+        },
+        {
+          "name": "candidate_sequences.json",
+          "path": "output/candidate_sequences.json",
+          "size_bytes": 677,
+          "sha256": "c68f4e0addde9fd2cd10abd59efcf6d7c49ec523bd25321859bba1ec3d4077ac"
+        },
+        {
+          "name": "manifest_post.json",
+          "path": "output/manifest_post.json",
+          "size_bytes": 478,
+          "sha256": "189da1e876758ea04cf48e220bd276b8e811614e717237fa4e916b734da4fcc8"
+        },
+        {
+          "name": "manifest_pre.json",
+          "path": "output/manifest_pre.json",
+          "size_bytes": 381,
+          "sha256": "3379e0675bc8b57cb000bcfd1cf45032b0f2cd55bc508e1094b861c382fa01a3"
+        }
+      ],
+      "metrics": {},
+      "warnings": [],
+      "error": null,
+      "provenance": "real_model",
+      "validation_status": "NOT_EXPERIMENTALLY_VALIDATED"
+    }
+  },
+  {
+    "seed": 42,
+    "job_id": "366b6d5f-79bd-4cfa-b558-040c65e996fc",
+    "status": "SUCCEEDED",
+    "duration": 5.38,
+    "error": {},
+    "result": {
+      "run_id": "real_pepmlm_20260814",
+      "job_id": "366b6d5f-79bd-4cfa-b558-040c65e996fc",
+      "model_id": "pepmlm",
+      "model_version": "ChatterjeeLab/PepMLM-650M",
+      "status": "SUCCEEDED",
+      "started_at": "2026-08-13T17:06:03.451746",
+      "finished_at": "2026-08-13T17:06:07.657174+00:00",
+      "duration_seconds": 5.363,
+      "device": "cuda:1",
+      "checkpoint_sha256": "e80587d2ac4a3fb84f2be2cd4f4d02d5f2127cafc75144108ba349d4796c3668",
+      "input_sha256": "e6627e485f44a683313166487f7ac8af759452cf9329322a44ad198d6dc74682",
+      "candidates": [
+        {
+          "candidate_id": "pepmlm_0001",
+          "sequence": "QSVLLAAAAALG",
+          "length": 12,
+          "rank": 1,
+          "score": null,
+          "structure_path": null,
+          "source_model": "pepmlm"
+        }
+      ],
+      "artifacts": [
+        {
+          "name": "request.json",
+          "path": "input/request.json",
+          "size_bytes": 132,
+          "sha256": "e6627e485f44a683313166487f7ac8af759452cf9329322a44ad198d6dc74682"
+        },
+        {
+          "name": "runner.log",
+          "path": "logs/runner.log",
+          "size_bytes": 322,
+          "sha256": "a7425505669fe074c4d8dc2b08499b0be444eef06941fc9775653e0d387d7b5d"
+        },
+        {
+          "name": "candidate_sequences.csv",
+          "path": "output/candidate_sequences.csv",
+          "size_bytes": 132,
+          "sha256": "a3edcce5ca5e13b4a43c7f81a7f2a18ab5179b70e3127d0f907317da2c2299e7"
+        },
+        {
+          "name": "candidate_sequences.json",
+          "path": "output/candidate_sequences.json",
+          "size_bytes": 677,
+          "sha256": "b42ee500d415d0c46387a499a11f39a5df166ef70536440c99631d2cc6e2de46"
+        },
+        {
+          "name": "manifest_post.json",
+          "path": "output/manifest_post.json",
+          "size_bytes": 478,
+          "sha256": "7e0a0ae353e9144c3bbd6e584cdc6441ddd233e92e16dde57fa9e0351df1b411"
+        },
+        {
+          "name": "manifest_pre.json",
+          "path": "output/manifest_pre.json",
+          "size_bytes": 381,
+          "sha256": "3379e0675bc8b57cb000bcfd1cf45032b0f2cd55bc508e1094b861c382fa01a3"
+        }
+      ],
+      "metrics": {},
+      "warnings": [],
+      "error": null,
+      "provenance": "real_model",
+      "validation_status": "NOT_EXPERIMENTALLY_VALIDATED"
+    }
+  },
+  {
+    "seed": 43,
+    "job_id": "9dc52ffb-1313-475f-8334-91b6f829bee7",
+    "status": "SUCCEEDED",
+    "duration": 5.37,
+    "error": {},
+    "result": {
+      "run_id": "real_pepmlm_20260814",
+      "job_id": "9dc52ffb-1313-475f-8334-91b6f829bee7",
+      "model_id": "pepmlm",
+      "model_version": "ChatterjeeLab/PepMLM-650M",
+      "status": "SUCCEEDED",
+      "started_at": "2026-08-13T17:06:08.858151",
+      "finished_at": "2026-08-13T17:06:13.064443+00:00",
+      "duration_seconds": 5.336,
+      "device": "cuda:1",
+      "checkpoint_sha256": "e80587d2ac4a3fb84f2be2cd4f4d02d5f2127cafc75144108ba349d4796c3668",
+      "input_sha256": "cde763214d3afc851dd869f4fd7bdf1d5c67ca0b1027f465078e50a519fffedb",
+      "candidates": [
+        {
+          "candidate_id": "pepmlm_0001",
+          "sequence": "QVVLVLLLQLAG",
+          "length": 12,
+          "rank": 1,
+          "score": null,
+          "structure_path": null,
+          "source_model": "pepmlm"
+        }
+      ],
+      "artifacts": [
+        {
+          "name": "request.json",
+          "path": "input/request.json",
+          "size_bytes": 132,
+          "sha256": "cde763214d3afc851dd869f4fd7bdf1d5c67ca0b1027f465078e50a519fffedb"
+        },
+        {
+          "name": "runner.log",
+          "path": "logs/runner.log",
+          "size_bytes": 322,
+          "sha256": "1c935dee091bae3c0d686ced1b11b4da88386a009ec289063855ca3c4b54965d"
+        },
+        {
+          "name": "candidate_sequences.csv",
+          "path": "output/candidate_sequences.csv",
+          "size_bytes": 132,
+          "sha256": "ff840078eeda07db3e35ccb26ef916a2d0f9a6ad6ffbdf6d250ecf1a8981d01e"
+        },
+        {
+          "name": "candidate_sequences.json",
+          "path": "output/candidate_sequences.json",
+          "size_bytes": 677,
+          "sha256": "493058810347fc9cf957b77e95a015dab0fec03df013ba70336be27ede7a1c34"
+        },
+        {
+          "name": "manifest_post.json",
+          "path": "output/manifest_post.json",
+          "size_bytes": 478,
+          "sha256": "a444a38f57d3b4b540693d1116660f8dfb4fc7470009c0c216be4673b2a02154"
+        },
+        {
+          "name": "manifest_pre.json",
+          "path": "output/manifest_pre.json",
+          "size_bytes": 381,
+          "sha256": "3379e0675bc8b57cb000bcfd1cf45032b0f2cd55bc508e1094b861c382fa01a3"
+        }
+      ],
+      "metrics": {},
+      "warnings": [],
+      "error": null,
+      "provenance": "real_model",
+      "validation_status": "NOT_EXPERIMENTALLY_VALIDATED"
+    }
+  }
+]
