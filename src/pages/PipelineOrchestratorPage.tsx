@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { pipelineRunsApi, type PipelineLogRecord, type PipelineRun, type PipelineStatus, type PipelineStepSummary } from '@/lib/api/pipelineRuns';
+import { pipelineRunsApi, type PipelineLogRecord, type PipelineRun, type PipelineStatus, type PipelineStepSummary, type UnifiedModelJob, type UnifiedModelLogRecord } from '@/lib/api/pipelineRuns';
 import { fetchClient } from '@/lib/api/client';
 import { mockTargetProtein } from '@/data/platformMockData';
 import {
@@ -293,6 +293,8 @@ export default function PipelineOrchestratorPage() {
   const [polling, setPolling] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [runLogs, setRunLogs] = useState<PipelineLogRecord[]>([]);
+  const [modelJobs, setModelJobs] = useState<UnifiedModelJob[]>([]);
+  const [modelLogs, setModelLogs] = useState<UnifiedModelLogRecord[]>([]);
 
   // --- models live fetch ---
   useEffect(() => {
@@ -337,6 +339,20 @@ export default function PipelineOrchestratorPage() {
     }
   }, []);
 
+  const loadModelExecution = useCallback(async (runId: string) => {
+    try {
+      const [jobs, logs] = await Promise.all([
+        pipelineRunsApi.getModelJobs(`pipeline_${runId}`),
+        pipelineRunsApi.getModelLogs(`pipeline_${runId}`),
+      ]);
+      setModelJobs(jobs.jobs || []);
+      setModelLogs(logs.records || []);
+    } catch {
+      setModelJobs([]);
+      setModelLogs([]);
+    }
+  }, []);
+
   useEffect(() => {
     loadRuns();
   }, [loadRuns]);
@@ -349,6 +365,7 @@ export default function PipelineOrchestratorPage() {
         const res = await pipelineRunsApi.get(selectedRunId);
         setRunDetail(res);
         await loadRunLogs(selectedRunId);
+        await loadModelExecution(selectedRunId);
         if (res.status !== 'RUNNING') {
           setPolling(false);
           loadRuns();
@@ -358,7 +375,7 @@ export default function PipelineOrchestratorPage() {
       }
     }, 3000);
     return () => clearInterval(interval);
-  }, [selectedRunId, polling, loadRuns, loadRunLogs]);
+  }, [selectedRunId, polling, loadRuns, loadRunLogs, loadModelExecution]);
 
   // --- input helpers ---
   const loadExample = () => {
@@ -473,6 +490,7 @@ export default function PipelineOrchestratorPage() {
       const detail = await pipelineRunsApi.get(res.id);
       setRunDetail(detail);
       await loadRunLogs(res.id);
+      await loadModelExecution(res.id);
       if (mode === 'semi_auto') {
         // Semi-auto: jump to epitope screening so the user reviews candidates
         // before manually continuing to peptide generation.
@@ -492,6 +510,7 @@ export default function PipelineOrchestratorPage() {
       const res = await pipelineRunsApi.get(runId);
       setRunDetail(res);
       await loadRunLogs(runId);
+      await loadModelExecution(runId);
       if (res.status === 'RUNNING') setPolling(true);
     } finally {
       setLoadingDetail(false);
@@ -943,6 +962,64 @@ export default function PipelineOrchestratorPage() {
                       <span className="font-semibold">{entry.level}</span>{' '}
                       {entry.step && <span className="text-cyan-300">[{entry.step}] </span>}
                       <span>{entry.message}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="border-[#E5E7EB]">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-semibold text-gray-900 flex items-center justify-between">
+                <span>模型子任务</span>
+                <Button size="sm" variant="ghost" className="h-7 gap-1" onClick={() => loadModelExecution(runDetail.run_id)}>
+                  <RefreshCw className="w-3.5 h-3.5" /> 刷新
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {modelJobs.length === 0 ? (
+                <p className="text-sm text-gray-500">模型生成步骤启动后，将显示各模型的真实任务状态。</p>
+              ) : modelJobs.map((job) => {
+                const candidates = Array.isArray(job.result?.candidates) ? job.result.candidates : [];
+                return (
+                  <div key={job.job_id} className="rounded-lg border border-gray-200 p-3 space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-medium text-sm text-gray-900">{MODEL_DEFS.find((m) => m.id === job.model_id)?.label || job.model_id}</span>
+                      <span className={cn('text-[10px] px-1.5 py-0.5 rounded-full font-medium', STATUS_COLORS[job.status] || 'bg-gray-100 text-gray-600')}>{job.status}</span>
+                      <span className="text-xs text-gray-500">{job.progress ?? 0}% · {job.message}</span>
+                      <span className="ml-auto text-[10px] font-mono text-gray-400">{job.job_id.slice(0, 8)}</span>
+                    </div>
+                    <div className="h-1.5 overflow-hidden rounded-full bg-gray-100">
+                      <div className="h-full bg-[#156B98] transition-all" style={{ width: `${Math.max(0, Math.min(100, job.progress || 0))}%` }} />
+                    </div>
+                    {job.error && Object.keys(job.error).length > 0 && (
+                      <pre className="whitespace-pre-wrap break-words rounded bg-red-50 p-2 text-xs text-red-700">{JSON.stringify(job.error, null, 2)}</pre>
+                    )}
+                    <div className="flex flex-wrap items-center gap-2 text-xs">
+                      {candidates.length > 0 && <span className="text-emerald-700">候选 {candidates.length} 条</span>}
+                      {job.status === 'RUNNING' && (
+                        <Button size="sm" variant="outline" className="h-7 text-xs" onClick={async () => {
+                          await pipelineRunsApi.cancelModelJob(job.job_id);
+                          await loadModelExecution(runDetail.run_id);
+                        }}>取消任务</Button>
+                      )}
+                      {Array.isArray(job.result?.artifacts) && job.result.artifacts.slice(0, 3).map((artifact: any) => (
+                        <a key={artifact.path} className="text-[#156B98] hover:underline" href={pipelineRunsApi.modelArtifactUrl(job.job_id, artifact.path)} download>{artifact.name}</a>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+              {modelLogs.length > 0 && (
+                <div className="max-h-64 overflow-auto rounded-lg bg-slate-950 p-3 font-mono text-xs text-slate-200 space-y-1">
+                  {modelLogs.map((entry) => (
+                    <div key={`${entry.job_id}-${entry.id}`} className={entry.level === 'ERROR' ? 'text-red-300' : ''}>
+                      <span className="text-slate-500">{entry.timestamp.replace('T', ' ').slice(0, 19)}</span>{' '}
+                      <span className="text-cyan-300">[{entry.model_id}]</span>{' '}
+                      <span className="text-violet-300">{entry.event}</span>{' '}
+                      {entry.message}
                     </div>
                   ))}
                 </div>

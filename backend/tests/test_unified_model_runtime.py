@@ -138,3 +138,22 @@ def test_artifact_resolver_rejects_traversal(db, configured_runtime):
     assert resolve_job_artifact(job, "output/result.json").is_file()
     with pytest.raises(ValueError, match="INVALID_ARTIFACT_PATH"):
         resolve_job_artifact(job, "../../etc/passwd")
+
+
+@pytest.mark.asyncio
+async def test_canonical_job_status_endpoint(client, app, db, configured_runtime):
+    from app.database import get_db
+    from app.routers.model_jobs import router
+    if not any(getattr(route, "path", "") == "/api/v1/jobs/{job_id}" for route in app.routes):
+        app.include_router(router)
+    app.dependency_overrides[get_db] = lambda: (yield db)
+    job = submit_model_job(db, "pepmlm", _payload(), run_id="canonical_status")
+    try:
+        response = await client.get(f"/api/v1/jobs/{job.id}")
+        assert response.status_code == 200
+        data = response.json()["data"]
+        assert data["job_id"] == job.id
+        assert data["model_id"] == "pepmlm"
+        assert data["status"] == "QUEUED"
+    finally:
+        app.dependency_overrides.pop(get_db, None)

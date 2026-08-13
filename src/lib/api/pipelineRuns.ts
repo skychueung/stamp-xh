@@ -60,6 +60,31 @@ export interface PipelineLogRecord {
   message: string;
 }
 
+export interface UnifiedModelJob {
+  job_id: string;
+  run_id: string;
+  model_id: string;
+  status: string;
+  progress: number;
+  message: string;
+  error: Record<string, any>;
+  result: Record<string, any>;
+  started_at: string | null;
+  finished_at: string | null;
+}
+
+export interface UnifiedModelLogRecord {
+  id: number;
+  timestamp: string;
+  level: string;
+  run_id: string;
+  job_id: string;
+  model_id: string;
+  event: string;
+  message: string;
+  progress?: number;
+}
+
 export const pipelineRunsApi = {
   create: (data: PipelineRunCreate) =>
     fetchClient<PipelineRun>('/pipeline-runs', {
@@ -82,6 +107,20 @@ export const pipelineRunsApi = {
 
   getLogs: (runId: string, tail = 500) =>
     fetchClient<{ run_id: string; records: PipelineLogRecord[] }>(`/pipeline-runs/${runId}/logs?tail=${tail}`),
+
+  getModelJobs: (runId: string) =>
+    fetchClient<{ run_id: string; jobs: UnifiedModelJob[] }>(`/runs/${runId}/jobs`),
+
+  getModelLogs: (runId: string, afterId = 0, limit = 500) =>
+    fetchClient<{ run_id: string; records: UnifiedModelLogRecord[] }>(
+      `/runs/${runId}/logs?after_id=${afterId}&limit=${limit}`
+    ),
+
+  cancelModelJob: (jobId: string) =>
+    fetchClient<UnifiedModelJob>(`/jobs/${jobId}/model-cancel`, { method: 'POST' }),
+
+  modelArtifactUrl: (jobId: string, path: string) =>
+    `/api/v1/jobs/${jobId}/artifacts/download?path=${encodeURIComponent(path)}`,
 
   run: (runId: string) =>
     fetchClient<PipelineRun>(`/pipeline-runs/${runId}/run`, { method: 'POST' }),
