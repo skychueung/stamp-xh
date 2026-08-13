@@ -4,7 +4,7 @@
   "verdict": "PARTIAL",
   "repository": "https://github.com/skychueung/stamp-xh.git",
   "branch": "fix/five-model-unified-runtime",
-  "head": "0676549",
+  "head": "f86b534",
   "deployment": {
     "tailscale_url": "http://100.75.69.36:12973",
     "backend_port": 12974,
@@ -882,7 +882,23 @@
     "screenshots": [
       "output/playwright/five-model-runtime-12973.png",
       "output/playwright/pepmlm-live-run-succeeded-12973.png"
-    ]
+    ],
+    "partial_five_model_pipeline": {
+      "run_id": "62b5cba1-76e3-409a-be2c-98e52279fbb4",
+      "status": "SUCCEEDED",
+      "ready_models": [
+        "pepmlm",
+        "evobind2",
+        "pephar",
+        "pepflow"
+      ],
+      "unavailable_models": [
+        "pepprclip"
+      ],
+      "result_policy": "ready model results preserved",
+      "screenshot": "output/playwright/partial-five-model-pipeline-12973.png"
+    },
+    "unified_model_job_console": "output/playwright/unified-model-job-console-12973.png"
   },
   "remaining_gaps": [
     "PepPrCLIP canonical MiniCLIP checkpoint is absent; 3/3 real runs remain outstanding.",

@@ -3,7 +3,7 @@
 - 验收时间：2026-08-14（Australia/Sydney）
 - 目标仓库：[skychueung/stamp-xh](https://github.com/skychueung/stamp-xh)
 - 分支：`fix/five-model-unified-runtime`
-- 本报告对应 HEAD：`0676549`
+- 本报告对应 HEAD：`f86b534`
 - 独立部署：`http://100.75.69.36:12973`（Tailscale），后端 `12974`
 - **FINAL VERDICT: PARTIAL**
 
@@ -62,7 +62,9 @@
 - `/api/v1/models/production/status`：恰好五模型，四 ready、一 checkpoint_missing。
 - 统一提交、状态、run 汇总、日志筛选、产物列表/下载、取消均实测。
 - 浏览器登录后真实创建 Pipeline，run `c54b50f3-547c-427f-93fc-5d695a089678` 最终 `SUCCEEDED`；刷新后状态、步骤、日志和结果从后端恢复。
-- 截图：`output/playwright/five-model-runtime-12973.png`、`output/playwright/pepmlm-live-run-succeeded-12973.png`。
+- 五模型选择的浏览器 Pipeline，run `62b5cba1-76e3-409a-be2c-98e52279fbb4` 最终 `SUCCEEDED`：四个 ready 模型结果完整保留，PepPrCLIP 以 `checkpoint_missing` 警告呈现，不再抹除其余结果。
+- 页面新增模型子任务控制台：逐模型状态、进度、开始/结束信息、结构化事件日志、错误 JSON、取消按钮和真实产物下载。
+- 截图：`output/playwright/five-model-runtime-12973.png`、`output/playwright/pepmlm-live-run-succeeded-12973.png`、`output/playwright/unified-model-job-console-12973.png`、`output/playwright/partial-five-model-pipeline-12973.png`。
 
 ## 7. 自动化测试
 
