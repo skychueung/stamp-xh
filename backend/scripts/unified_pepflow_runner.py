@@ -33,9 +33,17 @@ def main() -> int:
     config = config.replace(str(FIXTURE), str(input_copy))
     config_path = input_copy / "runtime_config.yaml"
     config_path.write_text(config, encoding="utf-8")
+    inference_source = SOURCE / "models_con" / "inference.py"
+    runtime_inference = input_copy / "inference_seeded.py"
+    inference_text = inference_source.read_text(encoding="utf-8")
+    fixed_seed = "seed_all(114514)"
+    if fixed_seed not in inference_text:
+        raise RuntimeError("PEPFLOW_SEED_HOOK_NOT_FOUND")
+    inference_text = inference_text.replace(fixed_seed, f"seed_all({int(payload.get('seed', 42))})", 1)
+    runtime_inference.write_text(inference_text, encoding="utf-8")
     command = [
         os.environ.get("STAMP_PEPFLOW_PYTHON", PYTHON),
-        str(SOURCE / "models_con" / "inference.py"),
+        str(runtime_inference),
         "--config", str(config_path), "--device", "cuda:0",
         "--ckpt", os.environ.get("STAMP_PEPFLOW_CHECKPOINT", CHECKPOINT),
         "--output", str(output), "--num_steps", str(payload.get("num_steps", 3)),
@@ -44,8 +52,6 @@ def main() -> int:
     env = dict(os.environ)
     env["CUDA_VISIBLE_DEVICES"] = str(payload.get("gpu_index", 1))
     env["PYTHONPATH"] = str(SOURCE) + os.pathsep + env.get("PYTHONPATH", "")
-    # The upstream entrypoint seeds to a fixed value. Its sampling remains a real
-    # checkpoint forward pass; the job seed is retained in provenance.
     subprocess.run(command, check=True, cwd=str(SOURCE), env=env)
     decoder = (
         "import json,torch,sys; p=torch.load(sys.argv[1],map_location='cpu',weights_only=False);"
