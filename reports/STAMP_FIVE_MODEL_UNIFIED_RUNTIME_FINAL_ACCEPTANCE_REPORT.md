@@ -3,13 +3,13 @@
 - 验收时间：2026-08-14（Australia/Sydney）
 - 目标仓库：[skychueung/stamp-xh](https://github.com/skychueung/stamp-xh)
 - 分支：`fix/five-model-unified-runtime`
-- 本报告对应 HEAD：`f86b534`
+- 本报告对应 HEAD：`b371807`
 - 独立部署：`http://100.75.69.36:12973`（Tailscale），后端 `12974`
 - **FINAL VERDICT: PARTIAL**
 
 ## 1. 执行摘要
 
-统一注册、API、数据库任务、worker、状态机、JSONL 日志、GPU 锁、产物隔离、取消、超时、崩溃恢复和浏览器界面已落地。PepMLM、EvoBind2、PepHAR、PepFlow 完成 12/12 次真实 checkpoint 推理；总分母为 15，本轮实际 **12/15**。PepPrCLIP 官方 MiniCLIP 权重位于需确认许可的 Hugging Face gated 仓库，服务器未配置该资产，因此其 3 次真实推理仍为空缺。官方论文同时说明完整代码需经非商业研究许可获取。[官方模型仓库](https://huggingface.co/ubiquitx/pepprclip/tree/main)｜[论文与数据声明](https://pmc.ncbi.nlm.nih.gov/articles/PMC11291000/)
+统一注册、API、数据库任务、worker、状态机、JSONL 日志、GPU 锁、产物隔离、取消、超时、崩溃恢复和浏览器界面已落地。PepMLM、EvoBind2、PepHAR、PepFlow 完成 12/12 次真实 checkpoint 推理；总分母为 15，本轮实际 **12/15**。PepPrCLIP 官方 MiniCLIP 权重位于需确认许可的 Hugging Face gated 仓库，服务器尚缺官方 checkpoint 与 650,000 条候选嵌入库，因此其 3 次真实推理仍为空缺。统一真实 runner、默认命令、双资产探测和带尺寸校验的安装脚本已经补齐；资产到位后可直接进入 worker。官方论文同时说明完整代码需经非商业研究许可获取。[官方模型仓库](https://huggingface.co/ubiquitx/pepprclip/tree/main)｜[论文与数据声明](https://pmc.ncbi.nlm.nih.gov/articles/PMC11291000/)
 
 ## 2. 根因与修复
 
@@ -27,7 +27,7 @@
 | 模型 | 运行探测 | Checkpoint SHA256 | 真实连续运行 | 判定 |
 |---|---|---|---:|---|
 | pepmlm | ready | `e80587d2ac4a3fb84f2be2cd4f4d02d5f2127cafc75144108ba349d4796c3668` | 3/3 | PASS |
-| pepprclip | checkpoint_missing | — | 0/3 | OPEN |
+| pepprclip | checkpoint_missing（checkpoint + candidate_library） | — | 0/3 | OPEN |
 | evobind2 | ready | `f95e453e6a290ddf317ba1c9698d53fa110cf007ea979b0eae43e6ad38b4e364` | 3/3 | PASS |
 | pephar | ready | `06b9a2701a9594158de2650d10da756c51dda3cc410ea98c47cf9fd1dbc32d15` | 3/3 | PASS |
 | pepflow | ready | `80ef4d7a07eddd877067859b5df95c50833cb72c40ef10d6ff5aa1263f0dba21` | 3/3 | PASS |
@@ -48,7 +48,7 @@
 
 ## 5. 组合、并发与控制面验收
 
-- 五模型组合 run：`models_632ed8c58ced46fe`，五个子任务全部创建；PepMLM/EvoBind2/PepHAR/PepFlow 成功，PepPrCLIP 以明确 `RUNNER_COMMAND_MISSING` 失败，总状态 `PARTIAL`，其余四份结果均保留。
+- 五模型组合 run：`models_632ed8c58ced46fe`，五个子任务全部创建；PepMLM/EvoBind2/PepHAR/PepFlow 成功，当时 PepPrCLIP 以明确 `RUNNER_COMMAND_MISSING` 失败，总状态 `PARTIAL`，其余四份结果均保留。
 - 组合日志：51 条，包含五个 model_id，日志未混淆；具备领取、探测、推理、状态、锁获取/释放事件。
 - 不同模型任务：观察到 `[RUNNING, QUEUED]` 后依次 `SUCCEEDED`，资源不足真实排队。
 - 同模型双任务：观察到 `[RUNNING, QUEUED] → [SUCCEEDED, RUNNING] → [SUCCEEDED, SUCCEEDED]`。
@@ -68,12 +68,14 @@
 
 ## 7. 自动化测试
 
+新增全部点名的统一运行回归用例，并补充 PepPrCLIP 双资产探测测试；当前 focused suite 为 **40 passed**（45.43s）。`backend/scripts/unified_pepprclip_runner.py` 已实现官方 MiniCLIP checkpoint + 官方候选嵌入库的真实批量评分路径，`scripts/install-pepprclip-assets.sh` 提供原子安装与文件尺寸校验。
+
 | 命令 | 结果 |
 |---|---|
 | Linux `pytest -q backend/tests` | **1678 passed, 3 skipped, 0 failed**, 302.38s |
 | `npm run lint` | PASS |
 | `npm run build` | PASS，3600 modules transformed |
-| Pipeline focused tests | 20 passed |
+| Pipeline + unified runtime focused tests | 40 passed |
 
 首次全量测试暴露服务器 venv 未按 `backend/requirements.txt` 安装 numpy/pdfminer.six；补齐已声明依赖后，原 3 项失败单独复测 3/3、全量复测全绿。
 

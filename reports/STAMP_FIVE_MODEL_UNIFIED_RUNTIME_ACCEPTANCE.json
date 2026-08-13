@@ -1,10 +1,10 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-08-14T04:30:00+10:00",
+  "generated_at": "2026-08-14T05:50:00+10:00",
   "verdict": "PARTIAL",
   "repository": "https://github.com/skychueung/stamp-xh.git",
   "branch": "fix/five-model-unified-runtime",
-  "head": "f86b534",
+  "head": "b371807",
   "deployment": {
     "tailscale_url": "http://100.75.69.36:12973",
     "backend_port": 12974,
@@ -904,5 +904,23 @@
     "PepPrCLIP canonical MiniCLIP checkpoint is absent; 3/3 real runs remain outstanding.",
     "PepHAR and PepFlow wrappers execute real checkpoints against fixed historical structural fixtures rather than fully deriving arbitrary structure input from target_sequence.",
     "Frontend bundle emits a >500 kB chunk warning; server Node 18 is below Vite 7 recommended runtime."
-  ]
+  ],
+  "pepprclip_runtime_completion": {
+    "runner": "backend/scripts/unified_pepprclip_runner.py",
+    "installer": "scripts/install-pepprclip-assets.sh",
+    "required_assets": [
+      "canonical_miniclip_4-22-23.ckpt",
+      "candidate_peptides_lengths_5_to_30_25Keach.pkl"
+    ],
+    "probe_state": "checkpoint_missing",
+    "missing": [
+      "checkpoint",
+      "candidate_library"
+    ],
+    "focused_tests": {
+      "passed": 40,
+      "failed": 0,
+      "duration_seconds": 45.43
+    }
+  }
 }
