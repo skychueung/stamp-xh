@@ -656,8 +656,8 @@ def run_peptide_generation_step(
     generation_run = StampGenerationRun(
         project_id=run.project_id,
         epitope_id=epitopes[0].id,
-        generator_name="deterministic_targeting_peptide_baseline_v1",
-        generator_version="1.0",
+        generator_name="unified_five_model_runtime" if model_execution else "deterministic_targeting_peptide_baseline_v1",
+        generator_version="2.0" if model_execution else "1.0",
         status="COMPLETED",
         started_at=_utc_now(),
         finished_at=_utc_now(),
@@ -665,7 +665,33 @@ def run_peptide_generation_step(
     db.add(generation_run)
     db.flush()
 
-    for epitope in epitopes:
+    if model_execution:
+        for model_job in model_execution["jobs"]:
+            result = model_job.get("result") or {}
+            for candidate in result.get("candidates") or []:
+                sequence = str(candidate.get("sequence", "")).upper()
+                if not sequence or any(aa not in VALID_AA for aa in sequence):
+                    continue
+                gravy = compute_gravy(sequence)
+                all_peptides.append({
+                    "sequence": sequence,
+                    "length": len(sequence),
+                    "net_charge": round(compute_net_charge(sequence), 2),
+                    "hydrophobic_ratio": round((gravy + 4.5) / 9.0, 3),
+                    "source_epitope_id": epitopes[0].id,
+                    "source_epitope_sequence": epitopes[0].sequence.upper(),
+                    "generation_method": "unified_five_model_runtime",
+                    "source_model": model_job["model_id"],
+                    "source_job_id": model_job["job_id"],
+                    "source_candidate_id": candidate.get("candidate_id"),
+                    "score": candidate.get("score"),
+                    "structure_path": candidate.get("structure_path"),
+                    "pass_basic_filters": True,
+                    "warning_flags": [],
+                    "provenance": "real_model",
+                })
+
+    for epitope in ([] if model_execution else epitopes):
         epi_seq = epitope.sequence.upper()
         epi_charge = compute_net_charge(epi_seq)
         charge_sign = "positive" if epi_charge > 0.5 else "negative" if epi_charge < -0.5 else "neutral"
@@ -743,6 +769,7 @@ def run_peptide_generation_step(
         "method": STEP_METHODS["PEPTIDE_GENERATION"],
         "scientific_boundary_note": STEP_BOUNDARIES["PEPTIDE_GENERATION"],
         "peptides": all_peptides,
+        "model_execution": model_execution,
     })
     _write_csv(
         os.path.join(artifact_dir, "generated_peptides.csv"),
