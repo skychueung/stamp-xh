@@ -1,0 +1,24 @@
+{
+  "jobs": [
+    "12e3e29a-3bf7-4ea9-a238-5709a1ec16c6",
+    "e79305dc-9e34-46b6-b1ab-e27a75ae2760"
+  ],
+  "samples": [
+    [
+      "RUNNING",
+      "QUEUED"
+    ],
+    [
+      "SUCCEEDED",
+      "RUNNING"
+    ],
+    [
+      "SUCCEEDED",
+      "SUCCEEDED"
+    ]
+  ],
+  "final": [
+    "SUCCEEDED",
+    "SUCCEEDED"
+  ]
+}

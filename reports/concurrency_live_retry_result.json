@@ -1,0 +1,60 @@
+{
+  "jobs": [
+    "03e43c99-8af8-40fd-97d0-1094e46229ff",
+    "30bfa49d-1daa-4a90-b5bb-e5fa811aa779"
+  ],
+  "samples": [
+    [
+      "RUNNING",
+      "QUEUED"
+    ],
+    [
+      "SUCCEEDED",
+      "RUNNING"
+    ],
+    [
+      "SUCCEEDED",
+      "RUNNING"
+    ],
+    [
+      "SUCCEEDED",
+      "RUNNING"
+    ],
+    [
+      "SUCCEEDED",
+      "RUNNING"
+    ],
+    [
+      "SUCCEEDED",
+      "RUNNING"
+    ],
+    [
+      "SUCCEEDED",
+      "RUNNING"
+    ],
+    [
+      "SUCCEEDED",
+      "RUNNING"
+    ],
+    [
+      "SUCCEEDED",
+      "RUNNING"
+    ],
+    [
+      "SUCCEEDED",
+      "RUNNING"
+    ],
+    [
+      "SUCCEEDED",
+      "POSTPROCESSING"
+    ],
+    [
+      "SUCCEEDED",
+      "SUCCEEDED"
+    ]
+  ],
+  "final": [
+    "SUCCEEDED",
+    "SUCCEEDED"
+  ]
+}

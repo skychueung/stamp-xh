@@ -1,0 +1,43 @@
+--- git ---
+/home/xh/kxc/stamp-v3/.goal-worktrees/five-model-unified-runtime
+fix/five-model-unified-runtime
+66c180dee559f15b1317047f45ff65bb3e24ab0d
+origin	https://github.com/skychueung/stamp-targeted-peptide-platform.git (fetch)
+origin	https://github.com/skychueung/stamp-targeted-peptide-platform.git (push)
+stamp-xh	https://github.com/skychueung/stamp-xh.git (fetch)
+stamp-xh	https://github.com/skychueung/stamp-xh.git (push)
+?? backend/app/data/__pycache__/
+?? reports/evobind2-real-acceptance.db
+?? reports/evobind2_real_3x_results.json
+?? reports/pepflow-real-acceptance.db
+?? reports/pepflow_real_3x_results.json
+?? reports/pephar-real-acceptance.db
+?? reports/pephar_real_3x_results.json
+?? reports/pepmlm-real-acceptance.db
+?? reports/pepmlm_real_3x_results.json
+?? reports/runtime-real-evobind2/
+?? reports/runtime-real-pepflow/
+?? reports/runtime-real-pephar/
+?? reports/runtime-real-pepmlm/
+66c180d fix(runtime): start durable pipeline worker
+0dbc334 fix(ui): send session and CSRF on API mutations
+60fefe1 fix(pipeline): consume real unified model candidates
+eec6b61 fix(deploy): wait for database initialization before worker
+fa8dff3 feat(deploy): add isolated 12973 web and worker stack
+0c651d2 fix(runtime): recover interrupted jobs at API startup
+2eaee4f fix(worker): claim jobs atomically and expose downloads
+8d99e63 fix(runtime): honor PepFlow job seed
+a909da0 fix(runtime): decode PepFlow output in model environment
+35a2e72 feat(runtime): bridge PepFlow real runner
+--- processes ---
+1036238 Fri Aug 14 02:20:42 2026 /home/xh/kxc/stamp-v3/backend/.venv/bin/python -m uvicorn app.main:app --app-dir /home/xh/kxc/stamp-v3/.goal-worktrees/five-model-unified-runtime/backend --host 0.0.0.0 --port 12974
+1036268 Fri Aug 14 02:20:43 2026 /home/xh/kxc/stamp-v3/backend/.venv/bin/python -m app.workers.pipeline_worker --loop
+1036269 Fri Aug 14 02:20:43 2026 /home/xh/kxc/stamp-v3/backend/.venv/bin/python /home/xh/kxc/stamp-v3/.goal-worktrees/five-model-unified-runtime/scripts/unified_web_12973.py --root /home/xh/kxc/stamp-v3/.goal-worktrees/five-model-unified-runtime/dist --backend http://127.0.0.1:12974 --port 12973
+1037872 Fri Aug 14 02:21:25 2026 /home/xh/kxc/stamp-v3/backend/.venv/bin/python -m app.workers.model_worker
+--- listeners ---
+LISTEN 0      2048                       0.0.0.0:12974      0.0.0.0:*    users:(("python",pid=1036238,fd=16))                                                       
+LISTEN 0      5                          0.0.0.0:12973      0.0.0.0:*    users:(("python",pid=1036269,fd=3))                                                        
+--- status ---
+{"code":200,"message":"success","data":{"models":[{"model_id":"pepmlm","model_version":"ChatterjeeLab/PepMLM-650M","state":"ready","missing":[],"checkpoint_sha256":"e80587d2ac4a3fb84f2be2cd4f4d02d5f2127cafc75144108ba349d4796c3668","install_hint":null,"configured":{"root":false,"python":false,"checkpoint":false}},{"model_id":"pepprclip","model_version":"canonical-miniclip-4-22-23","state":"checkpoint_missing","missing":["checkpoint"],"checkpoint_sha256":null,"install_hint":"Install the licensed PepPrCLIP weight archive and set STAMP_PEPPRCLIP_* paths.","configured":{"root":false,"python":false,"checkpoint":false}},{"model_id":"evobind2","model_version":"EvoBind2-model_1","state":"ready","missing":[],"checkpoint_sha256":"f95e453e6a290ddf317ba1c9698d53fa110cf007ea979b0eae43e6ad38b4e364","install_hint":null,"configured":{"root":false,"python":false,"checkpoint":false}},{"model_id":"pephar","model_version":"ICLR-2025","state":"ready","missing":[],"checkpoint_sha256":"06b9a2701a9594158de2650d10da756c51dda3cc410ea98c47cf9fd1dbc32d15","install_hint":null,"configured":{"root":false,"python":false,"checkpoint":false}},{"model_id":"pepflow","model_version":"ICML-2024-model2","state":"ready","missing":[],"checkpoint_sha256":"80ef4d7a07eddd877067859b5df95c50833cb72c40ef10d6ff5aa1263f0dba21","install_hint":null,"configured":{"root":false,"python":false,"checkpoint":false}}],"count":5}}
+--- locks/busy ---
+--- zombie children of stack ---

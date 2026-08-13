@@ -1,0 +1,17 @@
+{
+  "job_id": "8085f59c-40c8-4133-8ad7-b42b6795c6a0",
+  "run_id": "acceptance_cancel_live",
+  "model_id": "evobind2",
+  "status": "CANCELLED",
+  "progress": 15,
+  "message": "Model process cancelled",
+  "error": {},
+  "result": {
+    "pid": 1032335,
+    "run_id": "acceptance_cancel_live",
+    "model_id": "evobind2"
+  },
+  "created_at": "2026-08-13T18:19:49.823793",
+  "started_at": "2026-08-13T18:19:50.634816",
+  "finished_at": "2026-08-13T18:19:53.653146"
+}

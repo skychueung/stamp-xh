@@ -1,0 +1,892 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-08-14T04:30:00+10:00",
+  "verdict": "PARTIAL",
+  "repository": "https://github.com/skychueung/stamp-xh.git",
+  "branch": "fix/five-model-unified-runtime",
+  "head": "0676549",
+  "deployment": {
+    "tailscale_url": "http://100.75.69.36:12973",
+    "backend_port": 12974,
+    "runtime_root": "/home/xh/kxc/runtime/five-model-unified",
+    "health": "PASS"
+  },
+  "model_registry": {
+    "expected": 5,
+    "actual": 5,
+    "ids": [
+      "pepmlm",
+      "pepprclip",
+      "evobind2",
+      "pephar",
+      "pepflow"
+    ]
+  },
+  "real_execution": {
+    "expected_runs": 15,
+    "passed_runs": 12,
+    "models": {
+      "pepmlm": {
+        "runs": [
+          {
+            "seed": 41,
+            "job_id": "d364acfe-b715-4874-a620-1350dd58c68b",
+            "status": "SUCCEEDED",
+            "duration_seconds": 5.35,
+            "checkpoint_sha256": "e80587d2ac4a3fb84f2be2cd4f4d02d5f2127cafc75144108ba349d4796c3668",
+            "candidate_count": 1,
+            "candidate_sequences": [
+              "EELVVLAALLAR"
+            ]
+          },
+          {
+            "seed": 42,
+            "job_id": "366b6d5f-79bd-4cfa-b558-040c65e996fc",
+            "status": "SUCCEEDED",
+            "duration_seconds": 5.38,
+            "checkpoint_sha256": "e80587d2ac4a3fb84f2be2cd4f4d02d5f2127cafc75144108ba349d4796c3668",
+            "candidate_count": 1,
+            "candidate_sequences": [
+              "QSVLLAAAAALG"
+            ]
+          },
+          {
+            "seed": 43,
+            "job_id": "9dc52ffb-1313-475f-8334-91b6f829bee7",
+            "status": "SUCCEEDED",
+            "duration_seconds": 5.37,
+            "checkpoint_sha256": "e80587d2ac4a3fb84f2be2cd4f4d02d5f2127cafc75144108ba349d4796c3668",
+            "candidate_count": 1,
+            "candidate_sequences": [
+              "QVVLVLLLQLAG"
+            ]
+          }
+        ]
+      },
+      "evobind2": {
+        "runs": [
+          {
+            "seed": 41,
+            "job_id": "50c9b364-8e4e-4674-ad41-df9e259e45cc",
+            "status": "SUCCEEDED",
+            "duration_seconds": 48.49,
+            "checkpoint_sha256": "f95e453e6a290ddf317ba1c9698d53fa110cf007ea979b0eae43e6ad38b4e364",
+            "candidate_count": 1,
+            "candidate_sequences": [
+              "HGPNMQICVADR"
+            ]
+          },
+          {
+            "seed": 42,
+            "job_id": "84241482-da32-421f-a541-1a8870918c7c",
+            "status": "SUCCEEDED",
+            "duration_seconds": 48.5,
+            "checkpoint_sha256": "f95e453e6a290ddf317ba1c9698d53fa110cf007ea979b0eae43e6ad38b4e364",
+            "candidate_count": 1,
+            "candidate_sequences": [
+              "EGVITPQFDFMV"
+            ]
+          },
+          {
+            "seed": 43,
+            "job_id": "770986aa-b70b-4441-9ed7-3de3848d67d6",
+            "status": "SUCCEEDED",
+            "duration_seconds": 49.49,
+            "checkpoint_sha256": "f95e453e6a290ddf317ba1c9698d53fa110cf007ea979b0eae43e6ad38b4e364",
+            "candidate_count": 1,
+            "candidate_sequences": [
+              "DWACWQHVTGEC"
+            ]
+          }
+        ]
+      },
+      "pephar": {
+        "runs": [
+          {
+            "seed": 41,
+            "job_id": "fc152cc0-09f4-4067-bd83-4af910079425",
+            "status": "SUCCEEDED",
+            "duration_seconds": 53.23,
+            "checkpoint_sha256": "06b9a2701a9594158de2650d10da756c51dda3cc410ea98c47cf9fd1dbc32d15",
+            "candidate_count": 1,
+            "candidate_sequences": [
+              "PPAVVAAPPVVV"
+            ]
+          },
+          {
+            "seed": 42,
+            "job_id": "4b6130a2-0ae2-43b8-b008-ed762e9ad8a0",
+            "status": "SUCCEEDED",
+            "duration_seconds": 4.14,
+            "checkpoint_sha256": "06b9a2701a9594158de2650d10da756c51dda3cc410ea98c47cf9fd1dbc32d15",
+            "candidate_count": 1,
+            "candidate_sequences": [
+              "PVPPPPAPPVAI"
+            ]
+          },
+          {
+            "seed": 43,
+            "job_id": "06ccc72a-6125-43ab-9a8c-74e8ab290e79",
+            "status": "SUCCEEDED",
+            "duration_seconds": 3.17,
+            "checkpoint_sha256": "06b9a2701a9594158de2650d10da756c51dda3cc410ea98c47cf9fd1dbc32d15",
+            "candidate_count": 1,
+            "candidate_sequences": [
+              "PPVPGPAPAVVP"
+            ]
+          }
+        ]
+      },
+      "pepflow": {
+        "runs": [
+          {
+            "seed": 41,
+            "job_id": "e2cfd44b-7e68-43d7-9827-fb76f65d2c0d",
+            "status": "SUCCEEDED",
+            "duration_seconds": 6.2,
+            "checkpoint_sha256": "80ef4d7a07eddd877067859b5df95c50833cb72c40ef10d6ff5aa1263f0dba21",
+            "candidate_count": 1,
+            "candidate_sequences": [
+              "EWEDIKEIWAEEWPNEVNPHES"
+            ]
+          },
+          {
+            "seed": 42,
+            "job_id": "43736874-14d9-4361-a384-c83be0e0d1b9",
+            "status": "SUCCEEDED",
+            "duration_seconds": 6.21,
+            "checkpoint_sha256": "80ef4d7a07eddd877067859b5df95c50833cb72c40ef10d6ff5aa1263f0dba21",
+            "candidate_count": 1,
+            "candidate_sequences": [
+              "ENEENCWDHWPEEFPESNEPTP"
+            ]
+          },
+          {
+            "seed": 43,
+            "job_id": "5d1fcd0b-1c0d-45aa-a522-9510cbf94647",
+            "status": "SUCCEEDED",
+            "duration_seconds": 6.2,
+            "checkpoint_sha256": "80ef4d7a07eddd877067859b5df95c50833cb72c40ef10d6ff5aa1263f0dba21",
+            "candidate_count": 1,
+            "candidate_sequences": [
+              "DMEPTDDWEGSIIASNEINFEE"
+            ]
+          }
+        ]
+      },
+      "pepprclip": {
+        "runs": [],
+        "status": "checkpoint_missing",
+        "checkpoint_sha256": null,
+        "evidence": "Official Hugging Face repository is gated; canonical weight archive is absent and no Hugging Face authentication is configured."
+      }
+    }
+  },
+  "combined_run": {
+    "run_id": "models_632ed8c58ced46fe",
+    "status": "PARTIAL",
+    "jobs": [
+      {
+        "job_id": "a911f939-29b7-4021-a5a6-d3f5af38ebfc",
+        "run_id": "models_632ed8c58ced46fe",
+        "model_id": "pepmlm",
+        "status": "SUCCEEDED",
+        "progress": 100,
+        "message": "Generated 1 candidates",
+        "error": {},
+        "result": {
+          "run_id": "models_632ed8c58ced46fe",
+          "job_id": "a911f939-29b7-4021-a5a6-d3f5af38ebfc",
+          "model_id": "pepmlm",
+          "model_version": "ChatterjeeLab/PepMLM-650M",
+          "status": "SUCCEEDED",
+          "started_at": "2026-08-13T18:17:00.548626",
+          "finished_at": "2026-08-13T18:17:04.719372+00:00",
+          "duration_seconds": 5.319,
+          "device": "cuda:1",
+          "checkpoint_sha256": "e80587d2ac4a3fb84f2be2cd4f4d02d5f2127cafc75144108ba349d4796c3668",
+          "input_sha256": "1ef8f5394ff5314007540cd2aa598df7f616f454ef9226940d02fd4cec493315",
+          "candidates": [
+            {
+              "candidate_id": "pepmlm_0001",
+              "sequence": "QSVVLVAAAGLR",
+              "length": 12,
+              "rank": 1,
+              "score": null,
+              "structure_path": null,
+              "source_model": "pepmlm"
+            }
+          ],
+          "artifacts": [
+            {
+              "name": "request.json",
+              "path": "input/request.json",
+              "size_bytes": 274,
+              "sha256": "1ef8f5394ff5314007540cd2aa598df7f616f454ef9226940d02fd4cec493315"
+            },
+            {
+              "name": "runner.log",
+              "path": "logs/runner.log",
+              "size_bytes": 322,
+              "sha256": "07ffe1070fd6f27d53ddc2d1fcb65b9c120e1c01c5a739d9bb5f6bfbdc5b3c3f"
+            },
+            {
+              "name": "candidate_sequences.csv",
+              "path": "output/candidate_sequences.csv",
+              "size_bytes": 131,
+              "sha256": "3fe0bab46087e8bbc8b918934cc651ff331a1a022cd9337c08d93ea433bed9a8"
+            },
+            {
+              "name": "candidate_sequences.json",
+              "path": "output/candidate_sequences.json",
+              "size_bytes": 676,
+              "sha256": "ce8371abbd64efba9b3e36506c383927e33b004ab295ba947a8fe2cef00cc401"
+            },
+            {
+              "name": "manifest_post.json",
+              "path": "output/manifest_post.json",
+              "size_bytes": 478,
+              "sha256": "2ce623ed5cb10b1146d9ea22eba3dfb09946c855312f82a31818b637ac6a678a"
+            },
+            {
+              "name": "manifest_pre.json",
+              "path": "output/manifest_pre.json",
+              "size_bytes": 381,
+              "sha256": "3379e0675bc8b57cb000bcfd1cf45032b0f2cd55bc508e1094b861c382fa01a3"
+            }
+          ],
+          "metrics": {},
+          "warnings": [],
+          "error": null,
+          "provenance": "real_model",
+          "validation_status": "NOT_EXPERIMENTALLY_VALIDATED"
+        },
+        "created_at": "2026-08-13T18:16:58.857399",
+        "started_at": "2026-08-13T18:17:00.548626",
+        "finished_at": "2026-08-13T18:17:04.719817"
+      },
+      {
+        "job_id": "6dd932a2-44a4-40ac-a40f-9ce32e197586",
+        "run_id": "models_632ed8c58ced46fe",
+        "model_id": "pepprclip",
+        "status": "FAILED",
+        "progress": 5,
+        "message": "RUNNER_COMMAND_MISSING: set STAMP_PEPPRCLIP_RUNNER_COMMAND to a JSON argv array",
+        "error": {
+          "error_code": "RUNNER_COMMAND_MISSING",
+          "message": "RUNNER_COMMAND_MISSING: set STAMP_PEPPRCLIP_RUNNER_COMMAND to a JSON argv array"
+        },
+        "result": {},
+        "created_at": "2026-08-13T18:16:58.892395",
+        "started_at": null,
+        "finished_at": "2026-08-13T18:17:04.738996"
+      },
+      {
+        "job_id": "dc299861-8e70-4002-9c85-c1948732bd2d",
+        "run_id": "models_632ed8c58ced46fe",
+        "model_id": "evobind2",
+        "status": "SUCCEEDED",
+        "progress": 100,
+        "message": "Generated 1 candidates",
+        "error": {},
+        "result": {
+          "run_id": "models_632ed8c58ced46fe",
+          "job_id": "dc299861-8e70-4002-9c85-c1948732bd2d",
+          "model_id": "evobind2",
+          "model_version": "EvoBind2-model_1",
+          "status": "SUCCEEDED",
+          "started_at": "2026-08-13T18:17:04.921535",
+          "finished_at": "2026-08-13T18:17:54.146661+00:00",
+          "duration_seconds": 49.396,
+          "device": "cuda:1",
+          "checkpoint_sha256": "f95e453e6a290ddf317ba1c9698d53fa110cf007ea979b0eae43e6ad38b4e364",
+          "input_sha256": "1ef8f5394ff5314007540cd2aa598df7f616f454ef9226940d02fd4cec493315",
+          "candidates": [
+            {
+              "candidate_id": "evobind2_0001",
+              "sequence": "QASIWYLMGFLA",
+              "length": 12,
+              "rank": 1,
+              "score": -0.1107105481272823,
+              "structure_path": "design/unrelaxed_1.pdb",
+              "source_model": "evobind2"
+            }
+          ],
+          "artifacts": [
+            {
+              "name": "request.json",
+              "path": "input/request.json",
+              "size_bytes": 274,
+              "sha256": "1ef8f5394ff5314007540cd2aa598df7f616f454ef9226940d02fd4cec493315"
+            },
+            {
+              "name": "runner.log",
+              "path": "logs/runner.log",
+              "size_bytes": 2586,
+              "sha256": "7335aa646d5fc974836c76acda35ed5eefe0cf653f41846b0afa40846c4f6c35"
+            },
+            {
+              "name": "metrics.csv",
+              "path": "output/design/metrics.csv",
+              "size_bytes": 168,
+              "sha256": "1a1fafe0d556ea22c31230f43a7f2d6abe518f75047388821ff42873db3bd01e"
+            },
+            {
+              "name": "unrelaxed_1.pdb",
+              "path": "output/design/unrelaxed_1.pdb",
+              "size_bytes": 20220,
+              "sha256": "a1ec646f106523f700954aa48b3324a13cd6c94de3850b503b081e75b88d22a3"
+            },
+            {
+              "name": "receptor.a3m",
+              "path": "output/input/receptor.a3m",
+              "size_bytes": 31,
+              "sha256": "5825f0e5805d662ef66258b5fd23122e30755c1e12019abf564a79e398a0d561"
+            },
+            {
+              "name": "receptor.fasta",
+              "path": "output/input/receptor.fasta",
+              "size_bytes": 31,
+              "sha256": "5825f0e5805d662ef66258b5fd23122e30755c1e12019abf564a79e398a0d561"
+            },
+            {
+              "name": "result.json",
+              "path": "output/result.json",
+              "size_bytes": 1564,
+              "sha256": "13edf03eb966fa914985616380f21c20ae109ad92a22cbeecde8d60fea2027f4"
+            }
+          ],
+          "metrics": {
+            "iterations": [
+              {
+                "iteration": "init",
+                "if_dist_peptide": "8.568",
+                "plddt": "65.64077328790829",
+                "loss": "0.1305286243689184",
+                "sequence": "QASIWYLMGFNA"
+              },
+              {
+                "iteration": "1",
+                "if_dist_peptide": "8.009093",
+                "plddt": "72.34263961369784",
+                "loss": "0.1107105481272823",
+                "sequence": "QASIWYLMGFLA"
+              }
+            ]
+          },
+          "warnings": [],
+          "error": null,
+          "provenance": "real_model",
+          "validation_status": "NOT_EXPERIMENTALLY_VALIDATED"
+        },
+        "created_at": "2026-08-13T18:16:58.917337",
+        "started_at": "2026-08-13T18:17:04.921535",
+        "finished_at": "2026-08-13T18:17:54.147154"
+      },
+      {
+        "job_id": "233b0756-6dfc-4c8f-be84-cecfa548c91c",
+        "run_id": "models_632ed8c58ced46fe",
+        "model_id": "pephar",
+        "status": "SUCCEEDED",
+        "progress": 100,
+        "message": "Generated 1 candidates",
+        "error": {},
+        "result": {
+          "run_id": "models_632ed8c58ced46fe",
+          "job_id": "233b0756-6dfc-4c8f-be84-cecfa548c91c",
+          "model_id": "pephar",
+          "model_version": "ICLR-2025",
+          "status": "SUCCEEDED",
+          "started_at": "2026-08-13T18:17:54.178999",
+          "finished_at": "2026-08-13T18:17:58.239422+00:00",
+          "duration_seconds": 4.077,
+          "device": "cuda:1",
+          "checkpoint_sha256": "06b9a2701a9594158de2650d10da756c51dda3cc410ea98c47cf9fd1dbc32d15",
+          "input_sha256": "1ef8f5394ff5314007540cd2aa598df7f616f454ef9226940d02fd4cec493315",
+          "candidates": [
+            {
+              "candidate_id": "pephar_0001",
+              "sequence": "PPPPGPAPPVPP",
+              "length": 12,
+              "rank": 1,
+              "score": 0.0833333358168602,
+              "structure_path": "pephar_run/result/new_10_0_single_gt_sto_1/case0/gen_0.pdb",
+              "source_model": "pephar"
+            }
+          ],
+          "artifacts": [
+            {
+              "name": "request.json",
+              "path": "input/request.json",
+              "size_bytes": 274,
+              "sha256": "1ef8f5394ff5314007540cd2aa598df7f616f454ef9226940d02fd4cec493315"
+            },
+            {
+              "name": "runner.log",
+              "path": "logs/runner.log",
+              "size_bytes": 923,
+              "sha256": "49307dbb98635f17082769f381bddfc558fbf1d6d9c4fa5953bd9d6059810ff4"
+            },
+            {
+              "name": "gen_0.pdb",
+              "path": "output/pephar_run/result/new_10_0_single_gt_sto_1/case0/gen_0.pdb",
+              "size_bytes": 24795,
+              "sha256": "c4519d2d7ecda862d6058b75e328509afe2c396af3f6ef1fa0294a73f9e900eb"
+            },
+            {
+              "name": "gt.pdb",
+              "path": "output/pephar_run/result/new_10_0_single_gt_sto_1/case0/gt.pdb",
+              "size_bytes": 24795,
+              "sha256": "cba943cfce94ab8be4fa73d2bcac90ab9493db41b9724a91e72cccbe4c2baccb"
+            },
+            {
+              "name": "test.csv",
+              "path": "output/pephar_run/result/new_10_0_single_gt_sto_1/test.csv",
+              "size_bytes": 106,
+              "sha256": "72f5c3ab2224b4c0b7f32bc15fc330c1a6b326fec4c0100995ba316e67003542"
+            },
+            {
+              "name": "test_data_12aa.pkl",
+              "path": "output/pephar_run/test_data_12aa.pkl",
+              "size_bytes": 19268,
+              "sha256": "2794f84c6f9f7a9e3fa46dd8fbffdd9e9debedbd63231769c20436e46d7fcf77"
+            },
+            {
+              "name": "result.json",
+              "path": "output/result.json",
+              "size_bytes": 945,
+              "sha256": "7551e9ef53c45528881d1e5eb55004dc0ed78d1aa9db56803ae20c46a69da4fe"
+            }
+          ],
+          "metrics": {
+            "rows": [
+              {
+                "name": "case0",
+                "rmsd": "5.667082786560059",
+                "recovery": "0.0833333358168602",
+                "rec_length": "30",
+                "pep_length": "12",
+                "num": "0",
+                "valid": "1.0"
+              }
+            ]
+          },
+          "warnings": [],
+          "error": null,
+          "provenance": "real_model",
+          "validation_status": "NOT_EXPERIMENTALLY_VALIDATED"
+        },
+        "created_at": "2026-08-13T18:16:58.941700",
+        "started_at": "2026-08-13T18:17:54.178999",
+        "finished_at": "2026-08-13T18:17:58.239946"
+      },
+      {
+        "job_id": "f00fe179-72e5-4b62-a532-35884c268323",
+        "run_id": "models_632ed8c58ced46fe",
+        "model_id": "pepflow",
+        "status": "SUCCEEDED",
+        "progress": 100,
+        "message": "Generated 1 candidates",
+        "error": {},
+        "result": {
+          "run_id": "models_632ed8c58ced46fe",
+          "job_id": "f00fe179-72e5-4b62-a532-35884c268323",
+          "model_id": "pepflow",
+          "model_version": "ICML-2024-model2",
+          "status": "SUCCEEDED",
+          "started_at": "2026-08-13T18:17:58.299492",
+          "finished_at": "2026-08-13T18:18:04.387683+00:00",
+          "duration_seconds": 6.135,
+          "device": "cuda:1",
+          "checkpoint_sha256": "80ef4d7a07eddd877067859b5df95c50833cb72c40ef10d6ff5aa1263f0dba21",
+          "input_sha256": "1ef8f5394ff5314007540cd2aa598df7f616f454ef9226940d02fd4cec493315",
+          "candidates": [
+            {
+              "candidate_id": "pepflow_0001",
+              "sequence": "EEEEEENQWGEEWEPPVMSTET",
+              "length": 22,
+              "rank": 1,
+              "score": null,
+              "structure_path": null,
+              "source_model": "pepflow"
+            }
+          ],
+          "artifacts": [
+            {
+              "name": "request.json",
+              "path": "input/request.json",
+              "size_bytes": 274,
+              "sha256": "1ef8f5394ff5314007540cd2aa598df7f616f454ef9226940d02fd4cec493315"
+            },
+            {
+              "name": "runner.log",
+              "path": "logs/runner.log",
+              "size_bytes": 2335,
+              "sha256": "00f0aa39aa4bc9f11692c6bf00ab18bb5256a4b7c8c762f809e0ff720ab0b5a8"
+            },
+            {
+              "name": "converter_manifest.json",
+              "path": "output/input/converter_manifest.json",
+              "size_bytes": 1704,
+              "sha256": "dab913da95ab7d023f8d228abe3ce463521136a71d0250e4b8bd11b580fc7344"
+            },
+            {
+              "name": "dataset_config.yaml",
+              "path": "output/input/dataset_config.yaml",
+              "size_bytes": 281,
+              "sha256": "09f724f8aa4272f24e1aa120035bf05b6b069d332b9f6e8f7006d7cf0393b24c"
+            },
+            {
+              "name": "full_config.yaml",
+              "path": "output/input/full_config.yaml",
+              "size_bytes": 1539,
+              "sha256": "63f06868361faa34428580c3794d971f7e6378d35bfd578576b1a5e67f553b9b"
+            },
+            {
+              "name": "inference_seeded.py",
+              "path": "output/input/inference_seeded.py",
+              "size_bytes": 4016,
+              "sha256": "abda39d8c2ee2142c4a51140b53c915874a65d2657e135e41cfd53baad7f1d21"
+            },
+            {
+              "name": "pep_structure_cache.lmdb",
+              "path": "output/input/pep_structure_cache.lmdb",
+              "size_bytes": 28672,
+              "sha256": "74a352a7b0f900cb3d805e1590cb76c8500494eb8edad2a1739b6189dec654b7"
+            },
+            {
+              "name": "pep_structure_cache.lmdb-lock",
+              "path": "output/input/pep_structure_cache.lmdb-lock",
+              "size_bytes": 8192,
+              "sha256": "b57593f7098f7833020ce3d3314784add7abf859816ee28509734054e42fe3ee"
+            },
+            {
+              "name": "runtime_config.yaml",
+              "path": "output/input/runtime_config.yaml",
+              "size_bytes": 1635,
+              "sha256": "58a5382bb7836e019ad5853ffb5b74c65482a9da18d098ba1c83e777564c384b"
+            },
+            {
+              "name": "peptide.pdb",
+              "path": "output/input/structure_dir/case0/peptide.pdb",
+              "size_bytes": 14746,
+              "sha256": "4ddd0a6f41e86d960f94fc6246cbb543ca19c36a122a92dec1839050ca3c79f1"
+            },
+            {
+              "name": "pocket.pdb",
+              "path": "output/input/structure_dir/case0/pocket.pdb",
+              "size_bytes": 20011,
+              "sha256": "93b59336f4734b95272716153fdbadff1d5fe7e88f2ade2e1f3259f4491d49d8"
+            },
+            {
+              "name": "case0.pt",
+              "path": "output/outputs/case0.pt",
+              "size_bytes": 31407,
+              "sha256": "89ea22aa103b3fc4b4075792d2b549f98a4c5f0e4dc52cf4ab6373f8ab4b3464"
+            },
+            {
+              "name": "outputs.csv",
+              "path": "output/outputs.csv",
+              "size_bytes": 143,
+              "sha256": "2205828f8647c268745914250ba33f4ea0a802a1fb8cc92aaaf36c21899448fb"
+            },
+            {
+              "name": "result.json",
+              "path": "output/result.json",
+              "size_bytes": 1090,
+              "sha256": "337986c2707215814ff8cbaa1086386753290f87862ec44d2117800cb791143a"
+            }
+          ],
+          "metrics": {
+            "num_steps": 3,
+            "job_seed": 44
+          },
+          "warnings": [
+            "Uses the server's proven case0 receptor/pocket fixture for structural input."
+          ],
+          "error": null,
+          "provenance": "real_model",
+          "validation_status": "NOT_EXPERIMENTALLY_VALIDATED"
+        },
+        "created_at": "2026-08-13T18:16:58.966554",
+        "started_at": "2026-08-13T18:17:58.299492",
+        "finished_at": "2026-08-13T18:18:04.388356"
+      }
+    ]
+  },
+  "controls": {
+    "cancel": {
+      "job_id": "8085f59c-40c8-4133-8ad7-b42b6795c6a0",
+      "run_id": "acceptance_cancel_live",
+      "model_id": "evobind2",
+      "status": "CANCELLED",
+      "progress": 15,
+      "message": "Model process cancelled",
+      "error": {},
+      "result": {
+        "pid": 1032335,
+        "run_id": "acceptance_cancel_live",
+        "model_id": "evobind2"
+      },
+      "created_at": "2026-08-13T18:19:49.823793",
+      "started_at": "2026-08-13T18:19:50.634816",
+      "finished_at": "2026-08-13T18:19:53.653146"
+    },
+    "timeout": {
+      "job_id": "a04be744-4f47-4c9b-a818-7a3350b46502",
+      "run_id": "acceptance_timeout_live",
+      "model_id": "evobind2",
+      "status": "TIMED_OUT",
+      "progress": 15,
+      "message": "Model exceeded 1s",
+      "error": {},
+      "result": {
+        "pid": 1034900,
+        "run_id": "acceptance_timeout_live",
+        "model_id": "evobind2"
+      },
+      "created_at": "2026-08-13T18:20:22.792438",
+      "started_at": "2026-08-13T18:20:24.388856",
+      "finished_at": "2026-08-13T18:20:25.403638"
+    },
+    "restart_recovery": {
+      "job": {
+        "job_id": "9c845225-d954-4091-b5c0-e98fed931b7a",
+        "run_id": "acceptance_restart_live",
+        "model_id": "evobind2",
+        "status": "SUCCEEDED",
+        "progress": 100,
+        "message": "Generated 1 candidates",
+        "error": {},
+        "result": {
+          "run_id": "acceptance_restart_live",
+          "job_id": "9c845225-d954-4091-b5c0-e98fed931b7a",
+          "model_id": "evobind2",
+          "model_version": "EvoBind2-model_1",
+          "status": "SUCCEEDED",
+          "started_at": "2026-08-13T18:21:17.343634",
+          "finished_at": "2026-08-13T18:22:15.881060+00:00",
+          "duration_seconds": 49.401,
+          "device": "cuda:1",
+          "checkpoint_sha256": "f95e453e6a290ddf317ba1c9698d53fa110cf007ea979b0eae43e6ad38b4e364",
+          "input_sha256": "ef4e5214defd4c77d6d91f4faa3ad796878a9e56cd34f9f49e552ad771405b95",
+          "candidates": [
+            {
+              "candidate_id": "evobind2_0001",
+              "sequence": "NQAGHYPCRIAS",
+              "length": 12,
+              "rank": 1,
+              "score": -0.2478444840284782,
+              "structure_path": "design/unrelaxed_1.pdb",
+              "source_model": "evobind2"
+            }
+          ],
+          "artifacts": [
+            {
+              "name": "request.json",
+              "path": "input/request.json",
+              "size_bytes": 171,
+              "sha256": "ef4e5214defd4c77d6d91f4faa3ad796878a9e56cd34f9f49e552ad771405b95"
+            },
+            {
+              "name": "runner.log",
+              "path": "logs/runner.log",
+              "size_bytes": 2592,
+              "sha256": "56e18d29b3d8372b292c8f2ea99c4c9103ebaf394f0389f8f0e95a14845f43a4"
+            },
+            {
+              "name": "metrics.csv",
+              "path": "output/design/metrics.csv",
+              "size_bytes": 173,
+              "sha256": "480add840353fda3dbd24321ac7c19975a8baf0d184474e9ac72dae554eb2c46"
+            },
+            {
+              "name": "unrelaxed_1.pdb",
+              "path": "output/design/unrelaxed_1.pdb",
+              "size_bytes": 19653,
+              "sha256": "af0306c86db93aa3326c8e36b172cc6887f67df1f4067c9df4520107d8d306da"
+            },
+            {
+              "name": "receptor.a3m",
+              "path": "output/input/receptor.a3m",
+              "size_bytes": 31,
+              "sha256": "5825f0e5805d662ef66258b5fd23122e30755c1e12019abf564a79e398a0d561"
+            },
+            {
+              "name": "receptor.fasta",
+              "path": "output/input/receptor.fasta",
+              "size_bytes": 31,
+              "sha256": "5825f0e5805d662ef66258b5fd23122e30755c1e12019abf564a79e398a0d561"
+            },
+            {
+              "name": "result.json",
+              "path": "output/result.json",
+              "size_bytes": 1569,
+              "sha256": "b9b668894750c8cd63990957d40a1c6ef6a396e032f3dfb5352c42094302d351"
+            }
+          ],
+          "metrics": {
+            "iterations": [
+              {
+                "iteration": "init",
+                "if_dist_peptide": "9.495168",
+                "plddt": "54.396738659600935",
+                "loss": "0.1745539891951388",
+                "sequence": "NMAGHYPCRIAS"
+              },
+              {
+                "iteration": "1",
+                "if_dist_peptide": "15.786688",
+                "plddt": "63.69594188401709",
+                "loss": "0.2478444840284782",
+                "sequence": "NQAGHYPCRIAS"
+              }
+            ]
+          },
+          "warnings": [],
+          "error": null,
+          "provenance": "real_model",
+          "validation_status": "NOT_EXPERIMENTALLY_VALIDATED"
+        },
+        "created_at": "2026-08-13T18:21:16.827454",
+        "started_at": "2026-08-13T18:21:17.343634",
+        "finished_at": "2026-08-13T18:22:15.881568"
+      },
+      "events": [
+        "REQUEST_RECEIVED",
+        "STATE_QUEUED",
+        "WORKER_CLAIMED",
+        "STATE_PREFLIGHT",
+        "RUNTIME_PROBED",
+        "GPU_LOCK_ACQUIRED",
+        "STATE_RUNNING",
+        "INFERENCE_STARTED",
+        "STATE_RECOVERING",
+        "STATE_QUEUED",
+        "WORKER_CLAIMED",
+        "STATE_PREFLIGHT",
+        "RUNTIME_PROBED",
+        "GPU_LOCK_ACQUIRED",
+        "STATE_RUNNING",
+        "INFERENCE_STARTED",
+        "STATE_POSTPROCESSING",
+        "STATE_SUCCEEDED",
+        "GPU_LOCK_RELEASED"
+      ],
+      "record_count": 19
+    },
+    "different_models_queue": {
+      "jobs": [
+        "03e43c99-8af8-40fd-97d0-1094e46229ff",
+        "30bfa49d-1daa-4a90-b5bb-e5fa811aa779"
+      ],
+      "samples": [
+        [
+          "RUNNING",
+          "QUEUED"
+        ],
+        [
+          "SUCCEEDED",
+          "RUNNING"
+        ],
+        [
+          "SUCCEEDED",
+          "RUNNING"
+        ],
+        [
+          "SUCCEEDED",
+          "RUNNING"
+        ],
+        [
+          "SUCCEEDED",
+          "RUNNING"
+        ],
+        [
+          "SUCCEEDED",
+          "RUNNING"
+        ],
+        [
+          "SUCCEEDED",
+          "RUNNING"
+        ],
+        [
+          "SUCCEEDED",
+          "RUNNING"
+        ],
+        [
+          "SUCCEEDED",
+          "RUNNING"
+        ],
+        [
+          "SUCCEEDED",
+          "RUNNING"
+        ],
+        [
+          "SUCCEEDED",
+          "POSTPROCESSING"
+        ],
+        [
+          "SUCCEEDED",
+          "SUCCEEDED"
+        ]
+      ],
+      "final": [
+        "SUCCEEDED",
+        "SUCCEEDED"
+      ]
+    },
+    "same_model_queue": {
+      "jobs": [
+        "12e3e29a-3bf7-4ea9-a238-5709a1ec16c6",
+        "e79305dc-9e34-46b6-b1ab-e27a75ae2760"
+      ],
+      "samples": [
+        [
+          "RUNNING",
+          "QUEUED"
+        ],
+        [
+          "SUCCEEDED",
+          "RUNNING"
+        ],
+        [
+          "SUCCEEDED",
+          "SUCCEEDED"
+        ]
+      ],
+      "final": [
+        "SUCCEEDED",
+        "SUCCEEDED"
+      ]
+    }
+  },
+  "tests": {
+    "backend": {
+      "passed": 1678,
+      "failed": 0,
+      "skipped": 3,
+      "warnings": 47,
+      "duration_seconds": 302.38
+    },
+    "frontend_lint": "PASS",
+    "frontend_build": "PASS",
+    "focused_pipeline": {
+      "passed": 20
+    }
+  },
+  "browser": {
+    "authenticated_ui": "PASS",
+    "exact_five_status": "PASS",
+    "pipeline_run_id": "c54b50f3-547c-427f-93fc-5d695a089678",
+    "pipeline_status": "SUCCEEDED",
+    "screenshots": [
+      "output/playwright/five-model-runtime-12973.png",
+      "output/playwright/pepmlm-live-run-succeeded-12973.png"
+    ]
+  },
+  "remaining_gaps": [
+    "PepPrCLIP canonical MiniCLIP checkpoint is absent; 3/3 real runs remain outstanding.",
+    "PepHAR and PepFlow wrappers execute real checkpoints against fixed historical structural fixtures rather than fully deriving arbitrary structure input from target_sequence.",
+    "Frontend bundle emits a >500 kB chunk warning; server Node 18 is below Vite 7 recommended runtime."
+  ]
+}

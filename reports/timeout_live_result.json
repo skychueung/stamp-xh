@@ -1,0 +1,17 @@
+{
+  "job_id": "a04be744-4f47-4c9b-a818-7a3350b46502",
+  "run_id": "acceptance_timeout_live",
+  "model_id": "evobind2",
+  "status": "TIMED_OUT",
+  "progress": 15,
+  "message": "Model exceeded 1s",
+  "error": {},
+  "result": {
+    "pid": 1034900,
+    "run_id": "acceptance_timeout_live",
+    "model_id": "evobind2"
+  },
+  "created_at": "2026-08-13T18:20:22.792438",
+  "started_at": "2026-08-13T18:20:24.388856",
+  "finished_at": "2026-08-13T18:20:25.403638"
+}
