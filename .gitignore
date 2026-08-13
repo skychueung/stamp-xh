@@ -79,6 +79,7 @@ backend/.venv-win/
 
 # SQLite databases
 backend/app/*.db
+backend/*.db
 
 # Backups
 backup/
