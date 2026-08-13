@@ -22,6 +22,7 @@ from app.services.pipeline_orchestrator import (
     create_pipeline_zip,
     get_pipeline_status,
     list_pipeline_artifacts,
+    read_pipeline_log,
     retry_pipeline_from_step,
     run_pipeline_once,
 )
@@ -92,6 +93,19 @@ class PipelineStatusResponse(BaseModel):
 
 class PipelineRetryRequest(BaseModel):
     from_step: str = Field(..., description="Step name to retry from")
+
+
+class PipelineLogRecord(BaseModel):
+    timestamp: str | None
+    level: str
+    run_id: str
+    step: str | None
+    message: str
+
+
+class PipelineLogResponse(BaseModel):
+    run_id: str
+    records: list[PipelineLogRecord]
 
 
 # ---------------------------------------------------------------------------
@@ -184,6 +198,22 @@ def get_steps(run_id: str, db: Session = Depends(get_db)):
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
     return ApiResponse.success(data=status["steps"])
+
+
+@router.get("/{run_id}/logs", response_model=ApiResponse[PipelineLogResponse])
+def get_run_logs(
+    run_id: str,
+    tail: int = Query(500, ge=1, le=5000),
+    db: Session = Depends(get_db),
+):
+    """Return durable execution events for one pipeline run."""
+    from app.models.orm import PipelineRun
+
+    if not db.query(PipelineRun.id).filter(PipelineRun.id == run_id).first():
+        raise HTTPException(status_code=404, detail="Pipeline run not found")
+    return ApiResponse.success(
+        data=PipelineLogResponse(run_id=run_id, records=read_pipeline_log(run_id, tail=tail))
+    )
 
 
 @router.post("/{run_id}/run", response_model=ApiResponse[PipelineRunResponse])

@@ -19,6 +19,7 @@ import json
 import logging
 import os
 import shutil
+import threading
 import zipfile
 from datetime import datetime, timezone
 from typing import Any, Optional
@@ -56,6 +57,8 @@ from app.services.sequence_validator import (
 from app.services.targeting_peptide_generator import generate_targeting_peptides
 
 logger = logging.getLogger("stamp")
+
+_pipeline_log_lock = threading.Lock()
 
 VALID_AA = set("ACDEFGHIKLMNPQRSTVWY")
 LINKER_LIBRARY = ["GGGGS", "EAAAKEAAAK", "RKRR", "AAY", "GSG"]
@@ -109,6 +112,53 @@ def _step_dir(run_id: str, step_name: str) -> str:
     path = os.path.join(_artifact_dir(run_id), step_name.lower())
     os.makedirs(path, exist_ok=True)
     return path
+
+
+def _pipeline_log_path(run_id: str) -> str:
+    """Return the durable, per-run execution log path."""
+    return os.path.join(_artifact_dir(run_id), "pipeline.log")
+
+
+def _append_pipeline_log(
+    run_id: str,
+    level: str,
+    message: str,
+    *,
+    step: str | None = None,
+) -> None:
+    """Append one structured line to the run log without breaking execution."""
+    record = {
+        "timestamp": _utc_now().isoformat(),
+        "level": level.upper(),
+        "run_id": run_id,
+        "step": step,
+        "message": message,
+    }
+    try:
+        with _pipeline_log_lock:
+            with open(_pipeline_log_path(run_id), "a", encoding="utf-8") as handle:
+                handle.write(json.dumps(record, ensure_ascii=False, default=str) + "\n")
+    except Exception:
+        logger.exception("Failed to write pipeline log for run %s", run_id)
+
+
+def read_pipeline_log(run_id: str, tail: int = 500) -> list[dict[str, Any]]:
+    """Read the newest structured execution log records for a pipeline run."""
+    path = _pipeline_log_path(run_id)
+    if not os.path.isfile(path):
+        return []
+    with open(path, "r", encoding="utf-8", errors="replace") as handle:
+        lines = handle.readlines()
+    records: list[dict[str, Any]] = []
+    for line in lines[-max(1, tail):]:
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            records.append(json.loads(line))
+        except json.JSONDecodeError:
+            records.append({"timestamp": None, "level": "INFO", "run_id": run_id, "step": None, "message": line})
+    return records
 
 
 def _write_json(path: str, data: dict | list) -> None:
@@ -1426,8 +1476,10 @@ def run_pipeline_once(
 
     if run.status == "SUCCEEDED":
         logger.info("PipelineRun %s already SUCCEEDED; skipping.", run_id)
+        _append_pipeline_log(run_id, "INFO", "Run already succeeded; no duplicate execution was started.")
         return run
 
+    _append_pipeline_log(run_id, "INFO", "Pipeline execution started.")
     _update_run(run, status="RUNNING")
     db.commit()
 
@@ -1447,31 +1499,42 @@ def run_pipeline_once(
         step = _get_step(db, run.id, step_name)
         if step.status == "SUCCEEDED":
             logger.info("Step %s already succeeded; skipping.", step_name)
+            _append_pipeline_log(run_id, "INFO", "Step already succeeded; skipped.", step=step_name)
             continue
 
         logger.info("Running pipeline step: %s for run %s", step_name, run_id)
+        _append_pipeline_log(run_id, "INFO", "Step started.", step=step_name)
         try:
             ok = step_func()
         except Exception as exc:
             logger.exception("Step %s failed for run %s: %s", step_name, run_id, exc)
-            _update_step(step, "FAILED", error_message=f"[{step_name}] {exc}")
-            _update_run(run, status="FAILED", current_step=step_name, error_message=str(exc))
+            _append_pipeline_log(run_id, "ERROR", f"{type(exc).__name__}: {exc}", step=step_name)
+            # A database exception leaves SQLAlchemy's transaction unusable.
+            # Roll it back before persisting the visible FAILED state.
+            db.rollback()
+            run = db.query(PipelineRun).filter(PipelineRun.id == run_id).first()
+            step = _get_step(db, run_id, step_name)
+            _update_step(step, "FAILED", error_message=f"[{step_name}] {type(exc).__name__}: {exc}")
+            _update_run(run, status="FAILED", current_step=step_name, error_message=f"{type(exc).__name__}: {exc}")
             db.commit()
             return run
 
         if not ok:
             logger.error("Step %s returned False for run %s", step_name, run_id)
+            _append_pipeline_log(run_id, "ERROR", step.error_message or "Step returned False.", step=step_name)
             _update_run(run, status="FAILED", current_step=step_name)
             db.commit()
             return run
 
         db.refresh(run)
+        _append_pipeline_log(run_id, "INFO", "Step succeeded.", step=step_name)
 
     # Mark completion
     _update_run(run, status="SUCCEEDED", current_step="FRONT_PIPELINE_TO_FINAL_RANKING_READY")
     db.commit()
     db.refresh(run)
     logger.info("PipelineRun %s completed successfully.", run_id)
+    _append_pipeline_log(run_id, "INFO", "Pipeline execution completed successfully.")
     return run
 
 
@@ -1503,6 +1566,7 @@ def retry_pipeline_from_step(db: Session, run_id: str, from_step: str) -> Pipeli
     _update_run(run, status="PENDING", current_step=from_step, error_message=None)
     db.commit()
     db.refresh(run)
+    _append_pipeline_log(run_id, "INFO", "Retry requested; this step and following steps were reset.", step=from_step)
     return run
 
 

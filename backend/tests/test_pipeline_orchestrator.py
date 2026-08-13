@@ -41,6 +41,7 @@ from app.services.pipeline_orchestrator import (
     run_final_ranking_step,
     generate_pipeline_report,
     run_pipeline_once,
+    read_pipeline_log,
 )
 
 
@@ -334,6 +335,29 @@ def test_run_pipeline_once_full(db_session, demo_sequence: str):
     zip_path = create_pipeline_zip(run.id)
     assert os.path.exists(zip_path)
     assert os.path.getsize(zip_path) > 0
+
+    logs = read_pipeline_log(run.id)
+    assert logs
+    assert logs[0]["message"] == "Pipeline execution started."
+    assert logs[-1]["message"] == "Pipeline execution completed successfully."
+
+
+def test_multiple_independent_runs_succeed(db_session, demo_sequence: str):
+    """Regression: a successful first run must not poison later runs."""
+    results = []
+    for index in range(3):
+        run = create_pipeline_run(db_session, None, f"repeat-{index}", demo_sequence)
+        results.append(
+            run_pipeline_once(
+                db_session,
+                run.id,
+                top_epitopes=3,
+                peptides_per_epitope=2,
+                top_stamp_candidates=5,
+            )
+        )
+    assert [result.status for result in results] == ["SUCCEEDED", "SUCCEEDED", "SUCCEEDED"]
+    assert len({result.id for result in results}) == 3
 
 
 # ---------------------------------------------------------------------------

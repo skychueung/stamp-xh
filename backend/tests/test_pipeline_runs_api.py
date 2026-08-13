@@ -69,6 +69,25 @@ async def async_client(test_app):
 
 
 @pytest.mark.asyncio
+async def test_pipeline_logs_endpoint(async_client: AsyncClient, db_session):
+    run = create_pipeline_run(db_session, None, "log-test", "MKKLLPTAAAGLLLLAAQPAMA")
+    run_pipeline_once(
+        db_session,
+        run.id,
+        top_epitopes=3,
+        peptides_per_epitope=2,
+        top_stamp_candidates=5,
+    )
+
+    resp = await async_client.get(f"/api/v1/pipeline-runs/{run.id}/logs")
+    assert resp.status_code == status.HTTP_200_OK, resp.text
+    data = resp.json()["data"]
+    assert data["run_id"] == run.id
+    assert data["records"]
+    assert data["records"][-1]["message"] == "Pipeline execution completed successfully."
+
+
+@pytest.mark.asyncio
 async def test_report_endpoint_reads_from_lowercase_dir(async_client: AsyncClient, db_session):
     """Ensure GET /report reads pipeline_report.json from report_export/ (lower-case)."""
     # 1. Create and run a full pipeline so report files are generated

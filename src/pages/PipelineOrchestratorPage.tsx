@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { pipelineRunsApi, type PipelineRun, type PipelineStatus, type PipelineStepSummary } from '@/lib/api/pipelineRuns';
+import { pipelineRunsApi, type PipelineLogRecord, type PipelineRun, type PipelineStatus, type PipelineStepSummary } from '@/lib/api/pipelineRuns';
 import { fetchClient } from '@/lib/api/client';
 import { mockTargetProtein } from '@/data/platformMockData';
 import {
@@ -293,6 +293,7 @@ export default function PipelineOrchestratorPage() {
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [polling, setPolling] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [runLogs, setRunLogs] = useState<PipelineLogRecord[]>([]);
 
   // --- models live fetch ---
   useEffect(() => {
@@ -328,6 +329,15 @@ export default function PipelineOrchestratorPage() {
     }
   }, []);
 
+  const loadRunLogs = useCallback(async (runId: string) => {
+    try {
+      const res = await pipelineRunsApi.getLogs(runId, 500);
+      setRunLogs(res.records || []);
+    } catch {
+      setRunLogs([]);
+    }
+  }, []);
+
   useEffect(() => {
     loadRuns();
   }, [loadRuns]);
@@ -339,6 +349,7 @@ export default function PipelineOrchestratorPage() {
       try {
         const res = await pipelineRunsApi.get(selectedRunId);
         setRunDetail(res);
+        await loadRunLogs(selectedRunId);
         if (res.status !== 'RUNNING') {
           setPolling(false);
           loadRuns();
@@ -348,7 +359,7 @@ export default function PipelineOrchestratorPage() {
       }
     }, 3000);
     return () => clearInterval(interval);
-  }, [selectedRunId, polling, loadRuns]);
+  }, [selectedRunId, polling, loadRuns, loadRunLogs]);
 
   // --- input helpers ---
   const loadExample = () => {
@@ -458,9 +469,11 @@ export default function PipelineOrchestratorPage() {
       } as any);
       setSelectedRunId(res.id);
       setPolling(true);
+      setRunLogs([]);
       await loadRuns();
       const detail = await pipelineRunsApi.get(res.id);
       setRunDetail(detail);
+      await loadRunLogs(res.id);
       if (mode === 'semi_auto') {
         // Semi-auto: jump to epitope screening so the user reviews candidates
         // before manually continuing to peptide generation.
@@ -479,6 +492,7 @@ export default function PipelineOrchestratorPage() {
     try {
       const res = await pipelineRunsApi.get(runId);
       setRunDetail(res);
+      await loadRunLogs(runId);
       if (res.status === 'RUNNING') setPolling(true);
     } finally {
       setLoadingDetail(false);
@@ -701,6 +715,7 @@ export default function PipelineOrchestratorPage() {
               )}
             </CardContent>
           </Card>
+
         </div>
 
         {/* ===== RIGHT: run config ===== */}
@@ -906,6 +921,33 @@ export default function PipelineOrchestratorPage() {
                   </div>
                 );
               })}
+            </CardContent>
+          </Card>
+
+          <Card className="border-[#E5E7EB]">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-semibold text-gray-900 flex items-center justify-between">
+                <span>运行日志</span>
+                <Button size="sm" variant="ghost" className="h-7 gap-1" onClick={() => loadRunLogs(runDetail.run_id)}>
+                  <RefreshCw className="w-3.5 h-3.5" /> 刷新
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {runLogs.length === 0 ? (
+                <p className="text-sm text-gray-500">日志正在生成；运行开始后会自动显示。</p>
+              ) : (
+                <div className="max-h-80 overflow-auto rounded-lg bg-slate-950 p-3 font-mono text-xs text-slate-200 space-y-1">
+                  {runLogs.map((entry, index) => (
+                    <div key={`${entry.timestamp}-${index}`} className={entry.level === 'ERROR' ? 'text-red-300' : entry.level === 'WARNING' ? 'text-amber-300' : ''}>
+                      <span className="text-slate-500">{entry.timestamp ? entry.timestamp.replace('T', ' ').slice(0, 19) : '--'}</span>{' '}
+                      <span className="font-semibold">{entry.level}</span>{' '}
+                      {entry.step && <span className="text-cyan-300">[{entry.step}] </span>}
+                      <span>{entry.message}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 

@@ -52,6 +52,14 @@ export interface PipelineArtifact {
   size_bytes: number;
 }
 
+export interface PipelineLogRecord {
+  timestamp: string | null;
+  level: string;
+  run_id: string;
+  step: string | null;
+  message: string;
+}
+
 export const pipelineRunsApi = {
   create: (data: PipelineRunCreate) =>
     fetchClient<PipelineRun>('/pipeline-runs', {
@@ -71,6 +79,9 @@ export const pipelineRunsApi = {
   get: (runId: string) => fetchClient<PipelineStatus>(`/pipeline-runs/${runId}`),
 
   getSteps: (runId: string) => fetchClient<PipelineStepSummary[]>(`/pipeline-runs/${runId}/steps`),
+
+  getLogs: (runId: string, tail = 500) =>
+    fetchClient<{ run_id: string; records: PipelineLogRecord[] }>(`/pipeline-runs/${runId}/logs?tail=${tail}`),
 
   run: (runId: string) =>
     fetchClient<PipelineRun>(`/pipeline-runs/${runId}/run`, { method: 'POST' }),
