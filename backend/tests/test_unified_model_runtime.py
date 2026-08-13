@@ -12,6 +12,7 @@ from app.database import Base
 from app.models.orm import Job
 from app.services.production_model_registry import MODEL_IDS, ProductionModelRegistry
 from app.services.unified_model_runtime import (
+    get_next_queued_model_job,
     job_paths,
     process_model_job,
     read_job_logs,
@@ -58,6 +59,9 @@ def configured_runtime(monkeypatch, tmp_path):
             f"STAMP_{model_id.upper()}_RUNNER_COMMAND",
             json.dumps([sys.executable, str(script)]),
         )
+    candidates = tmp_path / "pepprclip_candidates.pkl"
+    candidates.write_bytes(b"fixture")
+    monkeypatch.setenv("STAMP_PEPPRCLIP_CANDIDATES", str(candidates))
     return tmp_path
 
 
@@ -76,6 +80,21 @@ def test_every_model_has_executable_adapter():
         adapter = registry.get(model_id)
         for method in ("submit", "status", "cancel", "collect_artifacts", "normalize_result"):
             assert callable(getattr(adapter, method))
+
+
+def test_adapter_submit_creates_job(db, configured_runtime):
+    job = ProductionModelRegistry().get("pepmlm").submit(db, _payload(), run_id="adapter_submit")
+    assert job.status == "QUEUED"
+    assert job.job_type == "model_generate:pepmlm"
+
+
+def test_second_run_after_success(db, configured_runtime):
+    first = submit_model_job(db, "pepmlm", _payload(41), run_id="second_success")
+    process_model_job(db, first)
+    second = submit_model_job(db, "pepmlm", _payload(42), run_id="second_success")
+    process_model_job(db, second)
+    assert first.status == second.status == "SUCCEEDED"
+    assert first.id != second.id
 
 
 def test_all_models_repeatable_result_logs_and_artifact_isolation(db, configured_runtime):
@@ -109,6 +128,71 @@ def test_second_run_after_failure(db, configured_runtime, monkeypatch):
     second = submit_model_job(db, "pepmlm", _payload(42), run_id="failure_recovery")
     process_model_job(db, second)
     assert second.status == "SUCCEEDED"
+
+
+def test_gpu_lock_released_after_success(db, configured_runtime):
+    job = submit_model_job(db, "evobind2", _payload(), run_id="lock_success")
+    process_model_job(db, job)
+    paths = job_paths("lock_success", "evobind2", job.id)
+    assert job.status == "SUCCEEDED"
+    assert not paths["lock_path"].exists()
+
+
+def test_gpu_lock_and_busy_marker_released_after_failure(db, configured_runtime, monkeypatch):
+    monkeypatch.setenv(
+        "STAMP_EVOBIND2_RUNNER_COMMAND",
+        json.dumps([sys.executable, "-c", "raise SystemExit(9)"]),
+    )
+    job = submit_model_job(db, "evobind2", _payload(), run_id="lock_failure")
+    process_model_job(db, job)
+    paths = job_paths("lock_failure", "evobind2", job.id)
+    assert job.status == "FAILED"
+    assert not paths["lock_path"].exists()
+    assert not paths["busy_path"].exists()
+
+
+def test_worker_processes_multiple_jobs(db, configured_runtime):
+    jobs = [
+        submit_model_job(db, "pepmlm", _payload(41), run_id="worker_multiple"),
+        submit_model_job(db, "pepflow", _payload(42), run_id="worker_multiple"),
+    ]
+    for _ in jobs:
+        claimed = get_next_queued_model_job(db)
+        assert claimed is not None
+        process_model_job(db, claimed)
+    assert [job.status for job in jobs] == ["SUCCEEDED", "SUCCEEDED"]
+    assert get_next_queued_model_job(db) is None
+
+
+def test_job_log_persistence(db, configured_runtime):
+    job = submit_model_job(db, "pephar", _payload(), run_id="log_persistence")
+    process_model_job(db, job)
+    events = {row["event"] for row in read_job_logs(job)}
+    assert {"REQUEST_RECEIVED", "INFERENCE_STARTED", "STATE_SUCCEEDED", "GPU_LOCK_RELEASED"} <= events
+
+
+def test_result_schema_all_models(db, configured_runtime):
+    required = {
+        "run_id", "job_id", "model_id", "model_version", "status", "started_at",
+        "finished_at", "duration_seconds", "device", "checkpoint_sha256", "input_sha256",
+        "candidates", "artifacts", "metrics", "warnings", "error", "provenance",
+        "validation_status",
+    }
+    for model_id in MODEL_IDS:
+        job = submit_model_job(db, model_id, _payload(), run_id="schema_all")
+        process_model_job(db, job)
+        assert required <= set(job.output_json)
+        assert job.output_json["status"] == "SUCCEEDED"
+
+
+def test_combined_five_model_run(db, configured_runtime):
+    run_id = "combined_five"
+    jobs = [submit_model_job(db, model_id, _payload(), run_id=run_id) for model_id in MODEL_IDS]
+    for job in jobs:
+        process_model_job(db, job)
+    run_jobs = list(model_jobs_for_run(db, run_id))
+    assert [job.input_json["model_id"] for job in run_jobs] == list(MODEL_IDS)
+    assert all(job.status == "SUCCEEDED" and job.output_json["candidates"] for job in run_jobs)
 
 
 def test_restart_recovery(db, configured_runtime):

@@ -195,6 +195,25 @@ def _command_for(model_id: str, paths: dict[str, Path], payload: dict[str, Any])
                 "--num_candidates", "{num_candidates}", "--top_k", "3", "--device", "{device}",
                 "--output_dir", "{output_dir}", "--seed", "{seed}",
             ]
+        elif model_id == "pepprclip":
+            argv = [
+                str(_resolve_runtime_path(
+                    "STAMP_PEPPRCLIP_PYTHON",
+                    "/home/xh/kxc/stampup/models_dev/pepprclip/envs/pepprclip/bin/python",
+                )),
+                str(scripts / "unified_pepprclip_runner.py"),
+                "--input-json", "{input_json}",
+                "--output-dir", "{output_dir}",
+                "--result-json", "{result_json}",
+                "--checkpoint", str(_resolve_runtime_path(
+                    "STAMP_PEPPRCLIP_CHECKPOINT",
+                    "/home/xh/kxc/stampup/models_dev/pepprclip/weights/canonical_miniclip_4-22-23.ckpt",
+                )),
+                "--candidate-library", str(_resolve_runtime_path(
+                    "STAMP_PEPPRCLIP_CANDIDATES",
+                    "/home/xh/kxc/stampup/models_dev/pepprclip/candidate_peptides_lengths_5_to_30_25Keach.pkl",
+                )),
+            ]
         elif model_id in {"evobind2", "pephar", "pepflow"}:
             argv = [sys.executable, str(scripts / f"unified_{model_id}_runner.py"),
                     "--input-json", "{input_json}", "--output-dir", "{output_dir}",

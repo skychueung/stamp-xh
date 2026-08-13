@@ -68,6 +68,12 @@ class ConfiguredModelAdapter:
         root = _resolve(self.spec.root_env, self.spec.default_root)
         python = _resolve(self.spec.python_env, self.spec.default_python)
         checkpoint = _resolve(self.spec.checkpoint_env, self.spec.default_checkpoint)
+        candidate_library = None
+        if self.model_id == "pepprclip":
+            candidate_library = _resolve(
+                "STAMP_PEPPRCLIP_CANDIDATES",
+                "/home/xh/kxc/stampup/models_dev/pepprclip/candidate_peptides_lengths_5_to_30_25Keach.pkl",
+            )
         missing: list[str] = []
         state = "registered"
         if not root.exists():
@@ -79,6 +85,9 @@ class ConfiguredModelAdapter:
             state = "dependency_missing"
         elif not checkpoint.is_file():
             missing.append("checkpoint")
+            state = "checkpoint_missing"
+        elif candidate_library is not None and not candidate_library.is_file():
+            missing.append("candidate_library")
             state = "checkpoint_missing"
         elif root.exists():
             state = "ready"
@@ -104,6 +113,8 @@ class ConfiguredModelAdapter:
                 "root": bool(os.environ.get(self.spec.root_env)),
                 "python": bool(os.environ.get(self.spec.python_env)),
                 "checkpoint": bool(os.environ.get(self.spec.checkpoint_env)),
+                **({"candidate_library": bool(os.environ.get("STAMP_PEPPRCLIP_CANDIDATES"))}
+                   if self.model_id == "pepprclip" else {}),
             },
         }
 
