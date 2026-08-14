@@ -1,10 +1,10 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-08-14T05:50:00+10:00",
+  "generated_at": "2026-08-14T11:55:00+10:00",
   "verdict": "PARTIAL",
   "repository": "https://github.com/skychueung/stamp-xh.git",
   "branch": "fix/five-model-unified-runtime",
-  "head": "b371807",
+  "head": "f6a8fa7",
   "deployment": {
     "tailscale_url": "http://100.75.69.36:12973",
     "backend_port": 12974,
@@ -909,18 +909,19 @@
     "runner": "backend/scripts/unified_pepprclip_runner.py",
     "installer": "scripts/install-pepprclip-assets.sh",
     "required_assets": [
-      "canonical_miniclip_4-22-23.ckpt",
-      "candidate_peptides_lengths_5_to_30_25Keach.pkl"
+      "canonical_miniclip_4-22-23.ckpt"
     ],
     "probe_state": "checkpoint_missing",
     "missing": [
-      "checkpoint",
-      "candidate_library"
+      "checkpoint"
     ],
     "focused_tests": {
-      "passed": 40,
+      "passed": 41,
       "failed": 0,
-      "duration_seconds": 45.43
-    }
+      "duration_seconds": 44.75
+    },
+    "optional_acceleration_asset": "candidate_peptides_lengths_5_to_30_25Keach.pkl",
+    "base_peptide_source": "/home/xh/kxc/stampup/models_dev/pepprclip/source/pepprclip/Noisy_Dataset.csv",
+    "generation_mode": "official ESM-2 Gaussian latent perturbation"
   }
 }
