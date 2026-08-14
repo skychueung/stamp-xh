@@ -133,10 +133,10 @@ def main() -> int:
     if not selected:
         raise ValueError(f"candidate library has no peptides of length {length}")
 
-    prot = functional.normalize(miniclip.prot_embedder(target_embedding.unsqueeze(0)), dim=-1)
     scored: list[tuple[float, str]] = []
     batch_size = max(1, int(payload.get("pepprclip_batch_size", 4096)))
     with torch.inference_mode():
+        prot = functional.normalize(miniclip.prot_embedder(target_embedding.unsqueeze(0)), dim=-1)
         for start in range(0, len(selected), batch_size):
             rows = selected[start:start + batch_size]
             embeddings = torch.stack([torch.as_tensor(item[1]) for item in rows]).to(device)
