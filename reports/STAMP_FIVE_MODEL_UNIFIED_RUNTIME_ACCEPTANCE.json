@@ -1,10 +1,10 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-08-14T12:15:00+10:00",
+  "generated_at": "2026-08-14T12:35:00+10:00",
   "verdict": "PARTIAL",
   "repository": "https://github.com/skychueung/stamp-xh.git",
   "branch": "fix/five-model-unified-runtime",
-  "head": "17e8a98",
+  "head": "f5cef1e",
   "deployment": {
     "tailscale_url": "http://100.75.69.36:12973",
     "backend_port": 12974,
@@ -932,6 +932,13 @@
         "NLNSSRVPDLLV"
       ],
       "device": "cuda"
+    },
+    "real_acceptance_harness": "backend/scripts/run_pepprclip_real_acceptance.py",
+    "preflight": {
+      "state": "checkpoint_missing",
+      "missing": [
+        "checkpoint"
+      ]
     }
   },
   "automated_tests": {

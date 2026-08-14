@@ -3,7 +3,7 @@
 - 验收时间：2026-08-14（Australia/Sydney）
 - 目标仓库：[skychueung/stamp-xh](https://github.com/skychueung/stamp-xh)
 - 分支：`fix/five-model-unified-runtime`
-- 本报告对应 HEAD：`17e8a98`
+- 本报告对应已验证代码 HEAD：`f5cef1e`
 - 独立部署：`http://100.75.69.36:12973`（Tailscale），后端 `12974`
 - **FINAL VERDICT: PARTIAL**
 
@@ -84,11 +84,22 @@
 
 在服务器 GPU 环境中，以临时随机 MiniCLIP 状态字典仅作执行链路夹具，成功验证 `Noisy_Dataset.csv → ESM-2 650M → 高斯潜空间扰动 → 序列解码 → ESM 嵌入 → MiniCLIP 批量评分 → 统一 JSON` 全链路；生成 `NGGVERMYCLRK`、`NLNSSRVPDLLV` 两条候选，`candidate_source=official_gaussian_generation`。该结果只证明 runner 工程链路，未计入 12/15 真实模型分数；正式计分仍等待官方 checkpoint。
 
-## 8. 部署与回滚
+## 8. 最终复验入口
+
+官方 checkpoint 安装后执行：
+
+```bash
+cd /home/xh/kxc/stamp-v3/.goal-worktrees/five-model-unified-runtime
+/home/xh/kxc/stamp-v3/backend/.venv/bin/python backend/scripts/run_pepprclip_real_acceptance.py
+```
+
+该脚本固定执行 seeds 41/42/43，逐次核验真实 provenance、checkpoint SHA256、候选合法性、结果 JSON、结构化日志、推理事件、GPU lock/busy 清理和产物目录隔离，并写入 `reports/pepprclip_real_3x_results.json`。当前 preflight 精确返回 `checkpoint_missing`，未把夹具 smoke 计为真实运行。
+
+## 9. 部署与回滚
 
 启动：`bash scripts/start-unified-runtime-12973.sh`。运行数据在 `/home/xh/kxc/runtime/five-model-unified`，PID/日志在 `/home/xh/kxc/run/stamp-five-model`。脚本仅管理本独立栈的 12973/12974、model worker、pipeline worker。回滚时终止这四个 PID，并切换到前一提交后重跑脚本；数据库与 artifacts 保留。
 
-## 9. 最终验收表
+## 10. 最终验收表
 
 | 验收项 | 目标 | 实际结果 | 证据 | 判定 |
 |---|---:|---:|---|---|
