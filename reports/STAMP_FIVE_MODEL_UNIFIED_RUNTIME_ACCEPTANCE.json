@@ -1,10 +1,10 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-08-14T11:55:00+10:00",
+  "generated_at": "2026-08-14T12:15:00+10:00",
   "verdict": "PARTIAL",
   "repository": "https://github.com/skychueung/stamp-xh.git",
   "branch": "fix/five-model-unified-runtime",
-  "head": "f6a8fa7",
+  "head": "17e8a98",
   "deployment": {
     "tailscale_url": "http://100.75.69.36:12973",
     "backend_port": 12974,
@@ -922,6 +922,31 @@
     },
     "optional_acceleration_asset": "candidate_peptides_lengths_5_to_30_25Keach.pkl",
     "base_peptide_source": "/home/xh/kxc/stampup/models_dev/pepprclip/source/pepprclip/Noisy_Dataset.csv",
-    "generation_mode": "official ESM-2 Gaussian latent perturbation"
+    "generation_mode": "official ESM-2 Gaussian latent perturbation",
+    "gpu_fixture_smoke": {
+      "status": "PASS",
+      "counted_as_real_model": false,
+      "candidate_source": "official_gaussian_generation",
+      "candidate_sequences": [
+        "NGGVERMYCLRK",
+        "NLNSSRVPDLLV"
+      ],
+      "device": "cuda"
+    }
+  },
+  "automated_tests": {
+    "backend_full": {
+      "passed": 1689,
+      "skipped": 3,
+      "failed": 0,
+      "duration_seconds": 328.04
+    },
+    "focused": {
+      "passed": 41,
+      "failed": 0,
+      "duration_seconds": 44.75
+    },
+    "npm_lint": "PASS",
+    "npm_build": "PASS"
   }
 }

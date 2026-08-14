@@ -3,7 +3,7 @@
 - 验收时间：2026-08-14（Australia/Sydney）
 - 目标仓库：[skychueung/stamp-xh](https://github.com/skychueung/stamp-xh)
 - 分支：`fix/five-model-unified-runtime`
-- 本报告对应 HEAD：`f6a8fa7`
+- 本报告对应 HEAD：`17e8a98`
 - 独立部署：`http://100.75.69.36:12973`（Tailscale），后端 `12974`
 - **FINAL VERDICT: PARTIAL**
 
@@ -68,16 +68,21 @@
 
 ## 7. 自动化测试
 
-新增全部点名的统一运行回归用例，并补充 PepPrCLIP 双资产探测测试；当前 focused suite 为 **41 passed**（44.75s）。`backend/scripts/unified_pepprclip_runner.py` 已实现官方 MiniCLIP checkpoint + 官方候选库批量评分或官方基础肽高斯生成路径，`scripts/install-pepprclip-assets.sh` 提供原子安装与文件尺寸校验。
+新增全部点名的统一运行回归用例，并补充 PepPrCLIP 双资产探测测试；当前 focused suite 为 **41 passed**（44.75s）。服务器全量回归为 **1689 passed, 3 skipped, 0 failed**（328.04s）。`backend/scripts/unified_pepprclip_runner.py` 已实现官方 MiniCLIP checkpoint + 官方候选库批量评分或官方基础肽高斯生成路径，`scripts/install-pepprclip-assets.sh` 提供原子安装与文件尺寸校验。
 
 | 命令 | 结果 |
 |---|---|
-| Linux `pytest -q backend/tests` | **1678 passed, 3 skipped, 0 failed**, 302.38s |
+| Linux `pytest -q backend/tests` | **1689 passed, 3 skipped, 0 failed**, 328.04s |
 | `npm run lint` | PASS |
 | `npm run build` | PASS，3600 modules transformed |
 | Pipeline + unified runtime focused tests | 41 passed |
 
 首次全量测试暴露服务器 venv 未按 `backend/requirements.txt` 安装 numpy/pdfminer.six；补齐已声明依赖后，原 3 项失败单独复测 3/3、全量复测全绿。
+
+
+### PepPrCLIP 生成链路实机预验证
+
+在服务器 GPU 环境中，以临时随机 MiniCLIP 状态字典仅作执行链路夹具，成功验证 `Noisy_Dataset.csv → ESM-2 650M → 高斯潜空间扰动 → 序列解码 → ESM 嵌入 → MiniCLIP 批量评分 → 统一 JSON` 全链路；生成 `NGGVERMYCLRK`、`NLNSSRVPDLLV` 两条候选，`candidate_source=official_gaussian_generation`。该结果只证明 runner 工程链路，未计入 12/15 真实模型分数；正式计分仍等待官方 checkpoint。
 
 ## 8. 部署与回滚
 
