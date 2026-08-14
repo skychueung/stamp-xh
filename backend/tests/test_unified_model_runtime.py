@@ -83,6 +83,7 @@ def test_pepprclip_probe_reports_every_missing_asset(monkeypatch, tmp_path):
     monkeypatch.setenv("STAMP_PEPPRCLIP_PYTHON", str(python))
     monkeypatch.setenv("STAMP_PEPPRCLIP_CHECKPOINT", str(root / "missing.ckpt"))
     monkeypatch.setenv("STAMP_PEPPRCLIP_CANDIDATES", str(root / "missing.pkl"))
+    monkeypatch.setenv("STAMP_PEPPRCLIP_BASE_PEPTIDES", str(root / "missing.csv"))
     probe = ProductionModelRegistry().get("pepprclip").probe()
     assert probe["state"] == "checkpoint_missing"
     assert probe["missing"] == ["checkpoint", "candidate_source"]
