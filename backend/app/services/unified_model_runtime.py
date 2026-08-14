@@ -213,6 +213,10 @@ def _command_for(model_id: str, paths: dict[str, Path], payload: dict[str, Any])
                     "STAMP_PEPPRCLIP_CANDIDATES",
                     "/home/xh/kxc/stampup/models_dev/pepprclip/candidate_peptides_lengths_5_to_30_25Keach.pkl",
                 )),
+                "--base-peptides-csv", str(_resolve_runtime_path(
+                    "STAMP_PEPPRCLIP_BASE_PEPTIDES",
+                    "/home/xh/kxc/stampup/models_dev/pepprclip/source/pepprclip/Noisy_Dataset.csv",
+                )),
             ]
         elif model_id in {"evobind2", "pephar", "pepflow"}:
             argv = [sys.executable, str(scripts / f"unified_{model_id}_runner.py"),

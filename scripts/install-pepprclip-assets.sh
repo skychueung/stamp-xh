@@ -23,12 +23,12 @@ from huggingface_hub import hf_hub_download
 
 repo_id, root_raw, token = sys.argv[1:]
 root = Path(root_raw)
-assets = {
-    "canonical_miniclip_4-22-23.ckpt": (root / "weights" / "canonical_miniclip_4-22-23.ckpt", 24_610_559),
-    "candidate_peptides_lengths_5_to_30_25Keach.pkl": (
+assets = {"canonical_miniclip_4-22-23.ckpt":
+          (root / "weights" / "canonical_miniclip_4-22-23.ckpt", 24_610_559)}
+if os.environ.get("STAMP_PEPPRCLIP_DOWNLOAD_LIBRARY") == "1":
+    assets["candidate_peptides_lengths_5_to_30_25Keach.pkl"] = (
         root / "candidate_peptides_lengths_5_to_30_25Keach.pkl", 3_528_976_415
-    ),
-}
+    )
 for filename, (destination, expected_size) in assets.items():
     cached = Path(hf_hub_download(repo_id=repo_id, filename=filename, token=token))
     if cached.stat().st_size != expected_size:

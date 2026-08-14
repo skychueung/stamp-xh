@@ -4,8 +4,10 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import pickle
+import random
 from pathlib import Path
 
 
@@ -26,6 +28,7 @@ def main() -> int:
     parser.add_argument("--result-json", required=True, type=Path)
     parser.add_argument("--checkpoint", required=True, type=Path)
     parser.add_argument("--candidate-library", required=True, type=Path)
+    parser.add_argument("--base-peptides-csv", required=True, type=Path)
     args = parser.parse_args()
 
     import esm
@@ -47,8 +50,10 @@ def main() -> int:
     device = torch.device("cuda" if requested_device != "cpu" and torch.cuda.is_available() else "cpu")
     if not args.checkpoint.is_file():
         raise FileNotFoundError(f"PepPrCLIP checkpoint missing: {args.checkpoint}")
-    if not args.candidate_library.is_file():
-        raise FileNotFoundError(f"PepPrCLIP candidate library missing: {args.candidate_library}")
+    if not args.candidate_library.is_file() and not args.base_peptides_csv.is_file():
+        raise FileNotFoundError(
+            f"PepPrCLIP candidate source missing: {args.candidate_library} or {args.base_peptides_csv}"
+        )
 
     esm_model, alphabet = esm.pretrained.esm2_t33_650M_UR50D()
     esm_model = esm_model.to(device).eval()
@@ -66,9 +71,65 @@ def main() -> int:
     miniclip.load_state_dict(state, strict=True)
     miniclip = miniclip.to(device).eval()
 
-    with args.candidate_library.open("rb") as handle:
-        library = pickle.load(handle)
-    selected = [(str(seq), embedding) for seq, embedding in library.items() if len(str(seq)) == length]
+    candidate_source = "official_candidate_library"
+    library_size = 0
+    if args.candidate_library.is_file():
+        with args.candidate_library.open("rb") as handle:
+            library = pickle.load(handle)
+        library_size = len(library)
+        selected = [(str(seq), embedding) for seq, embedding in library.items() if len(str(seq)) == length]
+    else:
+        candidate_source = "official_gaussian_generation"
+        with args.base_peptides_csv.open(newline="", encoding="utf-8-sig") as handle:
+            base_rows = list(csv.DictReader(handle))
+        bases = [
+            str(row.get("pep_seq") or row.get("sequence") or "").strip().upper()
+            for row in base_rows
+        ]
+        bases = sorted({seq for seq in bases if len(seq) == length and not (set(seq) - AA)})
+        if not bases:
+            raise ValueError(f"base peptide dataset has no peptides of length {length}")
+        seed = int(payload.get("seed", 42))
+        rng = random.Random(seed)
+        torch.manual_seed(seed)
+        base_count = min(len(bases), max(1, int(payload.get("pepprclip_num_base_peptides", 20))))
+        sampled = rng.sample(bases, base_count)
+        pool_size = max(count, int(payload.get("pepprclip_generation_pool_size", max(100, count * 20))))
+        variances = (5, 9, 13, 17, 21)
+        aa_tokens = list("ARNDCEQGHILKMFPSTWYV")
+        aa_indices = [alphabet.get_idx(aa) for aa in aa_tokens]
+        generated: list[str] = []
+        cursor = 0
+        with torch.inference_mode():
+            while len(set(generated)) < pool_size:
+                base = sampled[cursor % len(sampled)]
+                variance = variances[(cursor // len(sampled)) % len(variances)]
+                _, _, base_tokens = converter([("base", base)])
+                base_tokens = base_tokens.to(device)
+                token_rep = esm_model(base_tokens, repr_layers=[33], return_contacts=False)["representations"][33]
+                perturbed = token_rep + torch.randn_like(token_rep) * variance * token_rep.var()
+                logits = esm_model.lm_head(perturbed)[:, :, aa_indices]
+                predicted = logits.argmax(dim=2).tolist()[0]
+                sequence = "".join(aa_tokens[index] for index in predicted)[1:-1]
+                if len(sequence) == length and not (set(sequence) - AA):
+                    generated.append(sequence)
+                cursor += 1
+                if cursor >= pool_size * 20:
+                    break
+        generated = list(dict.fromkeys(generated))
+        if not generated:
+            raise ValueError("Gaussian generation produced no valid peptide candidates")
+        selected = []
+        embedding_batch_size = max(1, int(payload.get("pepprclip_embedding_batch_size", 32)))
+        with torch.inference_mode():
+            for start in range(0, len(generated), embedding_batch_size):
+                rows = generated[start:start + embedding_batch_size]
+                _, _, row_tokens = converter([(f"candidate_{i}", seq) for i, seq in enumerate(rows)])
+                row_tokens = row_tokens.to(device)
+                row_reps = esm_model(row_tokens, repr_layers=[33], return_contacts=False)["representations"][33]
+                for index, sequence in enumerate(rows):
+                    selected.append((sequence, row_reps[index, 1:len(sequence) + 1].mean(0).cpu()))
+        library_size = len(generated)
     if not selected:
         raise ValueError(f"candidate library has no peptides of length {length}")
 
@@ -92,7 +153,8 @@ def main() -> int:
     args.result_json.parent.mkdir(parents=True, exist_ok=True)
     result = {
         "candidates": candidates,
-        "metrics": {"library_size": len(library), "eligible_peptides": len(selected), "device": str(device)},
+        "metrics": {"candidate_source": candidate_source, "library_size": library_size,
+                    "eligible_peptides": len(selected), "device": str(device)},
         "warnings": ["Computational predictions; validation_status=NOT_EXPERIMENTALLY_VALIDATED"],
     }
     args.result_json.write_text(json.dumps(result, indent=2), encoding="utf-8")

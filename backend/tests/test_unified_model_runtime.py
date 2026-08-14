@@ -85,7 +85,25 @@ def test_pepprclip_probe_reports_every_missing_asset(monkeypatch, tmp_path):
     monkeypatch.setenv("STAMP_PEPPRCLIP_CANDIDATES", str(root / "missing.pkl"))
     probe = ProductionModelRegistry().get("pepprclip").probe()
     assert probe["state"] == "checkpoint_missing"
-    assert probe["missing"] == ["checkpoint", "candidate_library"]
+    assert probe["missing"] == ["checkpoint", "candidate_source"]
+
+
+def test_pepprclip_probe_accepts_base_peptide_fallback(monkeypatch, tmp_path):
+    root = tmp_path / "pepprclip"
+    root.mkdir()
+    python = root / "python"
+    checkpoint = root / "model.ckpt"
+    base_peptides = root / "Noisy_Dataset.csv"
+    for path in (python, checkpoint, base_peptides):
+        path.write_text("fixture", encoding="utf-8")
+    monkeypatch.setenv("STAMP_PEPPRCLIP_ROOT", str(root))
+    monkeypatch.setenv("STAMP_PEPPRCLIP_PYTHON", str(python))
+    monkeypatch.setenv("STAMP_PEPPRCLIP_CHECKPOINT", str(checkpoint))
+    monkeypatch.setenv("STAMP_PEPPRCLIP_CANDIDATES", str(root / "missing.pkl"))
+    monkeypatch.setenv("STAMP_PEPPRCLIP_BASE_PEPTIDES", str(base_peptides))
+    probe = ProductionModelRegistry().get("pepprclip").probe()
+    assert probe["state"] == "ready"
+    assert probe["missing"] == []
 
 
 def test_every_model_has_executable_adapter():
